@@ -1,0 +1,24 @@
+{
+    "name": "xenos/lucenequery",
+    "type": "library",
+    "description": "A PHP library for creating Lucene search queries",
+    "keywords": ["lucene", "search", "query", "php"],
+    "homepage": "https://github.com/XenosEleatikos/LuceneQuery",
+    "authors": [
+        {
+            "name": "Christoph Hochholzer",
+            "email": "christoph@hochholzer.info",
+            "homepage": "https://github.com/XenosEleatikos",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "phpunit/phpunit": " ^6.1"
+    },
+    "autoload": {
+        "psr-0": {
+            "LuceneQuery": "src/"
+        }
+    }
+}
