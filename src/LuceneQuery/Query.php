@@ -2,6 +2,10 @@
 
 namespace LuceneQuery;
 
+/**
+ * A primitive query
+ * A primitive query consists of a term and an optional field.
+ */
 class Query implements QueryInterface
 {
     /**
