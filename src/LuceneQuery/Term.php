@@ -20,4 +20,14 @@ class Term
     {
         $this->searchString = $searchString;
     }
+
+    /**
+     * Returns the search string.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->searchString;
+    }
 }
