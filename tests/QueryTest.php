@@ -34,7 +34,7 @@ class QueryTest extends TestCase
      *
      * @return void
      */
-    public function test__toStringWithoutFieldGiven(): void
+    public function test__toStringWithoutField(): void
     {
         $query = new Query(new Term('term'));
 
@@ -50,7 +50,7 @@ class QueryTest extends TestCase
      *
      * @return void
      */
-    public function test__toStringWithEmptyFieldGiven(): void
+    public function test__toStringWithEmptyField(): void
     {
         $query = new Query(new Term('term'), new Field);
 
