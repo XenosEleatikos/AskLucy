@@ -2,6 +2,9 @@
 
 namespace LuceneQuery;
 
+/**
+ * A term
+ */
 class Term
 {
     /**
@@ -18,6 +21,10 @@ class Term
      */
     public function __construct(string $searchString)
     {
+        $searchString = trim($searchString);
+
+        $searchString = $this->addQuotesToPhrase($searchString);
+
         $this->searchString = $searchString;
     }
 
@@ -29,5 +36,21 @@ class Term
     public function __toString(): string
     {
         return $this->searchString;
+    }
+
+    /**
+     * Surrounds phrases containing several words with quotes.
+     *
+     * @param string $searchString A search string
+     *
+     * @return string
+     */
+    private function addQuotesToPhrase(string $searchString): string
+    {
+        if (strpos($searchString, ' ')) {
+            $searchString = '"' . $searchString . '"';
+        }
+
+        return $searchString;
     }
 }
