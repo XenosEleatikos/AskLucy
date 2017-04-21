@@ -8,6 +8,15 @@ namespace LuceneQuery;
 class Field
 {
     /**
+     * The default field
+     *
+     * @var string
+     */
+    public const DEFAULT = '';
+
+    /**
+     * The name of the field
+     *
      * @var string
      */
     private $name;
@@ -17,7 +26,7 @@ class Field
      *
      * @param string $name The name of the field
      */
-    public function __construct(string $name = '')
+    public function __construct(string $name = self::DEFAULT)
     {
         $this->name = $name;
     }
