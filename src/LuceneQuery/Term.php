@@ -5,8 +5,15 @@ namespace LuceneQuery;
 /**
  * A term
  */
-class Term
+class Term implements QueryInterface, ExpressionInterface
 {
+    /**
+     * The field
+     *
+     * @var Field
+     */
+    private $field;
+
     /**
      * The search string
      *
@@ -21,11 +28,32 @@ class Term
      */
     public function __construct(string $searchString)
     {
-        $searchString = trim($searchString);
+        $this->searchString = trim($searchString);
+        $this->field = new Field;
 
-        $searchString = $this->addQuotesToPhrase($searchString);
+        if ($this->isPhrase()) {
+            $this->addQuotes();
+        }
+    }
 
-        $this->searchString = $searchString;
+    /**
+     * Adds a field to search in.
+     *
+     * @param string $name A field name
+     */
+    public function addField(string $name = '')
+    {
+        $this->field = new Field($name);
+    }
+
+    /**
+     * Returns true, if the search string is a phrase of several words, otherwise false.
+     *
+     * @return bool
+     */
+    public function isPhrase(): bool
+    {
+        return (strpos($this->searchString, ' ')) ? true : false;
     }
 
     /**
@@ -35,22 +63,18 @@ class Term
      */
     public function __toString(): string
     {
-        return $this->searchString;
+        return (empty((string) $this->field))
+            ? (string) $this->searchString
+            : (string) $this->field . ':' . $this->searchString;
     }
 
     /**
-     * Surrounds phrases containing several words with quotes.
+     * Surrounds the search string with quotes.
      *
-     * @param string $searchString A search string
-     *
-     * @return string
+     * @return void
      */
-    private function addQuotesToPhrase(string $searchString): string
+    private function addQuotes(): void
     {
-        if (strpos($searchString, ' ')) {
-            $searchString = '"' . $searchString . '"';
-        }
-
-        return $searchString;
+        $this->searchString = '"' . $this->searchString . '"';
     }
 }

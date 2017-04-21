@@ -2,36 +2,74 @@
 
 namespace LuceneQuery;
 
-/**
- * A primitive query
- * A primitive query consists of a term and an optional field.
- */
-class Query implements QueryInterface
+class Query implements QueryInterface, ExpressionInterface
 {
     /**
-     * The field
+     * An array containing queries and operators
      *
-     * @var Field
+     * @var ExpressionInterface[]
      */
-    private $field;
+    private $elements = [];
 
     /**
-     * The search term
+     * Constructs a query.
      *
-     * @var Term
+     * @param QueryInterface $query A query
      */
-    private $term;
-
-    /**
-     * Constructs a primitive query.
-     *
-     * @param Term       $term  The term
-     * @param null|Field $field The field
-     */
-    public function __construct(Term $term, Field $field = null)
+    public function __construct(QueryInterface $query)
     {
-        $this->field = (isset($field)) ? $field : new Field;
-        $this->term  = $term;
+        $this->elements = [$query];
+    }
+
+    /**
+     * Adds a sub query to the query.
+     *
+     * @param QueryInterface $query A query
+     */
+    public function _add(QueryInterface $query): void
+    {
+        $this->add($query);
+    }
+
+    /**
+     * Appends a sub query as and-statement to the query.
+     *
+     * @param QueryInterface $query A query
+     *
+     * @return void
+     */
+    public function _and(QueryInterface $query): void
+    {
+        $this->add($query, new Operator('AND'));
+    }
+
+    /**
+     * Appends a sub query as or-statement to the query.
+     *
+     * @param QueryInterface $query A query
+     *
+     * @return void
+     */
+    public function _or(QueryInterface $query): void
+    {
+        $this->add($query, new Operator('OR'));
+    }
+
+    /**
+     * Appends a sub query with logical operator to the query.
+     *
+     * @param QueryInterface $query    A query
+     * @param Operator       $operator A logical operator
+     *
+     * @return void
+     */
+    private function add(QueryInterface $query, Operator $operator = null): void
+    {
+        if (isset($operator)) {
+            $this->elements[] = $operator;
+        }
+
+        $this->elements[] = $query;
     }
 
     /**
@@ -41,8 +79,6 @@ class Query implements QueryInterface
      */
     public function __toString(): string
     {
-        return (!empty((string) $this->field))
-            ? (string) $this->field . ':' . (string) $this->term
-            : (string) $this->term;
+        return '(' . implode(' ' , $this->elements) . ')';
     }
 }

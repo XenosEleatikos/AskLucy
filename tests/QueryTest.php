@@ -1,63 +1,74 @@
 <?php
 namespace LuceneQuery\Test;
 
-use LuceneQuery\Field;
 use LuceneQuery\Query;
-use LuceneQuery\Term;
+use LuceneQuery\QueryInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Unit tests for the primitive query.
+ * Unit tests for the query.
  *
  * @see Query
  */
 class QueryTest extends TestCase
 {
     /**
-     * Tests, if a query with fielded term is constructed and converted to string correctly.
+     * Tests, if _and() creates a well formed and-query.
      *
      * @return void
      */
-    public function test__toStringWithFieldedTerm(): void
+    public function test_and(): void
     {
-        $query = new Query(new Term('term'), new Field('field'));
+        $a = $this->getQueryMock('a');
+        $b = $this->getQueryMock('b');
+
+        $query = new Query($a);
+        $query->_and($b);
 
         $this->assertSame(
-            'field:term',
+            '(a AND b)',
             (string) $query,
-            'Asserted query with fielded term to be "field:term".'
+            'Asserted and-query to be "(a AND b)"'
         );
     }
 
     /**
-     * Tests, if a query with unfielded term is constructed and converted to string correctly.
+     * Tests, if _or() creates a well formed or-query.
      *
      * @return void
      */
-    public function test__toStringWithoutField(): void
+    public function test_or(): void
     {
-        $query = new Query(new Term('term'));
+        $a = $this->getQueryMock('a');
+        $b = $this->getQueryMock('b');
+
+        $query = new Query($a);
+        $query->_or($b);
 
         $this->assertSame(
-            'term',
+            '(a OR b)',
             (string) $query,
-            'Asserted query with unfielded term to be "term".'
+            'Asserted or-query to be "(a OR b)"'
         );
     }
 
     /**
-     * Tests, if a query with an empty field name is constructed and converted to string correctly.
+     * Returns a mock object for the query interface.
      *
-     * @return void
+     * @param string $query A query returned by __toString()
+     *
+     * @return \PHPUnit_Framework_MockObject_MockObject|QueryInterface
      */
-    public function test__toStringWithEmptyField(): void
+    private function getQueryMock(string $query): \PHPUnit_Framework_MockObject_MockObject
     {
-        $query = new Query(new Term('term'), new Field);
+        $queryMock = $this->getMockBuilder('LuceneQuery\QueryInterface')
+            ->setMethods(['__toString'])
+            ->getMockForAbstractClass();
 
-        $this->assertSame(
-            'term',
-            (string) $query,
-            'Asserted query with empty field name to be "term".'
-            );
+        $queryMock->expects($this->once())
+            ->method('__toString')
+            ->willReturn($query);
+
+        return $queryMock;
     }
 }
