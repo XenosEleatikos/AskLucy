@@ -22,7 +22,7 @@ class Operator implements ExpressionInterface
     public const SYMBOL_OR = 'OR';
 
     /**
-     * A list of valid symbols for logical operators.
+     * A list of valid symbols for logical operators
      *
      * @var array
      */
