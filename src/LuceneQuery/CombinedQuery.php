@@ -25,8 +25,10 @@ class CombinedQuery implements QueryInterface, ExpressionInterface
      * Appends a sub query as and-statement to the combined query.
      *
      * @param QueryInterface $query A query
+     *
+     * @return void
      */
-    public function _and(QueryInterface $query)
+    public function _and(QueryInterface $query): void
     {
         $this->add(new Operator('AND'), $query);
     }
@@ -35,8 +37,10 @@ class CombinedQuery implements QueryInterface, ExpressionInterface
      * Appends a sub query as or-statement to the combined query.
      *
      * @param QueryInterface $query A query
+     *
+     * @return void
      */
-    public function _or(QueryInterface $query)
+    public function _or(QueryInterface $query): void
     {
         $this->add(new Operator('OR'), $query);
     }
@@ -46,8 +50,10 @@ class CombinedQuery implements QueryInterface, ExpressionInterface
      *
      * @param Operator       $operator A logical operator
      * @param QueryInterface $query    A query
+     *
+     * @return void
      */
-    private function add(Operator $operator, QueryInterface $query)
+    private function add(Operator $operator, QueryInterface $query): void
     {
         $this->elements[] = $operator;
         $this->elements[] = $query;
