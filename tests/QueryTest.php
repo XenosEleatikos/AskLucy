@@ -17,6 +17,26 @@ class QueryTest extends TestCase
      *
      * @return void
      */
+    public function test_add(): void
+    {
+        $a = $this->getQueryMock('a');
+        $b = $this->getQueryMock('b');
+
+        $query = new Query($a);
+        $query->_add($b);
+
+        $this->assertSame(
+            '(a b)',
+            (string) $query,
+            'Asserted combined query to be "(a b)"'
+        );
+    }
+
+    /**
+     * Tests, if _and() creates a well formed and-query.
+     *
+     * @return void
+     */
     public function test_and(): void
     {
         $a = $this->getQueryMock('a');

@@ -28,7 +28,7 @@ class Query implements QueryInterface, ExpressionInterface
      */
     public function _add(QueryInterface $query): void
     {
-        $this->add($query);
+        $this->elements[] = $query;
     }
 
     /**
@@ -40,7 +40,8 @@ class Query implements QueryInterface, ExpressionInterface
      */
     public function _and(QueryInterface $query): void
     {
-        $this->add($query, new Operator('AND'));
+        $this->elements[] = new Operator('AND');
+        $this->elements[] = $query;
     }
 
     /**
@@ -52,23 +53,7 @@ class Query implements QueryInterface, ExpressionInterface
      */
     public function _or(QueryInterface $query): void
     {
-        $this->add($query, new Operator('OR'));
-    }
-
-    /**
-     * Appends a sub query with logical operator to the query.
-     *
-     * @param QueryInterface $query    A query
-     * @param Operator       $operator A logical operator
-     *
-     * @return void
-     */
-    private function add(QueryInterface $query, Operator $operator = null): void
-    {
-        if (isset($operator)) {
-            $this->elements[] = $operator;
-        }
-
+        $this->elements[] = new Operator('OR');
         $this->elements[] = $query;
     }
 
