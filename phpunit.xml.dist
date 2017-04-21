@@ -9,14 +9,17 @@
          convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnFailure="false">
-    <testsuites>
-        <testsuite name="lucenequery">
-            <directory>tests</directory>
-        </testsuite>
-    </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">src</directory>
         </whitelist>
     </filter>
+    <logging>
+        <log type="coverage-html" target="build/coverage" lowUpperBound="50" highLowerBound="90"/>
+    </logging>
+    <testsuites>
+        <testsuite name="lucenequery">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
 </phpunit>
