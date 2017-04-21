@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class CombinedQueryTest extends TestCase
 {
     /**
-     * Tests, if _and() creates a well form and-query.
+     * Tests, if _and() creates a well formed and-query.
      *
      * @return void
      */
@@ -33,7 +33,7 @@ class CombinedQueryTest extends TestCase
     }
 
     /**
-     * Tests, if _or() creates a well form or-query.
+     * Tests, if _or() creates a well formed or-query.
      *
      * @return void
      */
