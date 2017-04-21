@@ -1,6 +1,7 @@
 <?php
 namespace LuceneQuery\Test;
 
+use LuceneQuery\Field;
 use LuceneQuery\Term;
 use PHPUnit\Framework\TestCase;
 
@@ -11,6 +12,76 @@ use PHPUnit\Framework\TestCase;
  */
 class TermTest extends TestCase
 {
+    /**
+     * Tests, if Term::__construct() strips whitespace (or similar characters) from the beginning and end of a single
+     * term.
+     *
+     * @dataProvider dataProviderTest__ConstructTrimsSearchTerm
+     *
+     * @return void
+     */
+    public function test__constructTrimsSingleTerm($searchString): void
+    {
+        $term = new Term($searchString);
+
+        $this->assertSame(
+            'term',
+            (string) $term,
+            'Asserted leading and ending whitespace characters to be stripped from the term.'
+        );
+    }
+
+    /**
+     * Tests, if Term::__construct() strips whitespace (or similar characters) from the beginning and end of a phrase
+     * of several words.
+     *
+     * @dataProvider dataProviderTest__ConstructTrimsSearchPhrase
+     *
+     * @return void
+     */
+    public function test__constructTrimsPhrase($searchString): void
+    {
+        $term = new Term($searchString);
+
+        $this->assertSame(
+            '"a search phrase"',
+            (string) $term,
+            'Asserted leading and ending whitespace characters to be stripped from the phrase.'
+        );
+    }
+
+    /**
+     * Tests, if addField() adds a field to a single term.
+     *
+     * @return void
+     */
+    public function testAddFieldToSingleTerm(): void
+    {
+        $term = new Term('term');
+        $term->addField(new Field('field'));
+
+        $this->assertSame(
+            'field:term',
+            (string) $term
+        );
+    }
+
+    /**
+     * Tests, if addField() adds a field to a phrase of several words.
+     *
+     * @return void
+     */
+    public function testAddFieldToPhrase(): void
+    {
+        $term = new Term('a search phrase');
+        $term->addField(new Field('field'));
+
+        $this->assertSame(
+            'field:"a search phrase"',
+            (string) $term
+        );
+    }
+
     /**
      * Tests, if Term::__toString() returns the term given as constructor argument.
      *
@@ -32,7 +103,7 @@ class TermTest extends TestCase
      *
      * @return void
      */
-    public function test__toStringWithoutEmptyTermName(): void
+    public function test__toStringWithEmptyTermName(): void
     {
         $term = new Term('');
 
@@ -44,31 +115,23 @@ class TermTest extends TestCase
     }
 
     /**
-     * Tests, if Term::__construct() strips whitespace (or similar characters) from the beginning and end of a term.
-     *
-     * @dataProvider dataProviderTest__ConstructTrimsSearchTerm
-     *
-     * @return void
-     */
-    public function test__constructTrimsSearchTerm($searchString): void
-    {
-        $term = new Term($searchString);
-
-        $this->assertSame(
-            'term',
-            (string) $term,
-            'Asserted leading and ending whitespace characters to be stripped from the term.'
-        );
-    }
-
-    /**
      * Data provider for test__constructTrimsSearchTerm().
      *
      * @return array
      */
-    public function dataProviderTest__ConstructTrimsSearchTerm(): array
+    public function dataProviderTest__constructTrimsSearchTerm(): array
     {
         return $this->getWhiteSpacedTerms('term');
+    }
+
+    /**
+     * Data provider for test__constructTrimsSearchPhrase().
+     *
+     * @return array
+     */
+    public function dataProviderTest__constructTrimsSearchPhrase(): array
+    {
+        return $this->getWhiteSpacedTerms('a search phrase');
     }
 
     /**
@@ -76,7 +139,7 @@ class TermTest extends TestCase
      *
      * @return void
      */
-    public function testAddQuotesToPhrase(): void
+    public function testAddQuotes(): void
     {
         $term = new Term('a search phrase');
 
@@ -85,34 +148,6 @@ class TermTest extends TestCase
             (string) $term,
             'Asserted phrases containing several words being quoted.'
         );
-    }
-
-    /**
-     * Tests, if Term::__construct() strips whitespace (or similar characters) from the beginning and end of a phrase.
-     *
-     * @dataProvider dataProviderTest__ConstructTrimsSearchPhrase
-     *
-     * @return void
-     */
-    public function test__constructTrimsSearchPhrase($searchString): void
-    {
-        $term = new Term($searchString);
-
-        $this->assertSame(
-            '"a search phrase"',
-            (string) $term,
-            'Asserted leading and ending whitespace characters to be stripped from the phrase.'
-        );
-    }
-
-    /**
-     * Data provider for test__constructTrimsSearchPhrase().
-     *
-     * @return array
-     */
-    public function dataProviderTest__ConstructTrimsSearchPhrase(): array
-    {
-        return $this->getWhiteSpacedTerms('a search phrase');
     }
 
     /**

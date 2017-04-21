@@ -29,7 +29,7 @@ class Term implements QueryInterface, ExpressionInterface
     public function __construct(string $searchString)
     {
         $this->searchString = trim($searchString);
-        $this->field = new Field;
+        $this->field        = new Field;
 
         if ($this->isPhrase()) {
             $this->addQuotes();
