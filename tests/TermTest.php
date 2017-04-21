@@ -83,6 +83,50 @@ class TermTest extends TestCase
     }
 
     /**
+     * Tests, if fuzzifySingleWordTerm() appends the fuzzy operator correctly.
+     *
+     * @param string $searchString   The search string to be fuzzified
+     * @param int    $distance       The distance parameter, given to fuzzifySingleWordTerm()
+     * @param string $expectedResult The expected term
+     *
+     * @dataProvider dataProviderTestFuzzifyTerm
+     *
+     * @return void
+     */
+    public function testFuzzifyTerm(string $searchString, int $distance, string $expectedResult): void
+    {
+        $term = new Term($searchString);
+        $term->fuzzify($distance);
+
+        $this->assertSame(
+            $expectedResult,
+            (string) $term,
+            'Expected term to be "'
+            . $expectedResult
+            . '", if Damerau-Levenshtein Distance '
+            . $distance
+            . ' given as parameter.'
+        );
+    }
+
+    /**
+     * Tests, if fuzzify() appends the fuzz operator without distance operator, if no parameter given.
+     *
+     * @return void
+     */
+    public function testFuzzifyTermWithDefaultParameter()
+    {
+        $term = new Term('term');
+        $term->fuzzify();
+
+        $this->assertSame(
+            'term~',
+            (string) $term,
+            'Expected fuzzy term to be "term~", if no Damerau-Levenshtein Distance given as parameter.'
+        );
+    }
+
+    /**
      * Tests, if Term::__toString() returns the term given as constructor argument.
      *
      * @return void
@@ -115,6 +159,22 @@ class TermTest extends TestCase
     }
 
     /**
+     * Tests, if phrases containing several words being quoted.
+     *
+     * @return void
+     */
+    public function testAddQuotes(): void
+    {
+        $term = new Term('a search phrase');
+
+        $this->assertSame(
+            '"a search phrase"',
+            (string) $term,
+            'Asserted phrases containing several words being quoted.'
+        );
+    }
+
+    /**
      * Data provider for test__constructTrimsSearchTerm().
      *
      * @return array
@@ -135,19 +195,20 @@ class TermTest extends TestCase
     }
 
     /**
-     * Tests, if phrases containing several words being quoted.
+     * Data provider for testFuzzifyTerm().
      *
-     * @return void
+     * @return array
      */
-    public function testAddQuotes(): void
+    public function dataProviderTestFuzzifyTerm(): array
     {
-        $term = new Term('a search phrase');
-
-        $this->assertSame(
-            '"a search phrase"',
-            (string) $term,
-            'Asserted phrases containing several words being quoted.'
-        );
+        return [
+            'Single word term with distance 0' => ['term', 0, 'term'],
+            'Single word term with distance 1' => ['term', 1, 'term~1'],
+            'Single word term with distance 2' => ['term', 2, 'term~'],
+            'Phrase with distance 0'           => ['a search string', 0, '"a search string"'],
+            'Phrase with distance 1'           => ['a search string', 1, '"a~1 search~1 string~1"'],
+            'Phrase with distance 2'           => ['a search string', 2, '"a~ search~ string~"'],
+        ];
     }
 
     /**

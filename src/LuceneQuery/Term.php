@@ -30,10 +30,6 @@ class Term implements QueryInterface, ExpressionInterface
     {
         $this->searchString = trim($searchString);
         $this->field        = new Field;
-
-        if ($this->isPhrase()) {
-            $this->addQuotes();
-        }
     }
 
     /**
@@ -41,9 +37,23 @@ class Term implements QueryInterface, ExpressionInterface
      *
      * @param string $name A field name
      */
-    public function addField(string $name = '')
+    public function addField(string $name = ''): void
     {
         $this->field = new Field($name);
+    }
+
+    /**
+     * Allows search results similar to the search term.
+     *
+     * @param int $distance The Damerau-Levenshtein Distance
+     */
+    public function fuzzify(int $distance = 2): void
+    {
+        if ($distance === 2) {
+            $this->appendToEachWord('~');
+        } elseif ($distance === 1) {
+            $this->appendToEachWord('~1');
+        }
     }
 
     /**
@@ -63,18 +73,45 @@ class Term implements QueryInterface, ExpressionInterface
      */
     public function __toString(): string
     {
-        return (empty((string) $this->field))
-            ? (string) $this->searchString
-            : (string) $this->field . ':' . $this->searchString;
+        $term = (empty((string) $this->field))
+            ? ''
+            : (string) $this->field . ':';
+
+        $term .= ($this->isPhrase())
+            ? $this->addQuotes($this->searchString)
+            : $this->searchString;
+
+        return $term;
     }
 
     /**
-     * Surrounds the search string with quotes.
+     * Surrounds a given search string with quotes.
+     *
+     * @return string
+     */
+    private function addQuotes($searchString): string
+    {
+        return '"' . $searchString . '"';
+    }
+
+    /**
+     * Appends a given string to each word of the search string.
+     *
+     * @param string $string A string to append
      *
      * @return void
      */
-    private function addQuotes(): void
+    private function appendToEachWord(string $string): void
     {
-        $this->searchString = '"' . $this->searchString . '"';
+        $this->searchString = implode(
+            ' ',
+            array_map(
+                function (string $word) use ($string)
+                {
+                    return $word . $string;
+                },
+                explode(' ', $this->searchString)
+            )
+        );
     }
 }
