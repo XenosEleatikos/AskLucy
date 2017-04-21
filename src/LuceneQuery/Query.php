@@ -22,16 +22,6 @@ class Query implements QueryInterface, ExpressionInterface
     }
 
     /**
-     * Adds a sub query to the query.
-     *
-     * @param QueryInterface $query A query
-     */
-    public function _add(QueryInterface $query): void
-    {
-        $this->elements[] = $query;
-    }
-
-    /**
      * Appends a sub query as and-statement to the query.
      *
      * @param QueryInterface $query A query
