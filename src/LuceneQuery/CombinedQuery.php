@@ -18,7 +18,7 @@ class CombinedQuery implements QueryInterface, ExpressionInterface
      */
     public function __construct(QueryInterface $query)
     {
-        $this->queries = [$query];
+        $this->elements = [$query];
     }
 
     /**
@@ -49,8 +49,8 @@ class CombinedQuery implements QueryInterface, ExpressionInterface
      */
     private function add(Operator $operator, QueryInterface $query)
     {
-        $this->elements[] = $query;
         $this->elements[] = $operator;
+        $this->elements[] = $query;
     }
 
     /**

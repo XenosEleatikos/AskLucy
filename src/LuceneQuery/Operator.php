@@ -30,8 +30,9 @@ class Operator implements ExpressionInterface
         self::SYMBOL_AND,
         self::SYMBOL_OR
     ];
+
     /**
-     * A sign for the operator
+     * A symbol for the operator
      *
      * @var string
      */
