@@ -2,6 +2,9 @@
 
 namespace LuceneQuery;
 
+/**
+ * A query
+ */
 class Query extends AbstractClause
 {
     /**
@@ -14,7 +17,7 @@ class Query extends AbstractClause
     /**
      * Constructs a query.
      *
-     * @param Clause $query A query
+     * @param Clause $query A clause
      */
     public function __construct(Clause $query)
     {
@@ -22,13 +25,13 @@ class Query extends AbstractClause
     }
 
     /**
-     * Appends a query with optional matching.
+     * Appends a clause with optional matching.
      *
      * @param Clause $query A query
      *
      * @return Query
      */
-    public function addOptionalQuery(Clause $query): self
+    public function addOptionalClause(Clause $query): self
     {
         $this->elements[] = new Operator(Operator::SYMBOL_OPTIONAL);
         $this->elements[] = $query;
@@ -37,13 +40,13 @@ class Query extends AbstractClause
     }
 
     /**
-     * Appends a query with required matching.
+     * Appends a clause with required matching.
      *
      * @param Clause $query A query
      *
      * @return Query
      */
-    public function addRequiredQuery(Clause $query): self
+    public function addRequiredClause(Clause $query): self
     {
         $this->elements[] = new Operator(Operator::SYMBOL_REQUIRED);
         $this->elements[] = $query;
@@ -52,13 +55,13 @@ class Query extends AbstractClause
     }
 
     /**
-     * Appends a query with prohibited matching.
+     * Appends a clause with prohibited matching.
      *
      * @param Clause $query A query
      *
      * @return Query
      */
-    public function addProhibitedQuery(Clause $query): self
+    public function addProhibitedClause(Clause $query): self
     {
         $this->elements[] = new Operator(Operator::SYMBOL_PROHIBITED);
         $this->elements[] = $query;
@@ -67,7 +70,7 @@ class Query extends AbstractClause
     }
 
     /**
-     * Appends a sub query as and-statement to the query.
+     * Appends a clause as and-statement.
      *
      * @param Clause $query A query
      *
@@ -82,7 +85,7 @@ class Query extends AbstractClause
     }
 
     /**
-     * Appends a sub query as or-statement to the query.
+     * Appends a clause as or-statement.
      *
      * @param Clause $query A query
      *
@@ -97,7 +100,7 @@ class Query extends AbstractClause
     }
 
     /**
-     * Appends a sub query as not-statement to the query.
+     * Appends a clause as not-statement.
      *
      * @param Clause $query A query
      *

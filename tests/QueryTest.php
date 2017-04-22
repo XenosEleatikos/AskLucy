@@ -30,7 +30,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Tests, if addOptionalQuery() adds a given query and returns the query itself for a fluent interface.
+     * Tests, if addOptionalClause() adds a given query and returns the query itself for a fluent interface.
      *
      * @return void
      */
@@ -40,12 +40,12 @@ class QueryTest extends TestCase
         $b = $this->getClauseMock('b');
 
         $query = new Query($a);
-        $result = $query->addOptionalQuery($b);
+        $result = $query->addOptionalClause($b);
 
         $this->assertSame(
             $query,
             $result,
-            'Expected addOptionalQuery() to return the query itself for a fluent interface.'
+            'Expected addOptionalClause() to return the query itself for a fluent interface.'
         );
 
         $this->assertSame(
@@ -56,7 +56,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Tests, if addRequiredQuery() adds a given query with plus (+) prefix and returns the conjuncted query itself
+     * Tests, if addRequiredClause() adds a given query with plus (+) prefix and returns the conjuncted query itself
      * for a fluent interface.
      *
      * @return void
@@ -67,12 +67,12 @@ class QueryTest extends TestCase
         $b = $this->getClauseMock('b');
 
         $query = new Query($a);
-        $result = $query->addRequiredQuery($b);
+        $result = $query->addRequiredClause($b);
 
         $this->assertSame(
             $query,
             $result,
-            'Expected addRequiredQuery() to return the query itself for a fluent interface.'
+            'Expected addRequiredClause() to return the query itself for a fluent interface.'
         );
 
         $this->assertSame(
@@ -83,7 +83,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Tests, if addProhibitedQuery() adds a given query with minus (-) prefix and returns the conjuncted query itself
+     * Tests, if addProhibitedClause() adds a given query with minus (-) prefix and returns the conjuncted query itself
      * for a fluent interface.
      *
      * @return void
@@ -94,12 +94,12 @@ class QueryTest extends TestCase
         $b = $this->getClauseMock('b');
 
         $query = new Query($a);
-        $result = $query->addProhibitedQuery($b);
+        $result = $query->addProhibitedClause($b);
 
         $this->assertSame(
             $query,
             $result,
-            'Expected addProhibitedQuery() to return the query itself for a fluent interface.'
+            'Expected addProhibitedClause() to return the query itself for a fluent interface.'
         );
 
         $this->assertSame(
