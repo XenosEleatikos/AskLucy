@@ -29,14 +29,16 @@ class Query extends AbstractClause
     /**
      * Appends a clause with optional matching.
      *
-     * @param Clause $query A query
+     * @param Clause $clause A clause
      *
      * @return Query
      */
-    public function addOptionalClause(Clause $query): self
+    public function addOptionalClause(Clause $clause): self
     {
-        $this->elements[] = new Operator(Operator::SYMBOL_OPTIONAL);
-        $this->elements[] = $query;
+        $this->addSubQuery(
+            new Operator(Operator::SYMBOL_OPTIONAL),
+            $clause
+        );
 
         return $this;
     }
@@ -44,14 +46,16 @@ class Query extends AbstractClause
     /**
      * Appends a clause with required matching.
      *
-     * @param Clause $query A query
+     * @param Clause $clause A clause
      *
      * @return Query
      */
-    public function addRequiredClause(Clause $query): self
+    public function addRequiredClause(Clause $clause): self
     {
-        $this->elements[] = new Operator(Operator::SYMBOL_REQUIRED);
-        $this->elements[] = $query;
+        $this->addSubQuery(
+            new Operator(Operator::SYMBOL_REQUIRED),
+            $clause
+        );
 
         return $this;
     }
@@ -59,14 +63,16 @@ class Query extends AbstractClause
     /**
      * Appends a clause with prohibited matching.
      *
-     * @param Clause $query A query
+     * @param Clause $clause A clause
      *
      * @return Query
      */
-    public function addProhibitedClause(Clause $query): self
+    public function addProhibitedClause(Clause $clause): self
     {
-        $this->elements[] = new Operator(Operator::SYMBOL_PROHIBITED);
-        $this->elements[] = $query;
+        $this->addSubQuery(
+            new Operator(Operator::SYMBOL_PROHIBITED),
+            $clause
+        );
 
         return $this;
     }
@@ -74,14 +80,16 @@ class Query extends AbstractClause
     /**
      * Appends a clause as and-statement.
      *
-     * @param Clause $query A query
+     * @param Clause $clause A clause
      *
      * @return self
      */
-    public function _and(Clause $query): self
+    public function _and(Clause $clause): self
     {
-        $this->elements[] = new Operator(Operator::SYMBOL_AND);
-        $this->elements[] = $query;
+        $this->addSubQuery(
+            new Operator(Operator::SYMBOL_AND),
+            $clause
+        );
 
         return $this;
     }
@@ -89,14 +97,16 @@ class Query extends AbstractClause
     /**
      * Appends a clause as or-statement.
      *
-     * @param Clause $query A query
+     * @param Clause $clause A clause
      *
      * @return self
      */
-    public function _or(Clause $query): self
+    public function _or(Clause $clause): self
     {
-        $this->elements[] = new Operator(Operator::SYMBOL_OR);
-        $this->elements[] = $query;
+        $this->addSubQuery(
+            new Operator(Operator::SYMBOL_OR),
+            $clause
+        );
 
         return $this;
     }
@@ -104,14 +114,16 @@ class Query extends AbstractClause
     /**
      * Appends a clause as not-statement.
      *
-     * @param Clause $query A query
+     * @param Clause $clause A clause
      *
      * @return self
      */
-    public function _not(Clause $query): self
+    public function _not(Clause $clause): self
     {
-        $this->elements[] = new Operator(Operator::SYMBOL_NOT);
-        $this->elements[] = $query;
+        $this->addSubQuery(
+            new Operator(Operator::SYMBOL_NOT),
+            $clause
+        );
 
         return $this;
     }
@@ -125,5 +137,19 @@ class Query extends AbstractClause
     {
         return $this->getFieldSpecification()
             . '(' . implode('' , $this->elements) . ')';
+    }
+
+    /**
+     * Adds a sub query.
+     *
+     * @param Operator $operator An operator
+     * @param Clause   $clause   A clause
+     *
+     * @return void
+     */
+    private function addSubQuery(Operator $operator, Clause $clause): void
+    {
+        $this->elements[] = $operator;
+        $this->elements[] = $clause;
     }
 }
