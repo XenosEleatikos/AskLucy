@@ -2,7 +2,7 @@
 
 namespace LuceneQuery;
 
-class Query implements QueryInterface, ExpressionInterface
+class Query implements Clause, ExpressionInterface
 {
     /**
      * An array containing queries and operators
@@ -14,9 +14,9 @@ class Query implements QueryInterface, ExpressionInterface
     /**
      * Constructs a query.
      *
-     * @param QueryInterface $query A query
+     * @param Clause $query A query
      */
-    public function __construct(QueryInterface $query)
+    public function __construct(Clause $query)
     {
         $this->elements = [$query];
     }
@@ -24,11 +24,11 @@ class Query implements QueryInterface, ExpressionInterface
     /**
      * Appends a query with optional matching.
      *
-     * @param QueryInterface $query A query
+     * @param Clause $query A query
      *
      * @return Query
      */
-    public function addOptionalQuery(QueryInterface $query): self
+    public function addOptionalQuery(Clause $query): self
     {
         $this->elements[] = new Operator(Operator::SYMBOL_OPTIONAL);
         $this->elements[] = $query;
@@ -39,11 +39,11 @@ class Query implements QueryInterface, ExpressionInterface
     /**
      * Appends a query with required matching.
      *
-     * @param QueryInterface $query A query
+     * @param Clause $query A query
      *
      * @return Query
      */
-    public function addRequiredQuery(QueryInterface $query): self
+    public function addRequiredQuery(Clause $query): self
     {
         $this->elements[] = new Operator(Operator::SYMBOL_REQUIRED);
         $this->elements[] = $query;
@@ -54,11 +54,11 @@ class Query implements QueryInterface, ExpressionInterface
     /**
      * Appends a query with prohibited matching.
      *
-     * @param QueryInterface $query A query
+     * @param Clause $query A query
      *
      * @return Query
      */
-    public function addProhibitedQuery(QueryInterface $query): self
+    public function addProhibitedQuery(Clause $query): self
     {
         $this->elements[] = new Operator(Operator::SYMBOL_PROHIBITED);
         $this->elements[] = $query;
@@ -69,11 +69,11 @@ class Query implements QueryInterface, ExpressionInterface
     /**
      * Appends a sub query as and-statement to the query.
      *
-     * @param QueryInterface $query A query
+     * @param Clause $query A query
      *
      * @return self
      */
-    public function _and(QueryInterface $query): self
+    public function _and(Clause $query): self
     {
         $this->elements[] = new Operator(Operator::SYMBOL_AND);
         $this->elements[] = $query;
@@ -84,11 +84,11 @@ class Query implements QueryInterface, ExpressionInterface
     /**
      * Appends a sub query as or-statement to the query.
      *
-     * @param QueryInterface $query A query
+     * @param Clause $query A query
      *
      * @return self
      */
-    public function _or(QueryInterface $query): self
+    public function _or(Clause $query): self
     {
         $this->elements[] = new Operator(Operator::SYMBOL_OR);
         $this->elements[] = $query;
@@ -99,11 +99,11 @@ class Query implements QueryInterface, ExpressionInterface
     /**
      * Appends a sub query as not-statement to the query.
      *
-     * @param QueryInterface $query A query
+     * @param Clause $query A query
      *
      * @return self
      */
-    public function _not(QueryInterface $query): self
+    public function _not(Clause $query): self
     {
         $this->elements[] = new Operator(Operator::SYMBOL_NOT);
         $this->elements[] = $query;

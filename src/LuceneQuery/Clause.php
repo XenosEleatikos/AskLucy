@@ -2,7 +2,7 @@
 
 namespace LuceneQuery;
 
-interface QueryInterface
+interface Clause
 {
     /**
      * Returns the query as string.

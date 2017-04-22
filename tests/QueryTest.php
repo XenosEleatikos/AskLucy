@@ -2,7 +2,7 @@
 namespace LuceneQuery\Test;
 
 use LuceneQuery\Query;
-use LuceneQuery\QueryInterface;
+use LuceneQuery\Clause;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -175,7 +175,7 @@ class QueryTest extends TestCase
      *
      * @param string $query A query returned by __toString()
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|QueryInterface
+     * @return \PHPUnit_Framework_MockObject_MockObject|Clause
      */
     private function getQueryMock(string $query): \PHPUnit_Framework_MockObject_MockObject
     {
