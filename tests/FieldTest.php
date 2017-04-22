@@ -23,7 +23,7 @@ class FieldTest extends TestCase
         $this->assertSame(
             'field',
             (string) $field,
-            'Asserted field name to be "field".'
+            'Expected field name to be "field".'
         );
     }
 
@@ -39,7 +39,7 @@ class FieldTest extends TestCase
         $this->assertSame(
             '',
             (string) $field,
-            'Asserted field name to be an empty string.'
+            'Expected field name to be an empty string.'
         );
     }
 
@@ -55,7 +55,7 @@ class FieldTest extends TestCase
         $this->assertSame(
             '',
             (string) $field,
-            'Asserted field name to be an empty string.'
+            'Expected field name to be an empty string.'
         );
     }
 }

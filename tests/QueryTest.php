@@ -13,6 +13,86 @@ use PHPUnit\Framework\TestCase;
 class QueryTest extends TestCase
 {
     /**
+     * Tests, if addOptionalQuery() adds a given query and returns the query itself for a fluent interface.
+     *
+     * @return void
+     */
+    public function testAddOptionalQuery(): void
+    {
+        $a = $this->getQueryMock('a');
+        $b = $this->getQueryMock('b');
+
+        $query = new Query($a);
+        $result = $query->addOptionalQuery($b);
+
+        $this->assertSame(
+            $query,
+            $result,
+            'Expected addOptionalQuery() to return the query itself for a fluent interface.'
+        );
+
+        $this->assertSame(
+            '(a b)',
+            (string) $query,
+            'Expected conjuncted query to be "(a b)"'
+        );
+    }
+
+    /**
+     * Tests, if addRequiredQuery() adds a given query with plus (+) prefix and returns the conjuncted query itself
+     * for a fluent interface.
+     *
+     * @return void
+     */
+    public function testAddRequiredQuery(): void
+    {
+        $a = $this->getQueryMock('a');
+        $b = $this->getQueryMock('b');
+
+        $query = new Query($a);
+        $result = $query->addRequiredQuery($b);
+
+        $this->assertSame(
+            $query,
+            $result,
+            'Expected addRequiredQuery() to return the query itself for a fluent interface.'
+        );
+
+        $this->assertSame(
+            '(a +b)',
+            (string) $query,
+            'Expected conjuncted query to be "(a +b)"'
+        );
+    }
+
+    /**
+     * Tests, if addProhibitedQuery() adds a given query with minus (-) prefix and returns the conjuncted query itself
+     * for a fluent interface.
+     *
+     * @return void
+     */
+    public function testAddProhibitedQuery(): void
+    {
+        $a = $this->getQueryMock('a');
+        $b = $this->getQueryMock('b');
+
+        $query = new Query($a);
+        $result = $query->addProhibitedQuery($b);
+
+        $this->assertSame(
+            $query,
+            $result,
+            'Expected addProhibitedQuery() to return the query itself for a fluent interface.'
+        );
+
+        $this->assertSame(
+            '(a -b)',
+            (string) $query,
+            'Expected conjuncted query to be "(a -b)"'
+        );
+    }
+
+    /**
      * Tests, if _and() creates a well formed and-query and returns the query itself for a fluent interface.
      *
      * @return void
@@ -28,13 +108,13 @@ class QueryTest extends TestCase
         $this->assertSame(
             $query,
             $result,
-            'Asserted _and() to return the query itself for a fluent interface.'
+            'Expected _and() to return the query itself for a fluent interface.'
         );
 
         $this->assertSame(
             '(a AND b)',
             (string) $query,
-            'Asserted and-query to be "(a AND b)"'
+            'Expected and-query to be "(a AND b)"'
         );
     }
 
@@ -54,13 +134,39 @@ class QueryTest extends TestCase
         $this->assertSame(
             $query,
             $result,
-            'Asserted _and() to return the query itself for a fluent interface.'
+            'Expected _and() to return the query itself for a fluent interface.'
         );
 
         $this->assertSame(
             '(a OR b)',
             (string) $query,
-            'Asserted or-query to be "(a OR b)"'
+            'Expected or-query to be "(a OR b)"'
+        );
+    }
+
+    /**
+     * Tests, if _not() creates a well formed not-query and returns the query itself for a fluent interface.
+     *
+     * @return void
+     */
+    public function test_not(): void
+    {
+        $a = $this->getQueryMock('a');
+        $b = $this->getQueryMock('b');
+
+        $query = new Query($a);
+        $result = $query->_not($b);
+
+        $this->assertSame(
+            $query,
+            $result,
+            'Expected _not() to return the query itself for a fluent interface.'
+        );
+
+        $this->assertSame(
+            '(a NOT b)',
+            (string) $query,
+            'Expected or-query to be "(a NOT b)"'
         );
     }
 

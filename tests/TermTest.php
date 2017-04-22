@@ -27,7 +27,7 @@ class TermTest extends TestCase
         $this->assertSame(
             'term',
             (string) $term,
-            'Asserted leading and ending whitespace characters to be stripped from the term.'
+            'Expected leading and ending whitespace characters to be stripped from the term.'
         );
     }
 
@@ -46,7 +46,7 @@ class TermTest extends TestCase
         $this->assertSame(
             '"a search phrase"',
             (string) $term,
-            'Asserted leading and ending whitespace characters to be stripped from the phrase.'
+            'Expected leading and ending whitespace characters to be stripped from the phrase.'
         );
     }
 
@@ -138,7 +138,7 @@ class TermTest extends TestCase
         $this->assertSame(
             'term',
             (string) $term,
-            'Asserted term to be "term".'
+            'Expected term to be "term".'
         );
     }
 
@@ -154,7 +154,7 @@ class TermTest extends TestCase
         $this->assertSame(
             '',
             (string) $term,
-            'Asserted term to be an empty string.'
+            'Expected term to be an empty string.'
         );
     }
 
@@ -170,7 +170,7 @@ class TermTest extends TestCase
         $this->assertSame(
             '"a search phrase"',
             (string) $term,
-            'Asserted phrases containing several words being quoted.'
+            'Expected phrases containing several words being quoted.'
         );
     }
 
