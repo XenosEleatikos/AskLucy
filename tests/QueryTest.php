@@ -13,14 +13,14 @@ use PHPUnit\Framework\TestCase;
 class QueryTest extends TestCase
 {
     /**
-     * Tests, if addFields() adds a field to a query.
+     * Tests, if setField() specifies a field for a query.
      *
      * @return void
      */
-    public function testAddField(): void
+    public function testSetField(): void
     {
         $query = new Query($this->getClauseMock('term'));
-        $query->addField('field');
+        $query->setField('field');
 
         $this->assertSame(
             'field:(term)',

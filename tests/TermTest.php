@@ -51,14 +51,14 @@ class TermTest extends TestCase
     }
 
     /**
-     * Tests, if addField() adds a field to a single term.
+     * Tests, if setField() specifies a field for a single term.
      *
      * @return void
      */
-    public function testAddFieldToSingleTerm(): void
+    public function testSetFieldToSingleTerm(): void
     {
         $term = new Term('term');
-        $term->addField(new Field('field'));
+        $term->setField(new Field('field'));
 
         $this->assertSame(
             'field:term',
@@ -67,14 +67,14 @@ class TermTest extends TestCase
     }
 
     /**
-     * Tests, if addField() adds a field to a phrase of several words.
+     * Tests, if setField() specifies a field for a phrase of several words.
      *
      * @return void
      */
-    public function testAddFieldToPhrase(): void
+    public function testSetFieldToPhrase(): void
     {
         $term = new Term('a search phrase');
-        $term->addField(new Field('field'));
+        $term->setField(new Field('field'));
 
         $this->assertSame(
             'field:"a search phrase"',

@@ -26,11 +26,11 @@ abstract class AbstractClause implements Clause
     }
 
     /**
-     * Adds a field to search in.
+     * Specifies a field to search in.
      *
      * @param string $name A field name
      */
-    public function addField(string $name = ''): void
+    public function setField(string $name = ''): void
     {
         $this->field = new Field($name);
     }

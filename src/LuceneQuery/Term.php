@@ -22,7 +22,7 @@ class Term extends AbstractClause
     public function __construct(string $searchString)
     {
         $this->searchString = trim($searchString);
-        $this->field        = new Field;
+        $this->setField(new Field);
     }
 
     /**
