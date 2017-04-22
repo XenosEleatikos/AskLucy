@@ -56,9 +56,7 @@ class Term extends AbstractClause
      */
     public function __toString(): string
     {
-        $term = (empty((string) $this->field))
-            ? ''
-            : (string) $this->field . ':';
+        $term = $this->getFieldSpecification();
 
         $term .= ($this->isPhrase())
             ? $this->addQuotes($this->searchString)

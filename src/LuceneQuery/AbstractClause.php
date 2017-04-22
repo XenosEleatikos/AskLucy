@@ -12,6 +12,20 @@ abstract class AbstractClause implements Clause
     protected $field;
 
     /**
+     * Returns the field specification.
+     *
+     * @return string
+     */
+    protected function getFieldSpecification(): string
+    {
+        $term = (empty((string)$this->field))
+            ? Field::DEFAULT
+            : (string)$this->field . ':';
+
+        return $term;
+    }
+
+    /**
      * Adds a field to search in.
      *
      * @param string $name A field name
