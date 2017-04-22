@@ -21,8 +21,9 @@ class Term extends AbstractClause
      */
     public function __construct(string $searchString)
     {
+        parent::__construct();
+
         $this->searchString = trim($searchString);
-        $this->setField(new Field);
     }
 
     /**

@@ -21,6 +21,8 @@ class Query extends AbstractClause
      */
     public function __construct(Clause $query)
     {
+        parent::__construct();
+
         $this->elements = [$query];
     }
 
