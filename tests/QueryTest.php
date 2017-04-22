@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class QueryTest extends TestCase
 {
     /**
-     * Tests, if _and() creates a well formed and-query.
+     * Tests, if _and() creates a well formed and-query and returns the query itself for a fluent interface.
      *
      * @return void
      */
@@ -23,7 +23,13 @@ class QueryTest extends TestCase
         $b = $this->getQueryMock('b');
 
         $query = new Query($a);
-        $query->_and($b);
+        $result = $query->_and($b);
+
+        $this->assertSame(
+            $query,
+            $result,
+            'Asserted _and() to return the query itself for a fluent interface.'
+        );
 
         $this->assertSame(
             '(a AND b)',
@@ -33,7 +39,7 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Tests, if _or() creates a well formed or-query.
+     * Tests, if _or() creates a well formed or-query and returns the query itself for a fluent interface.
      *
      * @return void
      */
@@ -43,7 +49,13 @@ class QueryTest extends TestCase
         $b = $this->getQueryMock('b');
 
         $query = new Query($a);
-        $query->_or($b);
+        $result = $query->_or($b);
+
+        $this->assertSame(
+            $query,
+            $result,
+            'Asserted _and() to return the query itself for a fluent interface.'
+        );
 
         $this->assertSame(
             '(a OR b)',

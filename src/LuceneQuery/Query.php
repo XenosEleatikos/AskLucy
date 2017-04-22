@@ -26,12 +26,14 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @param QueryInterface $query A query
      *
-     * @return void
+     * @return self
      */
-    public function _and(QueryInterface $query): void
+    public function _and(QueryInterface $query): self
     {
         $this->elements[] = new Operator('AND');
         $this->elements[] = $query;
+
+        return $this;
     }
 
     /**
@@ -39,12 +41,14 @@ class Query implements QueryInterface, ExpressionInterface
      *
      * @param QueryInterface $query A query
      *
-     * @return void
+     * @return self
      */
-    public function _or(QueryInterface $query): void
+    public function _or(QueryInterface $query): self
     {
         $this->elements[] = new Operator('OR');
         $this->elements[] = $query;
+
+        return $this;
     }
 
     /**
