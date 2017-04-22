@@ -2,7 +2,7 @@
 
 namespace LuceneQuery;
 
-interface ExpressionInterface
+interface Expression
 {
     /**
      * Returns the query as string.

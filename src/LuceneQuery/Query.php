@@ -2,12 +2,12 @@
 
 namespace LuceneQuery;
 
-class Query implements Clause, ExpressionInterface
+class Query implements Clause, Expression
 {
     /**
      * An array containing queries and operators
      *
-     * @var ExpressionInterface[]
+     * @var Expression[]
      */
     private $elements = [];
 

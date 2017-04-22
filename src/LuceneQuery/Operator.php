@@ -5,7 +5,7 @@ namespace LuceneQuery;
 /**
  * A logical operator
  */
-class Operator implements ExpressionInterface
+class Operator implements Expression
 {
     /**
      * The symbol for the and-operator

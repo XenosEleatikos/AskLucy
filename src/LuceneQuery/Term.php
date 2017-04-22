@@ -5,7 +5,7 @@ namespace LuceneQuery;
 /**
  * A term
  */
-class Term implements Clause, ExpressionInterface
+class Term implements Clause, Expression
 {
     /**
      * The field
