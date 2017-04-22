@@ -19,7 +19,7 @@ class QueryTest extends TestCase
      */
     public function testAddField(): void
     {
-        $query = new Query($this->getQueryMock('term'));
+        $query = new Query($this->getClauseMock('term'));
         $query->addField('field');
 
         $this->assertSame(
@@ -36,8 +36,8 @@ class QueryTest extends TestCase
      */
     public function testAddOptionalQuery(): void
     {
-        $a = $this->getQueryMock('a');
-        $b = $this->getQueryMock('b');
+        $a = $this->getClauseMock('a');
+        $b = $this->getClauseMock('b');
 
         $query = new Query($a);
         $result = $query->addOptionalQuery($b);
@@ -63,8 +63,8 @@ class QueryTest extends TestCase
      */
     public function testAddRequiredQuery(): void
     {
-        $a = $this->getQueryMock('a');
-        $b = $this->getQueryMock('b');
+        $a = $this->getClauseMock('a');
+        $b = $this->getClauseMock('b');
 
         $query = new Query($a);
         $result = $query->addRequiredQuery($b);
@@ -90,8 +90,8 @@ class QueryTest extends TestCase
      */
     public function testAddProhibitedQuery(): void
     {
-        $a = $this->getQueryMock('a');
-        $b = $this->getQueryMock('b');
+        $a = $this->getClauseMock('a');
+        $b = $this->getClauseMock('b');
 
         $query = new Query($a);
         $result = $query->addProhibitedQuery($b);
@@ -116,8 +116,8 @@ class QueryTest extends TestCase
      */
     public function test_and(): void
     {
-        $a = $this->getQueryMock('a');
-        $b = $this->getQueryMock('b');
+        $a = $this->getClauseMock('a');
+        $b = $this->getClauseMock('b');
 
         $query = new Query($a);
         $result = $query->_and($b);
@@ -142,8 +142,8 @@ class QueryTest extends TestCase
      */
     public function test_or(): void
     {
-        $a = $this->getQueryMock('a');
-        $b = $this->getQueryMock('b');
+        $a = $this->getClauseMock('a');
+        $b = $this->getClauseMock('b');
 
         $query = new Query($a);
         $result = $query->_or($b);
@@ -168,8 +168,8 @@ class QueryTest extends TestCase
      */
     public function test_not(): void
     {
-        $a = $this->getQueryMock('a');
-        $b = $this->getQueryMock('b');
+        $a = $this->getClauseMock('a');
+        $b = $this->getClauseMock('b');
 
         $query = new Query($a);
         $result = $query->_not($b);
@@ -194,7 +194,7 @@ class QueryTest extends TestCase
      *
      * @return \PHPUnit_Framework_MockObject_MockObject|Clause
      */
-    private function getQueryMock(string $query): \PHPUnit_Framework_MockObject_MockObject
+    private function getClauseMock(string $query): \PHPUnit_Framework_MockObject_MockObject
     {
         $queryMock = $this->getMockBuilder('LuceneQuery\Clause')
             ->setMethods(['__toString'])
