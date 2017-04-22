@@ -13,14 +13,20 @@ use PHPUnit\Framework\TestCase;
 class QueryTest extends TestCase
 {
     /**
-     * Tests, if setField() specifies a field for a query.
+     * Tests, if setField() specifies a field for a query and returns the query itself for a fluent interface.
      *
      * @return void
      */
     public function testSetField(): void
     {
-        $query = new Query($this->getClauseMock('term'));
-        $query->setField('field');
+        $query  = new Query($this->getClauseMock('term'));
+        $result = $query->setField('field');
+
+        $this->assertSame(
+            $query,
+            $result,
+            'Expected setField() to return the query itself for a fluent interface.'
+        );
 
         $this->assertSame(
             'field:(term)',

@@ -2,6 +2,9 @@
 
 namespace LuceneQuery;
 
+/**
+ * An abstract clause
+ */
 abstract class AbstractClause implements Clause
 {
     /**
@@ -27,26 +30,28 @@ abstract class AbstractClause implements Clause
     }
 
     /**
+     * Specifies a field to search in.
+     *
+     * @param string $name A field name
+     *
+     * @return self
+     */
+    public function setField(string $name = Field::DEFAULT): self
+    {
+        $this->field = new Field($name);
+
+        return $this;
+    }
+
+    /**
      * Returns the field specification.
      *
      * @return string
      */
     protected function getFieldSpecification(): string
     {
-        $term = (empty((string) $this->field))
+        return (empty((string) $this->field))
             ? Field::DEFAULT
             : (string) $this->field . self::FIELD_SEPARATOR;
-
-        return $term;
-    }
-
-    /**
-     * Specifies a field to search in.
-     *
-     * @param string $name A field name
-     */
-    public function setField(string $name = ''): void
-    {
-        $this->field = new Field($name);
     }
 }

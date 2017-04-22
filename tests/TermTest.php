@@ -57,8 +57,14 @@ class TermTest extends TestCase
      */
     public function testSetFieldToSingleTerm(): void
     {
-        $term = new Term('term');
-        $term->setField(new Field('field'));
+        $term   = new Term('term');
+        $result = $term->setField(new Field('field'));
+
+        $this->assertSame(
+            $term,
+            $result,
+            'Expected setField() to return the term itself for a fluent interface.'
+        );
 
         $this->assertSame(
             'field:term',
@@ -73,9 +79,14 @@ class TermTest extends TestCase
      */
     public function testSetFieldToPhrase(): void
     {
-        $term = new Term('a search phrase');
-        $term->setField(new Field('field'));
+        $term   = new Term('a search phrase');
+        $result = $term->setField(new Field('field'));
 
+        $this->assertSame(
+            $term,
+            $result,
+            'Expected setField() to return the term itself for a fluent interface.'
+        );
         $this->assertSame(
             'field:"a search phrase"',
             (string) $term
