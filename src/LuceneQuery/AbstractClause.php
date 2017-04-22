@@ -5,6 +5,13 @@ namespace LuceneQuery;
 abstract class AbstractClause implements Clause
 {
     /**
+     * Separator between field name and clause
+     *
+     * @var string
+     */
+    private const FIELD_SEPARATOR = ':';
+
+    /**
      * The field
      *
      * @var Field
@@ -28,7 +35,7 @@ abstract class AbstractClause implements Clause
     {
         $term = (empty((string) $this->field))
             ? Field::DEFAULT
-            : (string) $this->field . ':';
+            : (string) $this->field . self::FIELD_SEPARATOR;
 
         return $term;
     }
