@@ -118,6 +118,12 @@ class Query extends AbstractClause
      */
     public function __toString(): string
     {
-        return '(' . implode('' , $this->elements) . ')';
+        $query = (empty((string) $this->field))
+            ? ''
+            : (string) $this->field . ':';
+
+        $query .= '(' . implode('' , $this->elements) . ')';
+
+        return $query;
     }
 }

@@ -13,6 +13,23 @@ use PHPUnit\Framework\TestCase;
 class QueryTest extends TestCase
 {
     /**
+     * Tests, if addFields() adds a field to a query.
+     *
+     * @return void
+     */
+    public function testAddField(): void
+    {
+        $query = new Query($this->getQueryMock('term'));
+        $query->addField('field');
+
+        $this->assertSame(
+            'field:(term)',
+            (string) $query,
+            'Expected fielded query to be "field:(term)".'
+        );
+    }
+
+    /**
      * Tests, if addOptionalQuery() adds a given query and returns the query itself for a fluent interface.
      *
      * @return void
