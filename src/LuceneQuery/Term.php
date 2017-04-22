@@ -5,15 +5,8 @@ namespace LuceneQuery;
 /**
  * A term
  */
-class Term implements Clause, Expression
+class Term extends AbstractClause
 {
-    /**
-     * The field
-     *
-     * @var Field
-     */
-    private $field;
-
     /**
      * The search string
      *
@@ -30,16 +23,6 @@ class Term implements Clause, Expression
     {
         $this->searchString = trim($searchString);
         $this->field        = new Field;
-    }
-
-    /**
-     * Adds a field to search in.
-     *
-     * @param string $name A field name
-     */
-    public function addField(string $name = ''): void
-    {
-        $this->field = new Field($name);
     }
 
     /**

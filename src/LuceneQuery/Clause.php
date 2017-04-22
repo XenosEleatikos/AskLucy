@@ -2,12 +2,6 @@
 
 namespace LuceneQuery;
 
-interface Clause
+interface Clause extends Expression
 {
-    /**
-     * Returns the query as string.
-     *
-     * @return string
-     */
-    public function __toString(): string;
 }

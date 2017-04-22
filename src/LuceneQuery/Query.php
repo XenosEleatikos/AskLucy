@@ -2,10 +2,10 @@
 
 namespace LuceneQuery;
 
-class Query implements Clause, Expression
+class Query extends AbstractClause
 {
     /**
-     * An array containing queries and operators
+     * An array containing clauses and operators
      *
      * @var Expression[]
      */
