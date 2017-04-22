@@ -30,14 +30,18 @@ class Term extends AbstractClause
      * Allows search results similar to the search term.
      *
      * @param int $distance The Damerau-Levenshtein Distance
+     *
+     * @return self
      */
-    public function fuzzify(int $distance = 2): void
+    public function fuzzify(int $distance = 2): self
     {
         if ($distance === 2) {
             $this->appendToEachWord('~');
         } elseif ($distance === 1) {
             $this->appendToEachWord('~1');
         }
+
+        return $this;
     }
 
     /**

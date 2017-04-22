@@ -94,7 +94,7 @@ class TermTest extends TestCase
     }
 
     /**
-     * Tests, if fuzzifySingleWordTerm() appends the fuzzy operator correctly.
+     * Tests, if fuzzify() appends the fuzzy operator correctly and returns the term itself for a fluent interface.
      *
      * @param string $searchString   The search string to be fuzzified
      * @param int    $distance       The distance parameter, given to fuzzifySingleWordTerm()
@@ -106,8 +106,14 @@ class TermTest extends TestCase
      */
     public function testFuzzifyTerm(string $searchString, int $distance, string $expectedResult): void
     {
-        $term = new Term($searchString);
-        $term->fuzzify($distance);
+        $term   = new Term($searchString);
+        $result = $term->fuzzify($distance);
+
+        $this->assertSame(
+            $term,
+            $result,
+            'Expected fuzzify() to return the term itself for a fluent interface.'
+        );
 
         $this->assertSame(
             $expectedResult,
@@ -121,14 +127,21 @@ class TermTest extends TestCase
     }
 
     /**
-     * Tests, if fuzzify() appends the fuzz operator without distance operator, if no parameter given.
+     * Tests, if fuzzify() appends the fuzzy operator without distance operator, if no parameter given. Also tests, if
+     * in that case the term itself is returned for a fluent interface.
      *
      * @return void
      */
     public function testFuzzifyTermWithDefaultParameter()
     {
         $term = new Term('term');
-        $term->fuzzify();
+        $result = $term->fuzzify();
+
+        $this->assertSame(
+            $term,
+            $result,
+            'Expected fuzzify() to return the term itself for a fluent interface.'
+        );
 
         $this->assertSame(
             'term~',
