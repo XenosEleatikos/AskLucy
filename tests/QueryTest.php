@@ -179,7 +179,7 @@ class QueryTest extends TestCase
      */
     private function getQueryMock(string $query): \PHPUnit_Framework_MockObject_MockObject
     {
-        $queryMock = $this->getMockBuilder('LuceneQuery\QueryInterface')
+        $queryMock = $this->getMockBuilder('LuceneQuery\Clause')
             ->setMethods(['__toString'])
             ->getMockForAbstractClass();
 
