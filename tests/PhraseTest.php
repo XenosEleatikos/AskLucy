@@ -51,6 +51,40 @@ class PhraseTest extends TestCase
     }
 
     /**
+     * Tests, if fuzzify() sets the fuzziness, and if the fuzzified phrase is rendered correctly by __toString(). Also
+     * tests, if fuzzify() returns the term itself for a fluent interface.
+     *
+     * @param string $phrase         The phrase to be fuzzified
+     * @param int    $distance       The distance parameter given to fuzzify()
+     * @param string $expectedPhrase The expected phrase
+     *
+     * @dataProvider dataProviderTestFuzzifyTerm
+     *
+     * @return void
+     */
+    public function testFuzzify(string $phrase, int $distance, string $expectedPhrase)
+    {
+        $phrase = new Phrase($phrase);
+
+        $result = $phrase->fuzzify($distance);
+
+        $this->assertSame(
+            $phrase,
+            $result,
+            'Expected fuzzify() to return the phrase itself for a fluent interface.'
+        );
+        $this->assertSame(
+            $expectedPhrase,
+            (string) $phrase,
+            'Expected phrase to be "'
+            . $expectedPhrase
+            . '", if Damerau-Levenshtein Distance '
+            . $distance
+            . ' given as parameter.'
+        );
+    }
+
+    /**
      * Data provider for testFuzzifyTerm().
      *
      * @return array

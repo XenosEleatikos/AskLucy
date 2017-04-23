@@ -83,6 +83,10 @@ class Phrase extends AbstractClause
      */
     private function getSearchString(): string
     {
-        return '"' . implode(' ', $this->terms) . '"';
+        $terms = implode(' ', $this->terms);
+
+        return (count($this->terms) > 1)
+            ? '"' . $terms . '"'
+            : $terms;
     }
 }

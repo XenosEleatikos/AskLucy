@@ -67,17 +67,18 @@ class TermTest extends TestCase
     }
 
     /**
-     * Tests, if fuzzify() appends the fuzzy operator correctly and returns the term itself for a fluent interface.
+     * Tests, if fuzzify() sets the fuzziness, and if the fuzzified term is rendered correctly by __toString(). Also
+     * tests, if fuzzify() returns the term itself for a fluent interface.
      *
-     * @param string $searchString   The search string to be fuzzified
-     * @param int    $distance       The distance parameter, given to fuzzifySingleWordTerm()
-     * @param string $expectedResult The expected term
+     * @param string $searchString   The term to be fuzzified
+     * @param int    $distance       The distance parameter given to fuzzify()
+     * @param string $expecteTerm    The expected term
      *
      * @dataProvider dataProviderTestFuzzifyTerm
      *
      * @return void
      */
-    public function testFuzzify(string $searchString, int $distance, string $expectedResult): void
+    public function testFuzzify(string $searchString, int $distance, string $expecteTerm): void
     {
         $term   = new Term($searchString);
         $result = $term->fuzzify($distance);
@@ -89,10 +90,10 @@ class TermTest extends TestCase
         );
 
         $this->assertSame(
-            $expectedResult,
+            $expecteTerm,
             (string) $term,
             'Expected term to be "'
-            . $expectedResult
+            . $expecteTerm
             . '", if Damerau-Levenshtein Distance '
             . $distance
             . ' given as parameter.'
@@ -100,8 +101,8 @@ class TermTest extends TestCase
     }
 
     /**
-     * Tests, if fuzzify() appends the fuzzy operator without distance operator, if no parameter given. Also tests, if
-     * in that case the term itself is returned for a fluent interface.
+     * Tests, if fuzzify() sets the default fuzziness, if no parameter is given. Also tests, if in that case the term
+     * itself is returned for a fluent interface.
      *
      * @return void
      */
@@ -149,7 +150,7 @@ class TermTest extends TestCase
     {
         return [
             'Negative distance' => [-1],
-            'To big distance' => [3],
+            'To big distance'   => [3],
         ];
     }
 

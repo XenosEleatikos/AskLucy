@@ -15,12 +15,11 @@ class Term extends AbstractClause
     private $searchString;
 
     /**
-     * The Damerau-Levenshtein Distance
-     * Possible values: 0, 1, 2
+     * The fuzziness
      *
-     * @var int
+     * @var Fuzziness
      */
-    private $fuzziness = 0;
+    private $fuzziness;
 
     /**
      * Constructs a term.
@@ -32,6 +31,7 @@ class Term extends AbstractClause
     public function __construct(string $searchString)
     {
         $this->searchString = trim($searchString);
+        $this->fuzziness    = new Fuzziness(0);
 
         if (strpos($this->searchString, ' ')) {
             throw new \Exception('A term must not contain spaces.');
@@ -46,19 +46,15 @@ class Term extends AbstractClause
      * @param int $distance The Damerau-Levenshtein Distance
      *                      Possible values: 0, 1, 2
      *
-     * @throws \Exception
+     * @throws \Exception Thrown, if the given Damerau-Levenshtein Distance is out of range
      *
      * @return self
      */
     public function fuzzify(int $distance = 2): self
     {
-        if ($distance >= 0 && $distance <= 2) {
-            $this->fuzziness = $distance;
+        $this->fuzziness->setDistance($distance);
 
-            return $this;
-        }
-
-        throw new \Exception('The Damerau-Levenshtein Distance must be 0, 1 or 2.');
+        return $this;
     }
 
     /**
@@ -70,23 +66,6 @@ class Term extends AbstractClause
     {
         return $this->getFieldSpecification()
             . $this->searchString
-            . $this->getFuzzinessSpecification();
-    }
-
-    /**
-     * Returns the fuzziness specification.
-     *
-     * @return string
-     */
-    private function getFuzzinessSpecification(): string
-    {
-        switch ($this->fuzziness) {
-            case 2:
-                return '~';
-            case 1:
-                return '~1';
-            default:
-                return '';
-        }
+            . $this->fuzziness;
     }
 }
