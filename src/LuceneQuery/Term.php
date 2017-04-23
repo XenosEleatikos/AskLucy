@@ -15,43 +15,50 @@ class Term extends AbstractClause
     private $searchString;
 
     /**
+     * The Damerau-Levenshtein Distance
+     * Possible values: 0, 1, 2
+     *
+     * @var int
+     */
+    private $fuzziness = 0;
+
+    /**
      * Constructs a term.
      *
      * @param string $searchString The string to search for
+     *
+     * @throws \Exception
      */
     public function __construct(string $searchString)
     {
-        parent::__construct();
-
         $this->searchString = trim($searchString);
+
+        if (strpos($this->searchString, ' ')) {
+            throw new \Exception('A term must not contain spaces.');
+        }
+
+        parent::__construct();
     }
 
     /**
      * Allows search results similar to the search term.
      *
      * @param int $distance The Damerau-Levenshtein Distance
+     *                      Possible values: 0, 1, 2
+     *
+     * @throws \Exception
      *
      * @return self
      */
     public function fuzzify(int $distance = 2): self
     {
-        if ($distance === 2) {
-            $this->appendToEachWord('~');
-        } elseif ($distance === 1) {
-            $this->appendToEachWord('~1');
+        if ($distance >= 0 && $distance <= 2) {
+            $this->fuzziness = $distance;
+
+            return $this;
         }
 
-        return $this;
-    }
-
-    /**
-     * Returns true, if the search string is a phrase of several words, otherwise false.
-     *
-     * @return bool
-     */
-    public function isPhrase(): bool
-    {
-        return (strpos($this->searchString, ' ')) ? true : false;
+        throw new \Exception('The Damerau-Levenshtein Distance must be 0, 1 or 2.');
     }
 
     /**
@@ -61,43 +68,25 @@ class Term extends AbstractClause
      */
     public function __toString(): string
     {
-        $term = $this->getFieldSpecification();
-
-        $term .= ($this->isPhrase())
-            ? $this->addQuotes($this->searchString)
-            : $this->searchString;
-
-        return $term;
+        return $this->getFieldSpecification()
+            . $this->searchString
+            . $this->getFuzzinessSpecification();
     }
 
     /**
-     * Surrounds a given search string with quotes.
+     * Returns the fuzziness specification.
      *
      * @return string
      */
-    private function addQuotes($searchString): string
+    private function getFuzzinessSpecification(): string
     {
-        return '"' . $searchString . '"';
-    }
-
-    /**
-     * Appends a given string to each word of the search string.
-     *
-     * @param string $string A string to append
-     *
-     * @return void
-     */
-    private function appendToEachWord(string $string): void
-    {
-        $this->searchString = implode(
-            ' ',
-            array_map(
-                function (string $word) use ($string)
-                {
-                    return $word . $string;
-                },
-                explode(' ', $this->searchString)
-            )
-        );
+        switch ($this->fuzziness) {
+            case 2:
+                return '~';
+            case 1:
+                return '~1';
+            default:
+                return '';
+        }
     }
 }

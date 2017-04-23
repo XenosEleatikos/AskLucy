@@ -13,14 +13,25 @@ use PHPUnit\Framework\TestCase;
 class TermTest extends TestCase
 {
     /**
-     * Tests, if Term::__construct() strips whitespace (or similar characters) from the beginning and end of a single
-     * term.
+     * Tests, if __construct() throws an expection for a given phrase containing spaces.
      *
-     * @dataProvider dataProviderTest__ConstructTrimsSearchTerm
+     * @expectedException \Exception
      *
      * @return void
      */
-    public function test__constructTrimsSingleTerm($searchString): void
+    public function test__constructThrowsExceptionForGivenPhrase():void
+    {
+        new Term('a search phrase');
+    }
+
+    /**
+     * Tests, if whitespace (or similar characters) are stripped from the beginning and end of the term.
+     *
+     * @dataProvider dataProviderTestTrimSearchString
+     *
+     * @return void
+     */
+    public function testTrimSearchString($searchString): void
     {
         $term = new Term($searchString);
 
@@ -32,30 +43,12 @@ class TermTest extends TestCase
     }
 
     /**
-     * Tests, if Term::__construct() strips whitespace (or similar characters) from the beginning and end of a phrase
-     * of several words.
-     *
-     * @dataProvider dataProviderTest__ConstructTrimsSearchPhrase
+     * Tests, if setField() specifies a field for the term, and if the fielded term is rendered correctly by
+     * __toString(). Also tests, if setField() returns the term itself for a fluent interface.
      *
      * @return void
      */
-    public function test__constructTrimsPhrase($searchString): void
-    {
-        $term = new Term($searchString);
-
-        $this->assertSame(
-            '"a search phrase"',
-            (string) $term,
-            'Expected leading and ending whitespace characters to be stripped from the phrase.'
-        );
-    }
-
-    /**
-     * Tests, if setField() specifies a field for a single term.
-     *
-     * @return void
-     */
-    public function testSetFieldToSingleTerm(): void
+    public function testSetField(): void
     {
         $term   = new Term('term');
         $result = $term->setField(new Field('field'));
@@ -68,28 +61,8 @@ class TermTest extends TestCase
 
         $this->assertSame(
             'field:term',
-            (string) $term
-        );
-    }
-
-    /**
-     * Tests, if setField() specifies a field for a phrase of several words.
-     *
-     * @return void
-     */
-    public function testSetFieldToPhrase(): void
-    {
-        $term   = new Term('a search phrase');
-        $result = $term->setField(new Field('field'));
-
-        $this->assertSame(
-            $term,
-            $result,
-            'Expected setField() to return the term itself for a fluent interface.'
-        );
-        $this->assertSame(
-            'field:"a search phrase"',
-            (string) $term
+            (string) $term,
+            'Expected fielded term to be "field:term".'
         );
     }
 
@@ -104,7 +77,7 @@ class TermTest extends TestCase
      *
      * @return void
      */
-    public function testFuzzifyTerm(string $searchString, int $distance, string $expectedResult): void
+    public function testFuzzify(string $searchString, int $distance, string $expectedResult): void
     {
         $term   = new Term($searchString);
         $result = $term->fuzzify($distance);
@@ -132,7 +105,7 @@ class TermTest extends TestCase
      *
      * @return void
      */
-    public function testFuzzifyTermWithDefaultParameter()
+    public function testFuzzifyWithDefaultParameter()
     {
         $term = new Term('term');
         $result = $term->fuzzify();
@@ -148,6 +121,36 @@ class TermTest extends TestCase
             (string) $term,
             'Expected fuzzy term to be "term~", if no Damerau-Levenshtein Distance given as parameter.'
         );
+    }
+
+    /**
+     * Tests, if fuzzify() throws an expection for an invalid Damerau-Levenshtein Distance given.
+     *
+     * @param int $distance The Damerau-Levenshtein Distance as parameter for fuzzify
+     *
+     * @dataProvider dataProviderTestFuzzifyThrowsExceptionForInvalidDistance
+     *
+     * @expectedException \Exception
+     *
+     * @return void
+     */
+    public function testFuzzifyThrowsExceptionForInvalidDistance(int $distance): void
+    {
+        $term = new Term('term');
+        $term->fuzzify($distance);
+    }
+
+    /**
+     * Data provider for testFuzzifyThrowsExceptionForInvalidDistance().
+     *
+     * @return array
+     */
+    public function dataProviderTestFuzzifyThrowsExceptionForInvalidDistance(): array
+    {
+        return [
+            'Negative distance' => [-1],
+            'To big distance' => [3],
+        ];
     }
 
     /**
@@ -183,39 +186,35 @@ class TermTest extends TestCase
     }
 
     /**
-     * Tests, if phrases containing several words being quoted.
-     *
-     * @return void
-     */
-    public function testAddQuotes(): void
-    {
-        $term = new Term('a search phrase');
-
-        $this->assertSame(
-            '"a search phrase"',
-            (string) $term,
-            'Expected phrases containing several words being quoted.'
-        );
-    }
-
-    /**
-     * Data provider for test__constructTrimsSearchTerm().
+     * Data provider for testTrimSearchString().
      *
      * @return array
      */
-    public function dataProviderTest__constructTrimsSearchTerm(): array
+    public function dataProviderTestTrimSearchString(): array
     {
-        return $this->getWhiteSpacedTerms('term');
-    }
-
-    /**
-     * Data provider for test__constructTrimsSearchPhrase().
-     *
-     * @return array
-     */
-    public function dataProviderTest__constructTrimsSearchPhrase(): array
-    {
-        return $this->getWhiteSpacedTerms('a search phrase');
+        return [
+            // Prepending white space characters
+            'Prepending ordinary space'                => array(" term"),
+            'Prepending tab'                           => array("\tterm"),
+            'Prepending new line'                      => array("\nterm"),
+            'Prepending carriage return'               => array("\rterm"),
+            'Prepending NUL-byte'                      => array("\0term"),
+            'Prepending vertical tab'                  => array("\x0Bterm"),
+            // Appending white space characters
+            'Appending ordinary space'                 => array("term "),
+            'Appending tab'                            => array("term\t"),
+            'Appending new line'                       => array("term\n"),
+            'Appending carriage return'                => array("term\r"),
+            'Appending NUL-byte'                       => array("term\0"),
+            'Appending vertical tab'                   => array("term\x0B"),
+            // Prepending and appending white space characters
+            'Prepending and appending ordinary space'  => array(" term "),
+            'Prepending and appending tab'             => array("\tterm\t"),
+            'Prepending and appending new line'        => array("\nterm\n"),
+            'Prepending and appending carriage return' => array("\rterm\r"),
+            'Prepending and appending NUL-byte'        => array("\0term\0"),
+            'Prepending and appending vertical tab'    => array("\x0Bterm\x0B")
+        ];
     }
 
     /**
@@ -228,44 +227,7 @@ class TermTest extends TestCase
         return [
             'Single word term with distance 0' => ['term', 0, 'term'],
             'Single word term with distance 1' => ['term', 1, 'term~1'],
-            'Single word term with distance 2' => ['term', 2, 'term~'],
-            'Phrase with distance 0'           => ['a search string', 0, '"a search string"'],
-            'Phrase with distance 1'           => ['a search string', 1, '"a~1 search~1 string~1"'],
-            'Phrase with distance 2'           => ['a search string', 2, '"a~ search~ string~"'],
+            'Single word term with distance 2' => ['term', 2, 'term~']
         ];
-    }
-
-    /**
-     * Creates a list of strings by appending and prepending white space characters to a given string.
-     *
-     * @param string $searchString A search string
-     *
-     * @return array
-     */
-    private function getWhiteSpacedTerms(string $searchString): array
-    {
-        return array(
-            // Prepending white space characters
-            'Prepending ordinary space'                => array(" $searchString"),
-            'Prepending tab'                           => array("\t$searchString"),
-            'Prepending new line'                      => array("\n$searchString"),
-            'Prepending carriage return'               => array("\r$searchString"),
-            'Prepending NUL-byte'                      => array("\0$searchString"),
-            'Prepending vertical tab'                  => array("\x0B$searchString"),
-            // Appending white space characters
-            'Appending ordinary space'                 => array("$searchString "),
-            'Appending tab'                            => array("$searchString\t"),
-            'Appending new line'                       => array("$searchString\n"),
-            'Appending carriage return'                => array("$searchString\r"),
-            'Appending NUL-byte'                       => array("$searchString\0"),
-            'Appending vertical tab'                   => array("$searchString\x0B"),
-            // Prepending and appending white space characters
-            'Prepending and appending ordinary space'  => array(" $searchString "),
-            'Prepending and appending tab'             => array("\t$searchString\t"),
-            'Prepending and appending new line'        => array("\n$searchString\n"),
-            'Prepending and appending carriage return' => array("\r$searchString\r"),
-            'Prepending and appending NUL-byte'        => array("\0$searchString\0"),
-            'Prepending and appending vertical tab'    => array("\x0B$searchString\x0B")
-        );
     }
 }
