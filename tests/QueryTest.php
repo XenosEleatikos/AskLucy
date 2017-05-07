@@ -297,6 +297,50 @@ class QueryTest extends TestCase
     }
 
     /**
+     * Tests, if __toString() renders the field specification correctly.
+     *
+     * @param Query  $query A query              A query
+     * @param string $expectedFieldSpecification The expected field specification
+     *
+     * @dataProvider dataProviderTest__toStringRendersFieldSpecification
+     *
+     * @return void
+     */
+    public function test__toStringRendersFieldSpecification(Query $query, string $expectedFieldSpecification): void
+    {
+        $query = new Query('field');
+        $query->add($this->getClauseMock('a'));
+
+        $this->assertSame(
+            'field:',
+            strstr($query, 'a', true)
+        );
+    }
+
+    /**
+     * Returns queries as test data for test__toStringRendersFieldSpecification().
+     *
+     * @return array
+     */
+    public function dataProviderTest__toStringRendersFieldSpecification(): array
+    {
+        $query1 = new Query('field');
+        $query1->add($this->getClauseMock('a'));
+
+        $query2 = new Query;
+        $query2->add($this->getClauseMock('a'));
+
+        $query3 = new Query('');
+        $query3->add($this->getClauseMock('a'));
+
+        return [
+            'Query, instantiated with a name of a non-default field as constructor argument' => [$query1, 'field:'],
+            'Query, instantiated without parameter for field name'                           => [$query2, ''],
+            'Query, instantiated with empty string as default field name'                    => [$query3, '']
+        ];
+    }
+
+    /**
      * Returns a mock object for a clause.
      *
      * @param string $query A query returned by __toString()
