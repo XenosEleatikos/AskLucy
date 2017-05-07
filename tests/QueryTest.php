@@ -308,12 +308,12 @@ class QueryTest extends TestCase
      */
     public function test__toStringRendersFieldSpecification(Query $query, string $expectedFieldSpecification): void
     {
-        $query = new Query('field');
-        $query->add($this->getClauseMock('a'));
-
         $this->assertSame(
-            'field:',
-            strstr($query, 'a', true)
+            $expectedFieldSpecification,
+            strstr($query, 'a', true),
+            (empty($expectedFieldSpecification))
+                ? 'Expected no field specification prepended to the clause.'
+                : 'Expected field specification "' .  $expectedFieldSpecification . '" prepending to the clause.'
         );
     }
 
