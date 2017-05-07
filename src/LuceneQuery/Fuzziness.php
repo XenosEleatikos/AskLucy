@@ -4,6 +4,8 @@ namespace LuceneQuery;
 
 /**
  * The fuzziness
+ *
+ * @see https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
  */
 class Fuzziness implements Expression
 {

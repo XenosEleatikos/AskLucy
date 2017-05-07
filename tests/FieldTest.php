@@ -28,34 +28,32 @@ class FieldTest extends TestCase
     }
 
     /**
-     * Tests, if Field::__toString() returns an empty string, if no field name was given to the constructor.
+     * Tests, if Field::__toString() returns an empty string for the default field.
+     *
+     * @param Field $field An empty field
+     *
+     * @dataProvider dataProviderTest__toStringWithDefaultField
      *
      * @return void
      */
-    public function test__toStringWithoutFieldName(): void
+    public function test__toStringWithDefaultField(Field $field): void
     {
-        $field = new Field;
-
-        $this->assertSame(
-            '',
+        $this->assertEmpty(
             (string) $field,
             'Expected field name to be an empty string.'
         );
     }
 
     /**
-     * Tests, if Field::__toString() returns an empty string, if an empty string was given to the constructor.
+     * Returns empty fields as test data for test__toStringWithDefaultField().
      *
-     * @return void
+     * @return array
      */
-    public function test__toStringWithEmptyFieldName(): void
+    public function dataProviderTest__toStringWithDefaultField(): array
     {
-        $field = new Field('');
-
-        $this->assertSame(
-            '',
-            (string) $field,
-            'Expected field name to be an empty string.'
-        );
+        return [
+            'Default field instantiated without constructor argument'              => [new Field],
+            'Default field instantiated with empty string as constructor argument' => [new Field('')]
+        ];
     }
 }

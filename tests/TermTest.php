@@ -1,8 +1,6 @@
 <?php
 namespace LuceneQuery\Test;
 
-use LuceneQuery\Field;
-use LuceneQuery\Query;
 use LuceneQuery\Term;
 use PHPUnit\Framework\TestCase;
 

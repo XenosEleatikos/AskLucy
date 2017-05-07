@@ -2,6 +2,9 @@
 
 namespace LuceneQuery;
 
+/**
+ * A clause
+ */
 interface Clause extends Expression
 {
     /**
