@@ -341,6 +341,25 @@ class QueryTest extends TestCase
     }
 
     /**
+     * Tests, if __toString() renders a list of clauses using spaces as separators.
+     *
+     * @return void
+     */
+    public function test__toStringRendersClausesWithSeparator():void
+    {
+        $query = new Query;
+        $query->add($this->getClauseMock('a'));
+        $query->add($this->getClauseMock('b'));
+        $query->add($this->getClauseMock('c'));
+
+        $this->assertInternalType(
+            'int',
+            strpos($query, 'a b c'),
+            'Expected the query to contain a space separated list of clauses.'
+        );
+    }
+
+    /**
      * Returns a mock object for a clause.
      *
      * @param string $query A query returned by __toString()
@@ -352,7 +371,7 @@ class QueryTest extends TestCase
         $clauseMock = $this->getMockBuilder('LuceneQuery\Clause')
             ->getMockForAbstractClass();
 
-        $clauseMock->expects($this->once())
+        $clauseMock->expects($this->any())
             ->method('__toString')
             ->willReturn($query);
 
