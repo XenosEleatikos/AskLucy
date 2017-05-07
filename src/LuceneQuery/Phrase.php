@@ -2,11 +2,15 @@
 
 namespace LuceneQuery;
 
+use LuceneQuery\Property\OperatorTrait;
+
 /**
  * A phrase
  */
-class Phrase extends AbstractClause
+class Phrase implements Clause
 {
+    use OperatorTrait;
+
     /**
      * A list of terms
      *
@@ -21,25 +25,7 @@ class Phrase extends AbstractClause
      */
     public function __construct(string $searchPhrase)
     {
-        parent::__construct();
-
         $this->addTerms($searchPhrase);
-    }
-
-    /**
-     * Allows search results similar to the search term.
-     *
-     * @param int $distance The Damerau-Levenshtein Distance
-     *
-     * @return self
-     */
-    public function fuzzify(int $distance = 2): self
-    {
-        foreach ($this->terms as $term) {
-            $term->fuzzify($distance);
-        }
-
-        return $this;
     }
 
     /**
@@ -49,10 +35,11 @@ class Phrase extends AbstractClause
      */
     public function __toString(): string
     {
-        $term = $this->getFieldSpecification()
-            . $this->getSearchString();
+        $terms = implode(' ', $this->terms);
 
-        return $term;
+        return (count($this->terms) > 1)
+            ? '"' . $terms . '"'
+            : $terms;
     }
 
     /**
@@ -74,19 +61,5 @@ class Phrase extends AbstractClause
                 explode(' ', $searchPhrase)
             )
         );
-    }
-
-    /**
-     * Returns the search string.
-     *
-     * @return string
-     */
-    private function getSearchString(): string
-    {
-        $terms = implode(' ', $this->terms);
-
-        return (count($this->terms) > 1)
-            ? '"' . $terms . '"'
-            : $terms;
     }
 }

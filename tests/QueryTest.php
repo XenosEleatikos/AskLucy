@@ -13,188 +13,291 @@ use PHPUnit\Framework\TestCase;
 class QueryTest extends TestCase
 {
     /**
-     * Tests, if setField() specifies a field for a query and returns the query itself for a fluent interface.
+     * Tests, if optional() adds no operator symbol.
      *
      * @return void
      */
-    public function testSetField(): void
+    public function testOptional(): void
     {
-        $query  = new Query($this->getClauseMock('term'));
-        $result = $query->setField('field');
+        $query = new Query;
+        $query->shouldHave($this->getClauseMock('term'));
+        $query->optional();
 
         $this->assertSame(
-            $query,
-            $result,
-            'Expected setField() to return the query itself for a fluent interface.'
-        );
-
-        $this->assertSame(
-            'field:(term)',
-            (string) $query,
-            'Expected fielded query to be "field:(term)".'
+            'term',
+            (string) $query
         );
     }
 
     /**
-     * Tests, if addOptionalClause() adds a given query and returns the query itself for a fluent interface.
+     * Tests, if optional() overwrites an operator set before.
      *
      * @return void
      */
-    public function testAddOptionalQuery(): void
+    public function testOptionalOverwritesOperator(): void
     {
-        $a = $this->getClauseMock('a');
-        $b = $this->getClauseMock('b');
-
-        $query = new Query($a);
-        $result = $query->addOptionalClause($b);
-
-        $this->assertSame(
-            $query,
-            $result,
-            'Expected addOptionalClause() to return the query itself for a fluent interface.'
-        );
+        $query = new Query;
+        $query->shouldHave($this->getClauseMock('term'));
+        $query->required();
+        $query->optional();
 
         $this->assertSame(
-            '(a b)',
-            (string) $query,
-            'Expected conjuncted query to be "(a b)"'
+            'term',
+            (string) $query
         );
     }
 
     /**
-     * Tests, if addRequiredClause() adds a given query with plus (+) prefix and returns the conjuncted query itself
-     * for a fluent interface.
+     * Tests, if required() adds the operator symbol "+" to require a clause.
      *
      * @return void
      */
-    public function testAddRequiredQuery(): void
+    public function testRequired(): void
     {
-        $a = $this->getClauseMock('a');
-        $b = $this->getClauseMock('b');
-
-        $query = new Query($a);
-        $result = $query->addRequiredClause($b);
+        $query = new Query;
+        $query->shouldHave($this->getClauseMock('term'));
+        $query->required();
 
         $this->assertSame(
-            $query,
-            $result,
-            'Expected addRequiredClause() to return the query itself for a fluent interface.'
-        );
-
-        $this->assertSame(
-            '(a +b)',
-            (string) $query,
-            'Expected conjuncted query to be "(a +b)"'
+            '+term',
+            (string) $query
         );
     }
 
     /**
-     * Tests, if addProhibitedClause() adds a given query with minus (-) prefix and returns the conjuncted query itself
-     * for a fluent interface.
+     * Tests, if required() overwrites an operator set before.
      *
      * @return void
      */
-    public function testAddProhibitedQuery(): void
+    public function testRequiredOverwritesOperator(): void
     {
-        $a = $this->getClauseMock('a');
-        $b = $this->getClauseMock('b');
-
-        $query = new Query($a);
-        $result = $query->addProhibitedClause($b);
-
-        $this->assertSame(
-            $query,
-            $result,
-            'Expected addProhibitedClause() to return the query itself for a fluent interface.'
-        );
+        $query = new Query;
+        $query->shouldHave($this->getClauseMock('term'));
+        $query->optional();
+        $query->required();
 
         $this->assertSame(
-            '(a -b)',
-            (string) $query,
-            'Expected conjuncted query to be "(a -b)"'
+            '+term',
+            (string) $query
         );
     }
 
     /**
-     * Tests, if _and() creates a well formed and-query and returns the query itself for a fluent interface.
+     * Tests, if prohibited() adds the operator symbol "-" to prohibit a clause.
      *
      * @return void
      */
-    public function test_and(): void
+    public function testProhibited(): void
     {
-        $a = $this->getClauseMock('a');
-        $b = $this->getClauseMock('b');
-
-        $query = new Query($a);
-        $result = $query->_and($b);
+        $query = new Query;
+        $query->shouldHave($this->getClauseMock('term'));
+        $query->prohibited();
 
         $this->assertSame(
-            $query,
-            $result,
-            'Expected _and() to return the query itself for a fluent interface.'
-        );
-
-        $this->assertSame(
-            '(a AND b)',
-            (string) $query,
-            'Expected and-query to be "(a AND b)"'
+            '-term',
+            (string) $query
         );
     }
 
     /**
-     * Tests, if _or() creates a well formed or-query and returns the query itself for a fluent interface.
+     * Tests, if prohibited() overwrites an operator set before.
      *
      * @return void
      */
-    public function test_or(): void
+    public function testProhibitedOverwritesOperator(): void
     {
-        $a = $this->getClauseMock('a');
-        $b = $this->getClauseMock('b');
-
-        $query = new Query($a);
-        $result = $query->_or($b);
-
-        $this->assertSame(
-            $query,
-            $result,
-            'Expected _and() to return the query itself for a fluent interface.'
-        );
+        $query = new Query;
+        $query->shouldHave($this->getClauseMock('term'));
+        $query->required();
+        $query->prohibited();
 
         $this->assertSame(
-            '(a OR b)',
-            (string) $query,
-            'Expected or-query to be "(a OR b)"'
+            '-term',
+            (string) $query
         );
     }
 
     /**
-     * Tests, if _not() creates a well formed not-query and returns the query itself for a fluent interface.
+     * Tests adding an optional clause with shouldHave().
      *
      * @return void
      */
-    public function test_not(): void
+    public function testShouldHave(): void
     {
-        $a = $this->getClauseMock('a');
-        $b = $this->getClauseMock('b');
+        $query = new Query;
 
-        $query = new Query($a);
-        $result = $query->_not($b);
+        $clauseMock = $this->getClauseMock('a');
+
+        $clauseMock->expects($this->once())
+            ->method('optional')
+            ->willReturn(null);
+
+        $clauseMock->expects($this->never())
+            ->method('required');
+
+        $clauseMock->expects($this->never())
+            ->method('prohibited');
+
+        $query->shouldHave($clauseMock);
 
         $this->assertSame(
-            $query,
-            $result,
-            'Expected _not() to return the query itself for a fluent interface.'
-        );
-
-        $this->assertSame(
-            '(a NOT b)',
+            'a',
             (string) $query,
-            'Expected or-query to be "(a NOT b)"'
+            'Expected the query to contain the optional clause "a".'
         );
     }
 
     /**
-     * Returns a mock object for the query interface.
+     * Tests adding a required clause with mustHave().
+     *
+     * @return void
+     */
+    public function testMustHave(): void
+    {
+        $query = new Query;
+
+        $clauseMock = $this->getClauseMock('+a');
+
+        $clauseMock->expects($this->never())
+            ->method('optional');
+
+        $clauseMock->expects($this->once())
+            ->method('required')
+            ->willReturn(null);
+
+        $clauseMock->expects($this->never())
+            ->method('prohibited');
+
+        $query->mustHave($clauseMock);
+
+        $this->assertSame(
+            '+a',
+            (string) $query,
+            'Expected the query to contain the required clause "+a".'
+        );
+    }
+
+    /**
+     * Tests adding a prohibited clause with mustNotHave().
+     *
+     * @return void
+     */
+    public function testMustNotHave(): void
+    {
+        $query = new Query;
+
+        $clauseMock = $this->getClauseMock('-a');
+
+        $clauseMock->expects($this->never())
+            ->method('optional');
+
+        $clauseMock->expects($this->never())
+            ->method('required');
+
+        $clauseMock->expects($this->once())
+            ->method('prohibited')
+            ->willReturn(null);
+
+        $query->mustNotHave($clauseMock);
+
+        $this->assertSame(
+            '-a',
+            (string) $query,
+            'Expected the query to contain the required clause "-a".'
+        );
+    }
+
+    /**
+     * Tests, if a test query contains brackets or not.
+     *
+     * @param Query  $query            A query
+     * @param bool $shouldHaveBrackets True, if the query is expected to contain brackets, otherwise false
+     *
+     * @dataProvider dataProviderTest__toStringRendersBrackets
+     */
+    public function test__toStringRendersBrackets(Query $query, bool $shouldHaveBrackets): void
+    {
+        $this->assertSame(
+            $shouldHaveBrackets,
+            (bool) preg_match('/\(.+\)/', (string) $query)
+        );
+    }
+
+    /**
+     * Provides test data for test__toStringRendersBrackets.
+     *
+     * @return array
+     */
+    public function dataProviderTest__toStringRendersBrackets(): array
+    {
+        $query1 = new Query('field');
+        $query1->required();
+        $query1->add($this->getClauseMock('a'));
+        $query1->add($this->getClauseMock('b'));
+
+        $query2 = new Query('field');
+        $query2->required();
+        $query2->add($this->getClauseMock('a'));
+
+        $query3 = new Query;
+        $query3->required();
+        $query3->add($this->getClauseMock('a'));
+        $query3->add($this->getClauseMock('b'));
+
+        $query4 = new Query;
+        $query4->required();
+        $query4->add($this->getClauseMock('a'));
+
+        $query5 = new Query('field');
+        $query5->prohibited();
+        $query5->add($this->getClauseMock('a'));
+        $query5->add($this->getClauseMock('b'));
+
+        $query6 = new Query('field');
+        $query6->prohibited();
+        $query6->add($this->getClauseMock('a'));
+
+        $query7 = new Query;
+        $query7->prohibited();
+        $query7->add($this->getClauseMock('a'));
+        $query7->add($this->getClauseMock('b'));
+
+        $query8 = new Query;
+        $query8->prohibited();
+        $query8->add($this->getClauseMock('a'));
+
+        $query9 = new Query('field');
+        $query9->add($this->getClauseMock('a'));
+        $query9->add($this->getClauseMock('b'));
+
+        $query10 = new Query('field');
+        $query10->add($this->getClauseMock('a'));
+
+        $query11 = new Query;
+        $query11->add($this->getClauseMock('a'));
+        $query11->add($this->getClauseMock('b'));
+
+        $query12 = new Query;
+        $query12->add($this->getClauseMock('a'));
+
+        return [
+            'Query with "required" operator, non-default field and more than one clause'   => [$query1, true],
+            'Query with "required" operator, non-default field and a single clause'        => [$query2, false],
+            'Query with "required" operator, default field and more than one clauses'      => [$query3, false],
+            'Query with "required" operator, default field and a single clause'            => [$query4, false],
+            'Query with "prohibited" operator, non-default field and more than one clause' => [$query5, true],
+            'Query with "prohibited" operator, non-default field and a single clause'      => [$query6, false],
+            'Query with "prohibited" operator, default field and more than one clauses'    => [$query7, false],
+            'Query with "prohibited" operator, default field and a single clause'          => [$query8, false],
+            'Query with default operator, non-default field and more than one clause'      => [$query9, false],
+            'Query with default operator, non-default field and a single clause'           => [$query10, false],
+            'Query with default operator, default field and more than one clauses'         => [$query11, false],
+            'Query with default operator, default field and a single clause'               => [$query12, false],
+        ];
+    }
+
+    /**
+     * Returns a mock object for a clause.
      *
      * @param string $query A query returned by __toString()
      *
@@ -202,14 +305,13 @@ class QueryTest extends TestCase
      */
     private function getClauseMock(string $query): \PHPUnit_Framework_MockObject_MockObject
     {
-        $queryMock = $this->getMockBuilder('LuceneQuery\Clause')
-            ->setMethods(['__toString'])
+        $clauseMock = $this->getMockBuilder('LuceneQuery\Clause')
             ->getMockForAbstractClass();
 
-        $queryMock->expects($this->once())
+        $clauseMock->expects($this->once())
             ->method('__toString')
             ->willReturn($query);
 
-        return $queryMock;
+        return $clauseMock;
     }
 }

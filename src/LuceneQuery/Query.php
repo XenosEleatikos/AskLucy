@@ -2,130 +2,108 @@
 
 namespace LuceneQuery;
 
+use LuceneQuery\Property\OperatorTrait;
+
 /**
  * A query
  */
-class Query extends AbstractClause
+class Query implements Clause
 {
+    use OperatorTrait;
+
     /**
-     * An array containing clauses and operators
+     * Separator between clauses
      *
-     * @var Expression[]
+     * @var string
      */
-    private $elements = [];
+    const CLAUSE_SEPARATOR = ' ';
+
+    /**
+     * Separator between field name and clause
+     *
+     * @var string
+     */
+    private const FIELD_SEPARATOR = ':';
+
+    /**
+     * The field to search in
+     *
+     * @var Field
+     */
+    private $field;
+
+    /**
+     * A list of clauses
+     *
+     * @var Clause[]
+     */
+    private $clauses = [];
 
     /**
      * Constructs a query.
      *
-     * @param Clause $query A clause
+     * @param string $field The name of the field
      */
-    public function __construct(Clause $query)
+    public function __construct(string $field = Field::DEFAULT)
     {
-        parent::__construct();
-
-        $this->elements = [$query];
+        $this->optional();
+        $this->field = new Field($field);
     }
 
     /**
-     * Appends a clause with optional matching.
+     * Adds a clause.
      *
      * @param Clause $clause A clause
      *
      * @return Query
      */
-    public function addOptionalClause(Clause $clause): self
+    public function add(Clause $clause): self
     {
-        $this->addSubQuery(
-            new Operator(Operator::SYMBOL_OPTIONAL),
-            $clause
-        );
+        $this->clauses[] = $clause;
 
         return $this;
     }
 
     /**
-     * Appends a clause with required matching.
+     * Adds an optional clause.
      *
      * @param Clause $clause A clause
      *
      * @return Query
      */
-    public function addRequiredClause(Clause $clause): self
+    public function shouldHave(Clause $clause): self
     {
-        $this->addSubQuery(
-            new Operator(Operator::SYMBOL_REQUIRED),
-            $clause
-        );
+        $clause->optional();
 
-        return $this;
+        return $this->add($clause);
     }
 
     /**
-     * Appends a clause with prohibited matching.
+     * Adds a required clause.
      *
      * @param Clause $clause A clause
      *
      * @return Query
      */
-    public function addProhibitedClause(Clause $clause): self
+    public function mustHave(Clause $clause): self
     {
-        $this->addSubQuery(
-            new Operator(Operator::SYMBOL_PROHIBITED),
-            $clause
-        );
+        $clause->required();
 
-        return $this;
+        return $this->add($clause);
     }
 
     /**
-     * Appends a clause as and-statement.
+     * Adds a prohibited clause.
      *
      * @param Clause $clause A clause
      *
-     * @return self
+     * @return Query
      */
-    public function _and(Clause $clause): self
+    public function mustNotHave(Clause $clause): self
     {
-        $this->addSubQuery(
-            new Operator(Operator::SYMBOL_AND),
-            $clause
-        );
+        $clause->prohibited();
 
-        return $this;
-    }
-
-    /**
-     * Appends a clause as or-statement.
-     *
-     * @param Clause $clause A clause
-     *
-     * @return self
-     */
-    public function _or(Clause $clause): self
-    {
-        $this->addSubQuery(
-            new Operator(Operator::SYMBOL_OR),
-            $clause
-        );
-
-        return $this;
-    }
-
-    /**
-     * Appends a clause as not-statement.
-     *
-     * @param Clause $clause A clause
-     *
-     * @return self
-     */
-    public function _not(Clause $clause): self
-    {
-        $this->addSubQuery(
-            new Operator(Operator::SYMBOL_NOT),
-            $clause
-        );
-
-        return $this;
+        return $this->add($clause);
     }
 
     /**
@@ -135,21 +113,32 @@ class Query extends AbstractClause
      */
     public function __toString(): string
     {
-        return $this->getFieldSpecification()
-            . '(' . implode('' , $this->elements) . ')';
+        return $this->operator
+            . $this->getFieldSpecification()
+            . $this->getClauses();
     }
 
     /**
-     * Adds a sub query.
+     * Returns the field specification.
      *
-     * @param Operator $operator An operator
-     * @param Clause   $clause   A clause
-     *
-     * @return void
+     * @return string
      */
-    private function addSubQuery(Operator $operator, Clause $clause): void
+    private function getFieldSpecification(): string
     {
-        $this->elements[] = $operator;
-        $this->elements[] = $clause;
+        return (empty((string) $this->field))
+            ? Field::DEFAULT
+            : (string) $this->field . self::FIELD_SEPARATOR;
+    }
+
+    /**
+     * @return string
+     */
+    private function getClauses(): string
+    {
+        $clauses = implode(self::CLAUSE_SEPARATOR, $this->clauses);
+
+        return (Field::DEFAULT != $this->field && Operator::SYMBOL_OPTIONAL != $this->operator && count($this->clauses) > 1)
+            ? '(' .  $clauses . ')'
+            : $clauses;
     }
 }

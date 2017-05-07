@@ -48,7 +48,7 @@ class FieldTest extends TestCase
      *
      * @return void
      */
-    public function test__toStringWithoutEmptyFieldName(): void
+    public function test__toStringWithEmptyFieldName(): void
     {
         $field = new Field('');
 

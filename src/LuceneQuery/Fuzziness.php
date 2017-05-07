@@ -69,5 +69,6 @@ class Fuzziness implements Expression
                 return '~1';
             default:
                 return '';
-        }    }
+        }
+    }
 }

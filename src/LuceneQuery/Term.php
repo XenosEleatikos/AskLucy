@@ -2,11 +2,15 @@
 
 namespace LuceneQuery;
 
+use LuceneQuery\Property\OperatorTrait;
+
 /**
  * A term
  */
-class Term extends AbstractClause
+class Term implements Clause
 {
+    use OperatorTrait;
+
     /**
      * The search string
      *
@@ -30,14 +34,14 @@ class Term extends AbstractClause
      */
     public function __construct(string $searchString)
     {
-        $this->searchString = trim($searchString);
-        $this->fuzziness    = new Fuzziness(0);
+        $searchString = trim($searchString);
 
-        if (strpos($this->searchString, ' ')) {
+        if (strpos($searchString, ' ')) {
             throw new \Exception('A term must not contain spaces.');
         }
 
-        parent::__construct();
+        $this->searchString = trim($searchString);
+        $this->fuzziness    = new Fuzziness(0);
     }
 
     /**
@@ -64,7 +68,7 @@ class Term extends AbstractClause
      */
     public function __toString(): string
     {
-        return $this->getFieldSpecification()
+        return $this->operator
             . $this->searchString
             . $this->fuzziness;
     }

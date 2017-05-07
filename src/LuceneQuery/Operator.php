@@ -12,42 +12,42 @@ class Operator implements Expression
      *
      * @var string
      */
-    public const SYMBOL_AND = ' AND ';
+    public const SYMBOL_AND = 'AND ';
 
     /**
      * The symbol for the or-operator
      *
      * @var string
      */
-    public const SYMBOL_OR = ' OR ';
+    public const SYMBOL_OR = 'OR ';
 
     /**
      * The symbol for the or-operator
      *
      * @var string
      */
-    public const SYMBOL_NOT = ' NOT ';
+    public const SYMBOL_NOT = 'NOT ';
 
     /**
      * The symbol for the optional-operator
      *
      * @var string
      */
-    public const SYMBOL_OPTIONAL = ' ';
+    public const SYMBOL_OPTIONAL = '';
 
     /**
      * The symbol for the prohibited-operator
      *
      * @var string
      */
-    public const SYMBOL_PROHIBITED = ' -';
+    public const SYMBOL_PROHIBITED = '-';
 
     /**
      * The symbol for the required-operator
      *
      * @var string
      */
-    public const SYMBOL_REQUIRED = ' +';
+    public const SYMBOL_REQUIRED = '+';
 
     /**
      * A list of valid symbols for logical operators

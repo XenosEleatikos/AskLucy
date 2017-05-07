@@ -2,6 +2,7 @@
 namespace LuceneQuery\Test;
 
 use LuceneQuery\Field;
+use LuceneQuery\Query;
 use LuceneQuery\Term;
 use PHPUnit\Framework\TestCase;
 
@@ -39,30 +40,6 @@ class TermTest extends TestCase
             'term',
             (string) $term,
             'Expected leading and ending whitespace characters to be stripped from the term.'
-        );
-    }
-
-    /**
-     * Tests, if setField() specifies a field for the term, and if the fielded term is rendered correctly by
-     * __toString(). Also tests, if setField() returns the term itself for a fluent interface.
-     *
-     * @return void
-     */
-    public function testSetField(): void
-    {
-        $term   = new Term('term');
-        $result = $term->setField(new Field('field'));
-
-        $this->assertSame(
-            $term,
-            $result,
-            'Expected setField() to return the term itself for a fluent interface.'
-        );
-
-        $this->assertSame(
-            'field:term',
-            (string) $term,
-            'Expected fielded term to be "field:term".'
         );
     }
 
