@@ -12,6 +12,13 @@ class Phrase implements Clause
     use OperatorTrait;
 
     /**
+     * Separator between terms
+     *
+     * @var string
+     */
+    const TERM_SEPARATOR = ' ';
+
+    /**
      * A list of terms
      *
      * @var Term[]
@@ -35,7 +42,7 @@ class Phrase implements Clause
      */
     public function __toString(): string
     {
-        $terms = implode(' ', $this->terms);
+        $terms = implode(self::TERM_SEPARATOR, $this->terms);
 
         return (count($this->terms) > 1)
             ? '"' . $terms . '"'
@@ -58,7 +65,7 @@ class Phrase implements Clause
                 {
                     return new Term($searchTerm);
                 },
-                explode(' ', $searchPhrase)
+                explode(self::TERM_SEPARATOR, $searchPhrase)
             )
         );
     }

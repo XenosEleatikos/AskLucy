@@ -2,6 +2,7 @@
 
 namespace LuceneQuery;
 
+use Doctrine\DBAL\Driver\AbstractDriverException;
 use LuceneQuery\Property\OperatorTrait;
 
 /**
@@ -30,13 +31,13 @@ class Term implements Clause
      *
      * @param string $searchString The string to search for
      *
-     * @throws \Exception
+     * @throws \Exception Throws an exception, if the given string contains spaces.
      */
     public function __construct(string $searchString)
     {
         $searchString = trim($searchString);
 
-        if (strpos($searchString, ' ')) {
+        if (strpos($searchString, Phrase::TERM_SEPARATOR)) {
             throw new \Exception('A term must not contain spaces.');
         }
 
