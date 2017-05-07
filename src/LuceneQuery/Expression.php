@@ -2,10 +2,13 @@
 
 namespace LuceneQuery;
 
+/**
+ * An expression
+ */
 interface Expression
 {
     /**
-     * Returns the query as string.
+     * Returns a string representation of the object.
      *
      * @return string
      */
