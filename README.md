@@ -7,20 +7,19 @@ You can create three types of queries:
 3. complex queries containing one or more sub-queries of any type
 
 ### Terms
+#### Creating a term
 To create a query matching documents that contain a single word, e. g. "word", just instantiate a new term with the word
 as constructor argument:
-
-#### Creating a term
-
 ```php
 <?php
 $term = new \LuceneQuery\Term('word');
 ```
+
 The string representation of the query will be:
 
 > word
 
-#### Operators
+#### Setting an operator to the term
 
 You can add operators to define, if the word is required, prohibited or optional.
 
@@ -36,17 +35,17 @@ The string representation of the query will be:
 
 > +word
 
-To prohibit the word, just call prohibited():
+To prohibit a word, e.g. "Java", just call prohibited():
 
 ```php
 <?php
-$term = new \LuceneQuery\Term('word');
+$term = new \LuceneQuery\Term('Java');
 $term->prohibited();
 ```
 
 The string representation of the query will be:
 
-> -word
+> -Java
 
 If neither required() nor prohibited() is called, the word is optional. You can make this explicit, but you don't have
 to, by calling optional():
@@ -83,6 +82,7 @@ the search term. By using the optional parameter, you can define that distance:
 $term = new \LuceneQuery\Term('word');
 $term->fuzzify(1);
 ```
+
 The string representation of the query will be:
 
 > word~1
@@ -92,10 +92,9 @@ default value of fuzzify() is 2, so that also words like "nerd" will be matched.
 is disabled, what is the same as just don't calling fuzzify(). Allowed values are 0, 1 and 2.
 
 ### Phrases
+#### Creating a phrase
 To create a query matching documents that contain a sequence of words, e. g. "Lucene search", just instantiate a new
 phrase with the sequence as constructor argument:
-
-#### Creating a phrase
 
 ```php
 <?php
@@ -105,7 +104,7 @@ The string representation of the query will be:
 
 > "Lucene query"
 
-#### Operators
+#### Setting an operator to the phrase
 
 You can add operators to phrases in the same manner as to terms.
 
@@ -125,13 +124,13 @@ To prohibit the phrase, just call prohibited():
 
 ```php
 <?php
-$phrase = new \LuceneQuery\Phrase('Lucene query');
+$phrase = new \LuceneQuery\Phrase('Java development');
 $phrase->prohibited();
 ```
 
 The string representation of the query will be:
 
-> -"Lucene query"
+> -"Java development"
 
 If neither required() nor prohibited() is called, the phrase is optional. You can make this explicit, but you don't have
 to, by calling optional():
@@ -145,3 +144,68 @@ $phrase->optional();
 The string representation of the query will be:
 
 > "Lucene query"
+
+### Complex queries
+#### Creating a complex query
+To create a complex query containing one or more sub-queries of any type, just instantiate a new query and add
+sub-queries:
+
+```php
+<?php
+$phrase = new \LuceneQuery\Query;
+$phrase
+    ->add(new \LuceneQuery\Term('word'))
+    ->add(new \LuceneQuery\Phrase('Lucene query'));
+```
+
+The string representation of the query will be:
+
+> word "Lucene query"
+
+#### Setting sub-queries with operators
+Instead of creating terms or phrases, setting operators to them and finally adding them as sub-queries to a complex
+query, you can use Query::shouldHave(), Query::mustHave() or Query::mustNotHave(), what automatically sets the
+"optional", "required" or "prohibited" operator to the given sub-queries.
+
+```php
+<?php
+$phrase = new \LuceneQuery\Query;
+$phrase
+    ->shouldHave(new \LuceneQuery\Term('word'))
+    ->mustHave(new \LuceneQuery\Phrase('Lucene query'))
+    ->mustNotHave(new \LuceneQuery\Phrase('Java development'));
+```
+
+The string representation of the query will be:
+
+> word +"Lucene query" -"Java development"
+
+#### Setting an operator to the complex query
+You can add operators to complex queries right as to terms and phrases:
+
+```php
+<?php
+$phrase = new \LuceneQuery\Query;
+$phrase
+    ->add(new \LuceneQuery\Term('Lucene'))
+    ->add(new \LuceneQuery\Phrase('search'))
+    ->required();
+```
+
+The query will match all documents containing necessarily "Lucene" or "search" (or both). The string representation will
+be:
+
+> +(Lucene search)
+
+#### Fields
+You can specify a field to search in by adding a constructor argument:
+
+```php
+<?php
+$phrase = new \LuceneQuery\Query('title');
+$phrase->add(new \LuceneQuery\Term('Lucene'));
+```
+
+The string representation of the query will be:
+
+> title:Lucene
