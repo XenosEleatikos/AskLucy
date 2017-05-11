@@ -8,6 +8,15 @@ namespace LuceneQuery;
 interface Clause extends Expression
 {
     /**
+     * Sets the field.
+     *
+     * @param string $name The name of the field to search in
+     *
+     * @return void
+     */
+    public function setField(string $name = Field::DEFAULT): void;
+
+    /**
      * Sets the optional operator.
      *
      * @return void

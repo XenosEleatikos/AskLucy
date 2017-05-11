@@ -2,6 +2,7 @@
 
 namespace LuceneQuery;
 
+use LuceneQuery\Property\FieldTrait;
 use LuceneQuery\Property\OperatorTrait;
 
 /**
@@ -9,6 +10,7 @@ use LuceneQuery\Property\OperatorTrait;
  */
 class Phrase implements Clause
 {
+    use FieldTrait;
     use OperatorTrait;
 
     /**
@@ -29,10 +31,12 @@ class Phrase implements Clause
      * Constructs a phrase.
      *
      * @param string $searchPhrase The phrase to search for
+     * @param string $field        Optional name of the field to search in
      */
-    public function __construct(string $searchPhrase)
+    public function __construct(string $searchPhrase, string $field = Field::DEFAULT)
     {
         $this->addTerms($searchPhrase);
+        $this->field = new Field($field);
     }
 
     /**
@@ -43,10 +47,11 @@ class Phrase implements Clause
     public function __toString(): string
     {
         $terms = implode(self::TERM_SEPARATOR, $this->terms);
-
-        return (count($this->terms) > 1)
+        $terms = (count($this->terms) > 1)
             ? '"' . $terms . '"'
             : $terms;
+
+        return $this->getFieldSpecification() . $terms;
     }
 
     /**

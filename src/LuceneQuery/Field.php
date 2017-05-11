@@ -15,6 +15,13 @@ class Field
     public const DEFAULT = '';
 
     /**
+     * Separator between field name and clause
+     *
+     * @var string
+     */
+    public const FIELD_SEPARATOR = ':';
+
+    /**
      * The name of the field
      *
      * @var string

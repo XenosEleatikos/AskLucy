@@ -2,6 +2,7 @@
 
 namespace LuceneQuery;
 
+use LuceneQuery\Property\FieldTrait;
 use LuceneQuery\Property\OperatorTrait;
 
 /**
@@ -9,6 +10,7 @@ use LuceneQuery\Property\OperatorTrait;
  */
 class Query implements Clause
 {
+    use FieldTrait;
     use OperatorTrait;
 
     /**
@@ -17,20 +19,6 @@ class Query implements Clause
      * @var string
      */
     const CLAUSE_SEPARATOR = ' ';
-
-    /**
-     * Separator between field name and clause
-     *
-     * @var string
-     */
-    private const FIELD_SEPARATOR = ':';
-
-    /**
-     * The field to search in
-     *
-     * @var Field
-     */
-    private $field;
 
     /**
      * A list of clauses
@@ -42,7 +30,7 @@ class Query implements Clause
     /**
      * Constructs a query.
      *
-     * @param string $field The name of the field
+     * @param string $field Optional name of the field to search in
      */
     public function __construct(string $field = Field::DEFAULT)
     {
@@ -116,18 +104,6 @@ class Query implements Clause
         return $this->operator
             . $this->getFieldSpecification()
             . $this->getClauses();
-    }
-
-    /**
-     * Returns the field specification.
-     *
-     * @return string
-     */
-    private function getFieldSpecification(): string
-    {
-        return (empty((string) $this->field))
-            ? Field::DEFAULT
-            : (string) $this->field . self::FIELD_SEPARATOR;
     }
 
     /**

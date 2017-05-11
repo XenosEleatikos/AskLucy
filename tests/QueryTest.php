@@ -3,6 +3,7 @@ namespace LuceneQuery\Test;
 
 use LuceneQuery\Query;
 use LuceneQuery\Clause;
+use LuceneQuery\Test\Property\FieldTraitTest;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -12,6 +13,8 @@ use PHPUnit\Framework\TestCase;
  */
 class QueryTest extends TestCase
 {
+    use FieldTraitTest;
+
     /**
      * Tests, if optional() adds no operator symbol.
      *
@@ -297,50 +300,6 @@ class QueryTest extends TestCase
     }
 
     /**
-     * Tests, if __toString() renders the field specification correctly.
-     *
-     * @param Query  $query A query              A query
-     * @param string $expectedFieldSpecification The expected field specification
-     *
-     * @dataProvider dataProviderTest__toStringRendersFieldSpecification
-     *
-     * @return void
-     */
-    public function test__toStringRendersFieldSpecification(Query $query, string $expectedFieldSpecification): void
-    {
-        $this->assertSame(
-            $expectedFieldSpecification,
-            strstr($query, 'a', true),
-            (empty($expectedFieldSpecification))
-                ? 'Expected no field specification prepended to the clause.'
-                : 'Expected field specification "' .  $expectedFieldSpecification . '" prepending to the clause.'
-        );
-    }
-
-    /**
-     * Returns queries as test data for test__toStringRendersFieldSpecification().
-     *
-     * @return array
-     */
-    public function dataProviderTest__toStringRendersFieldSpecification(): array
-    {
-        $query1 = new Query('field');
-        $query1->add($this->getClauseMock('a'));
-
-        $query2 = new Query;
-        $query2->add($this->getClauseMock('a'));
-
-        $query3 = new Query('');
-        $query3->add($this->getClauseMock('a'));
-
-        return [
-            'Query, instantiated with a name of a non-default field as constructor argument' => [$query1, 'field:'],
-            'Query, instantiated without parameter for field name'                           => [$query2, ''],
-            'Query, instantiated with empty string as default field name'                    => [$query3, '']
-        ];
-    }
-
-    /**
      * Tests, if __toString() renders a list of clauses using spaces as separators.
      *
      * @return void
@@ -376,5 +335,23 @@ class QueryTest extends TestCase
             ->willReturn($query);
 
         return $clauseMock;
+    }
+
+    /**
+     * Returns a query for testing.
+     *
+     * @param null|string $constructorArgumentField The constructor argument for the field
+     *
+     * @return Query
+     */
+    protected function getTestClause(?string $constructorArgumentField = null): Query
+    {
+        $query = (null === $constructorArgumentField)
+            ? new Query
+            : new Query($constructorArgumentField);
+
+        $query->add($this->getClauseMock('a'));
+
+        return $query;
     }
 }

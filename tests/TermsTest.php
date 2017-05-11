@@ -2,6 +2,7 @@
 namespace LuceneQuery\Test;
 
 use LuceneQuery\Term;
+use LuceneQuery\Test\Property\FieldTraitTest;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -9,8 +10,10 @@ use PHPUnit\Framework\TestCase;
  *
  * @see Term
  */
-class TermTest extends TestCase
+class TermTests extends TestCase
 {
+    use FieldTraitTest;
+
     /**
      * Tests, if __construct() throws an expection for a given phrase containing spaces.
      *
@@ -205,5 +208,21 @@ class TermTest extends TestCase
             'Single word term with distance 1' => ['term', 1, 'term~1'],
             'Single word term with distance 2' => ['term', 2, 'term~']
         ];
+    }
+
+    /**
+     * Returns a query for testing.
+     *
+     * @param null|string $constructorArgumentField The constructor argument for the field
+     *
+     * @return Term
+     */
+    protected function getTestClause(?string $constructorArgumentField = null): Term
+    {
+        $query = (null === $constructorArgumentField)
+            ? new Term('a')
+            : new Term('a', $constructorArgumentField);
+
+        return $query;
     }
 }

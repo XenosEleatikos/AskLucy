@@ -2,7 +2,7 @@
 
 namespace LuceneQuery;
 
-use Doctrine\DBAL\Driver\AbstractDriverException;
+use LuceneQuery\Property\FieldTrait;
 use LuceneQuery\Property\OperatorTrait;
 
 /**
@@ -10,6 +10,7 @@ use LuceneQuery\Property\OperatorTrait;
  */
 class Term implements Clause
 {
+    use FieldTrait;
     use OperatorTrait;
 
     /**
@@ -30,10 +31,11 @@ class Term implements Clause
      * Constructs a term.
      *
      * @param string $searchString The string to search for
+     * @param string $field        Optional name of the field to search in
      *
      * @throws \Exception Throws an exception, if the given string contains spaces.
      */
-    public function __construct(string $searchString)
+    public function __construct(string $searchString, string $field = Field::DEFAULT)
     {
         $searchString = trim($searchString);
 
@@ -42,6 +44,7 @@ class Term implements Clause
         }
 
         $this->searchString = trim($searchString);
+        $this->field        = new Field($field);
         $this->fuzziness    = new Fuzziness(0);
     }
 
@@ -70,6 +73,7 @@ class Term implements Clause
     public function __toString(): string
     {
         return $this->operator
+            . $this->getFieldSpecification()
             . $this->searchString
             . $this->fuzziness;
     }
