@@ -19,6 +19,26 @@ The string representation of the query will be:
 
 > word
 
+#### Setting a field to the term
+You can specify a field to search in by calling the method setField():
+
+```php
+<?php
+$term = new \LuceneQuery\Term('Lucene');
+$term->setField('searchEngine');
+```
+
+You can also set the field by adding a second constructor argument:
+
+```php
+<?php
+$term = new \LuceneQuery\Term('Lucene', 'searchEngine');
+```
+
+Both lead to the same result:
+
+> searchEngine:Lucene
+
 #### Setting an operator to the term
 
 You can add operators to define, if the word is required, prohibited or optional.
@@ -144,6 +164,26 @@ $phrase->optional();
 The string representation of the query will be:
 
 > "Lucene query"
+
+#### Setting a field to the phrase
+You can specify a field to search in by calling the method setField():
+
+```php
+<?php
+$phrase = new \LuceneQuery\Phrase('Search Engine');
+$phrase->setField('title');
+```
+
+You can also set the field by adding a second constructor argument:
+
+```php
+<?php
+$phrase = new \LuceneQuery\Phrase('Search Engine', 'title');
+```
+
+Both lead to the same result:
+
+> title:"Search Engine"
 
 ### Complex queries
 #### Creating a complex query
