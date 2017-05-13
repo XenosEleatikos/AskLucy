@@ -17,8 +17,9 @@
         "phpunit/phpunit": " ^6.1"
     },
     "autoload": {
-        "psr-0": {
-            "LuceneQuery": "src/"
+        "psr-4": {
+            "LuceneQuery\\": "src",
+            "LuceneQuery\\Test\\": "tests"
         }
     }
 }
