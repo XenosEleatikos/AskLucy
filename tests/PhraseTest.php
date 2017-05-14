@@ -4,6 +4,7 @@ namespace LuceneQuery\Test;
 use LuceneQuery\Phrase;
 use LuceneQuery\Term;
 use LuceneQuery\Test\Property\FieldTraitTest;
+use LuceneQuery\Test\Property\OperatorTraitTest;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -14,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 class PhraseTest extends TestCase
 {
     use FieldTraitTest;
+    use OperatorTraitTest;
 
     /**
      * Tests, if __construct() throws an expection for a given phrase containing spaces.

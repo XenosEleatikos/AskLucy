@@ -1,6 +1,7 @@
 <?php
 namespace LuceneQuery\Test;
 
+use LuceneQuery\Property\OperatorTrait;
 use LuceneQuery\Query;
 use LuceneQuery\Clause;
 use LuceneQuery\Test\Property\FieldTraitTest;
@@ -14,111 +15,7 @@ use PHPUnit\Framework\TestCase;
 class QueryTest extends TestCase
 {
     use FieldTraitTest;
-
-    /**
-     * Tests, if optional() adds no operator symbol.
-     *
-     * @return void
-     */
-    public function testOptional(): void
-    {
-        $query = new Query;
-        $query->shouldHave($this->getClauseMock('term'));
-        $query->optional();
-
-        $this->assertSame(
-            'term',
-            (string) $query
-        );
-    }
-
-    /**
-     * Tests, if optional() overwrites an operator set before.
-     *
-     * @return void
-     */
-    public function testOptionalOverwritesOperator(): void
-    {
-        $query = new Query;
-        $query->shouldHave($this->getClauseMock('term'));
-        $query->required();
-        $query->optional();
-
-        $this->assertSame(
-            'term',
-            (string) $query
-        );
-    }
-
-    /**
-     * Tests, if required() adds the operator symbol "+" to require a clause.
-     *
-     * @return void
-     */
-    public function testRequired(): void
-    {
-        $query = new Query;
-        $query->shouldHave($this->getClauseMock('term'));
-        $query->required();
-
-        $this->assertSame(
-            '+term',
-            (string) $query
-        );
-    }
-
-    /**
-     * Tests, if required() overwrites an operator set before.
-     *
-     * @return void
-     */
-    public function testRequiredOverwritesOperator(): void
-    {
-        $query = new Query;
-        $query->shouldHave($this->getClauseMock('term'));
-        $query->optional();
-        $query->required();
-
-        $this->assertSame(
-            '+term',
-            (string) $query
-        );
-    }
-
-    /**
-     * Tests, if prohibited() adds the operator symbol "-" to prohibit a clause.
-     *
-     * @return void
-     */
-    public function testProhibited(): void
-    {
-        $query = new Query;
-        $query->shouldHave($this->getClauseMock('term'));
-        $query->prohibited();
-
-        $this->assertSame(
-            '-term',
-            (string) $query
-        );
-    }
-
-    /**
-     * Tests, if prohibited() overwrites an operator set before.
-     *
-     * @return void
-     */
-    public function testProhibitedOverwritesOperator(): void
-    {
-        $query = new Query;
-        $query->shouldHave($this->getClauseMock('term'));
-        $query->required();
-        $query->prohibited();
-
-        $this->assertSame(
-            '-term',
-            (string) $query
-        );
-    }
+    use OperatorTrait;
 
     /**
      * Tests adding an optional clause with shouldHave().

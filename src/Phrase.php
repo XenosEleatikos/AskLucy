@@ -51,7 +51,9 @@ class Phrase implements Clause
             ? '"' . $terms . '"'
             : $terms;
 
-        return $this->getFieldSpecification() . $terms;
+        return $this->operator
+            . $this->getFieldSpecification()
+            . $terms;
     }
 
     /**
