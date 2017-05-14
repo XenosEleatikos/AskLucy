@@ -23,10 +23,10 @@ trait FieldTraitTest
         $query = $this->getTestClause();
         $query->setField('field');
 
-        $this->assertSame(
-            'field:',
-            strstr($query, 'a', true),
-            'Expected field specification "field:" prepending to the query, because field name "field" was set by setField().'
+        $this->assertRegExp(
+            '/(field:).?a/',
+            (string) $query,
+            'Expected setField() to prepend the field specification "field:" to the query.'
         );
     }
 
@@ -39,27 +39,26 @@ trait FieldTraitTest
     {
         $query = $this->getTestClause('field');
 
-        $this->assertSame(
-            'field:',
-            strstr($query, 'a', true),
-            'Expected field specification "field:" prepending to the query, because field name "field" was set by __construct().'
+        $this->assertRegExp(
+            '/(field:).?a/',
+            (string) $query,
+            'Expected __construct() to prepend the field specification "field:" to the query.'
         );
     }
 
     /**
-     * Tests, if __toString() doesn't render any field speficifaction, when the query was instantiated without
-     * constructor argument and setField() was not used.
+     * Tests, if __toString() doesn't render the field separator, when the clause was instantiated without constructor
+     * argument and setField() was not used.
      *
      * @return void
      */
-    public function test__toStringDoesNotRendersFieldSpecificationForQueryInstantiatedWithoutConstructorArgument(): void
+    public function test__toStringDoesNotRendersFieldSeparatorForQueryInstantiatedWithoutConstructorArgument(): void
     {
         $query = $this->getTestClause();
 
-        $this->assertSame(
-            '',
-            strstr($query, 'a', true),
-            'Expected no field specification prepended to the query instantiated without constructor argument.'
+        $this->assertFalse(
+            strstr($query, ':'),
+            'Expected that __toString() doesn\'t render the field separator ":", if the clause was instantiated without constructor argument and setField() was never called.'
         );
     }
 
@@ -73,10 +72,9 @@ trait FieldTraitTest
     {
         $query = $this->getTestClause('');
 
-        $this->assertSame(
-            '',
-            strstr($query, 'a', true),
-            'Expected no field specification prepended to the query instantiated with an empty string as constructor argument.'
+        $this->assertFalse(
+            strstr($query, ':'),
+            'Expected that __toString() doesn\'t render the field separator ":", if the clause was instantiated with an empty string as constructor argument.'
         );
     }
 
@@ -90,10 +88,10 @@ trait FieldTraitTest
         $query = $this->getTestClause('field');
         $query->setField('otherField');
 
-        $this->assertSame(
-            'otherField:',
-            strstr($query, 'a', true),
-            'Expected field specification "otherField:" prepended to the query, because "otherField" was last set by setField().'
+        $this->assertRegExp(
+            '/(otherField:).?a/',
+            (string) $query,
+            'Expected field specification (otherField:) prepended to the query, because "otherField" was last set by setField().'
         );
     }
 
@@ -108,10 +106,10 @@ trait FieldTraitTest
         $query->setField('field');
         $query->setField('otherField');
 
-        $this->assertSame(
-            'otherField:',
-            strstr($query, 'a', true),
-            'Expected field specification "otherField:" prepended to the query, because "otherField" was last set by setField().'
+        $this->assertRegExp(
+            '/(otherField:).?a/',
+            (string) $query,
+            'Expected field specification (otherField:) prepended to the query, because "otherField" was last set by setField().'
         );
     }
 
@@ -126,9 +124,8 @@ trait FieldTraitTest
         $query->setField('field');
         $query->setField();
 
-        $this->assertSame(
-            '',
-            strstr($query, 'a', true),
+        $this->assertFalse(
+            strstr($query, 'field'),
             'Expected no field specification prepended, because setField() was last called without argument.'
         );
     }

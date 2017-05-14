@@ -14,18 +14,21 @@ trait OperatorTraitTest
     abstract protected function getTestClause(?string $constructorArgumentField = null): Clause;
 
     /**
-     * Tests, if optional() adds no operator symbol.
+     * Tests, if optional() doesn't modify the clause.
      *
      * @return void
      */
     public function testOptional(): void
     {
-        $query = $this->getTestClause();
-        $query->optional();
+        $clause = $this->getTestClause();
+        $originalClause = (string) $clause;
+
+        $clause->optional();
 
         $this->assertSame(
-            'a',
-            (string) $query
+            $originalClause,
+            (string) $clause,
+            'Expected the clause to be the same after calling optional() as before.'
         );
     }
 
@@ -36,29 +39,34 @@ trait OperatorTraitTest
      */
     public function testOptionalOverwritesOperator(): void
     {
-        $query = $this->getTestClause();
-        $query->required();
-        $query->optional();
+        $clause = $this->getTestClause();
+        $originalClause = (string) $clause;
+
+        $clause->required();
+        $clause->prohibited();
+        $clause->optional();
 
         $this->assertSame(
-            'a',
-            (string) $query
+            $originalClause,
+            (string) $clause,
+            'Expected optional() to overwrite operators set before.'
         );
     }
 
     /**
-     * Tests, if required() adds the operator symbol "+" to require a clause.
+     * Tests, if required() prepends the operator symbol "+" to the clause.
      *
      * @return void
      */
     public function testRequired(): void
     {
-        $query = $this->getTestClause();
-        $query->required();
+        $clause = $this->getTestClause();
+        $clause->required();
 
-        $this->assertSame(
-            '+a',
-            (string) $query
+        $this->assertRegExp(
+            '/\+.?a/',
+            (string) $clause,
+            'Expected required() to prepend the operator symbol "+" to the clause.'
         );
     }
 
@@ -69,29 +77,32 @@ trait OperatorTraitTest
      */
     public function testRequiredOverwritesOperator(): void
     {
-        $query = $this->getTestClause();
-        $query->optional();
-        $query->required();
+        $clause = $this->getTestClause();
+        $clause->optional();
+        $clause->prohibited();
+        $clause->required();
 
-        $this->assertSame(
-            '+a',
-            (string) $query
+        $this->assertRegExp(
+            '/\+.?a/',
+            (string) $clause,
+            'Expected required() to overwrite operators set before.'
         );
     }
 
     /**
-     * Tests, if prohibited() adds the operator symbol "-" to prohibit a clause.
+     * Tests, if prohibited() prepends the operator symbol "-" to the clause.
      *
      * @return void
      */
     public function testProhibited(): void
     {
-        $query = $query = $this->getTestClause();
-        $query->prohibited();
+        $clause = $this->getTestClause();
+        $clause->prohibited();
 
-        $this->assertSame(
-            '-a',
-            (string) $query
+        $this->assertRegExp(
+            '/\-.?a/',
+            (string) $clause,
+            'Expected prohibited() to prepend the operator symbol "-" to the clause.'
         );
     }
 
@@ -102,13 +113,15 @@ trait OperatorTraitTest
      */
     public function testProhibitedOverwritesOperator(): void
     {
-        $query = $query = $this->getTestClause();
-        $query->required();
-        $query->prohibited();
+        $clause = $this->getTestClause();
+        $clause->optional();
+        $clause->required();
+        $clause->prohibited();
 
-        $this->assertSame(
-            '-a',
-            (string) $query
+        $this->assertRegExp(
+            '/\-.?a/',
+            (string) $clause,
+            'Expected prohibited() to overwrite operators set before.'
         );
     }
 }
