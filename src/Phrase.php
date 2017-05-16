@@ -28,6 +28,13 @@ class Phrase implements Clause
     private $terms = [];
 
     /**
+     * The required word proximity
+     *
+     * @var Proximity
+     */
+    private $proximity;
+
+    /**
      * Constructs a phrase.
      *
      * @param string $searchPhrase The phrase to search for
@@ -36,7 +43,23 @@ class Phrase implements Clause
     public function __construct(string $searchPhrase, string $field = Field::DEFAULT)
     {
         $this->addTerms($searchPhrase);
-        $this->field = new Field($field);
+
+        $this->field     = new Field($field);
+        $this->proximity = new Proximity;
+    }
+
+    /**
+     * Sets the required word proximity.
+     *
+     * @param int $proximity The required proximity between the terms
+     *
+     * @return self
+     */
+    public function setProximity(int $proximity = 0): self
+    {
+        $this->proximity = new Proximity($proximity);
+
+        return $this;
     }
 
     /**
@@ -53,7 +76,8 @@ class Phrase implements Clause
 
         return $this->operator
             . $this->getFieldSpecification()
-            . $terms;
+            . $terms
+            . $this->getProximitySpecification();
     }
 
     /**
@@ -75,5 +99,21 @@ class Phrase implements Clause
                 explode(self::TERM_SEPARATOR, $searchPhrase)
             )
         );
+    }
+
+    /**
+     * Term proximity only makes sense for more than one term, so we can ignore it for a single term. Actually we have
+     * to ignore it for don't getting confused with the fuzziness operator for single terms.
+     * We can also ignore the proximity for the default value 0.
+     *
+     * @see Fuzziness
+     *
+     * @return string
+     */
+    private function getProximitySpecification(): string
+    {
+        return (count($this->terms) > 1 && $this->proximity->getDistance() > 0)
+            ? Proximity::PROXIMITY_OPERATOR . (string) $this->proximity
+            : '';
     }
 }
