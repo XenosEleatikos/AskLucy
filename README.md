@@ -185,6 +185,23 @@ Both lead to the same result:
 
 > title:"Search Engine"
 
+#### Setting a required term proximity
+You can specify a maximum distance to find terms, that are near each other in a document. For example, if you search for
+the terms "search" and "term" within five words, create the following phrase:  
+
+```php
+<?php
+$phrase = new \LuceneQuery\Phrase('search term');
+$phrase->setProximity(5);
+```
+
+The string representation of the query will be:
+
+> "search term"~5
+
+The proximity 0 means exact matching and, as the Lucene default value, must not be rendered. The proximity 1 would
+allow interchanging words, "term search".
+
 ### Complex queries
 #### Creating a complex query
 To create a complex query containing one or more sub-queries of any type, just instantiate a new query and add
