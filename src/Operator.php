@@ -8,49 +8,49 @@ namespace LuceneQuery;
 class Operator implements Expression
 {
     /**
-     * The symbol for the and-operator
+     * The and-operator
      *
      * @var string
      */
     public const SYMBOL_AND = 'AND ';
 
     /**
-     * The symbol for the or-operator
+     * The or-operator
      *
      * @var string
      */
     public const SYMBOL_OR = 'OR ';
 
     /**
-     * The symbol for the or-operator
+     * The not-operator
      *
      * @var string
      */
     public const SYMBOL_NOT = 'NOT ';
 
     /**
-     * The symbol for the optional-operator
+     * The "optional"-operator
      *
      * @var string
      */
     public const SYMBOL_OPTIONAL = '';
 
     /**
-     * The symbol for the prohibited-operator
+     * The "prohibited"-operator
      *
      * @var string
      */
     public const SYMBOL_PROHIBITED = '-';
 
     /**
-     * The symbol for the required-operator
+     * The "required"-operator
      *
      * @var string
      */
     public const SYMBOL_REQUIRED = '+';
 
     /**
-     * A list of valid symbols for logical operators
+     * A list of valid operators
      *
      * @var array
      */
@@ -64,7 +64,7 @@ class Operator implements Expression
     ];
 
     /**
-     * A symbol for the operator
+     * The operator
      *
      * @var string
      */
@@ -73,7 +73,7 @@ class Operator implements Expression
     /**
      * Constructs a logical operator.
      *
-     * @param string $symbol A symbol for a logical operator
+     * @param string $symbol A logical operator
      *
      * @throws \Exception Exception for an invalid logical operator.
      */
@@ -87,7 +87,7 @@ class Operator implements Expression
     }
 
     /**
-     * Returns the symbol for the logical operator.
+     * Returns the logical operator as string.
      *
      * @return string
      */
