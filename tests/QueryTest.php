@@ -1,22 +1,16 @@
 <?php
 namespace LuceneQuery\Test;
 
-use LuceneQuery\Property\OperatorTrait;
 use LuceneQuery\Query;
 use LuceneQuery\Clause;
-use LuceneQuery\Test\Property\FieldTraitTest;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Unit tests for the query.
  *
  * @see Query
  */
-class QueryTest extends TestCase
+class QueryTest extends ClauseTest
 {
-    use FieldTraitTest;
-    use OperatorTrait;
-
     /**
      * Tests adding an optional clause with shouldHave().
      *
@@ -239,9 +233,9 @@ class QueryTest extends TestCase
      *
      * @param null|string $constructorArgumentField The constructor argument for the field
      *
-     * @return Query
+     * @return Clause|Query
      */
-    protected function getTestClause(?string $constructorArgumentField = null): Query
+    protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
         $query = (null === $constructorArgumentField)
             ? new Query

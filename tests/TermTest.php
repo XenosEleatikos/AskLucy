@@ -1,21 +1,16 @@
 <?php
 namespace LuceneQuery\Test;
 
+use LuceneQuery\Clause;
 use LuceneQuery\Term;
-use LuceneQuery\Test\Property\FieldTraitTest;
-use LuceneQuery\Test\Property\OperatorTraitTest;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Unit tests for the term.
  *
  * @see Term
  */
-class TermTests extends TestCase
+class TermTests extends ClauseTest
 {
-    use FieldTraitTest;
-    use OperatorTraitTest;
-
     /**
      * Tests, if __construct() throws an expection for a given phrase containing spaces.
      *
@@ -213,13 +208,13 @@ class TermTests extends TestCase
     }
 
     /**
-     * Returns a query for testing.
+     * Returns a term for testing.
      *
      * @param null|string $constructorArgumentField The constructor argument for the field
      *
-     * @return Term
+     * @return Clause|Term
      */
-    protected function getTestClause(?string $constructorArgumentField = null): Term
+    protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
         $query = (null === $constructorArgumentField)
             ? new Term('a')

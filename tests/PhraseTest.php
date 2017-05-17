@@ -1,7 +1,9 @@
 <?php
 namespace LuceneQuery\Test;
 
+use LuceneQuery\Clause;
 use LuceneQuery\Phrase;
+use LuceneQuery\Query;
 use LuceneQuery\Test\Property\FieldTraitTest;
 use LuceneQuery\Test\Property\OperatorTraitTest;
 use PHPUnit\Framework\TestCase;
@@ -11,11 +13,8 @@ use PHPUnit\Framework\TestCase;
  *
  * @see Phrase
  */
-class PhraseTest extends TestCase
+class PhraseTest extends ClauseTest
 {
-    use FieldTraitTest;
-    use OperatorTraitTest;
-
     /**
      * Tests, if phrases getting quoted.
      *
@@ -124,13 +123,13 @@ class PhraseTest extends TestCase
     }
 
     /**
-     * Returns a query for testing.
+     * Returns a phrase for testing.
      *
      * @param null|string $constructorArgumentField The constructor argument for the field
      *
-     * @return Phrase
+     * @return Clause|Phrase
      */
-    protected function getTestClause(?string $constructorArgumentField = null): Phrase
+    protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
         $query = (null === $constructorArgumentField)
             ? new Phrase('a b')
