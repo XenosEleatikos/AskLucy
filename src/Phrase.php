@@ -104,7 +104,6 @@ class Phrase implements Clause
     /**
      * Term proximity only makes sense for more than one term, so we can ignore it for a single term. Actually we have
      * to ignore it for don't getting confused with the fuzziness operator for single terms.
-     * We can also ignore the proximity for the default value 0.
      *
      * @see Fuzziness
      *
@@ -112,8 +111,8 @@ class Phrase implements Clause
      */
     private function getProximitySpecification(): string
     {
-        return (count($this->terms) > 1 && $this->proximity->getDistance() > 0)
-            ? Proximity::PROXIMITY_OPERATOR . (string) $this->proximity
+        return (count($this->terms) > 1)
+            ? $this->proximity
             : '';
     }
 }

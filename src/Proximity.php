@@ -40,22 +40,15 @@ class Proximity implements Expression
     }
 
     /**
-     * Returns the term proximity as integer.
-     *
-     * @return int
-     */
-    public function getDistance(): int
-    {
-        return $this->proximity;
-    }
-
-    /**
      * Returns the term proximity as string.
+     * We can ignore the proximity for the default value 0.
      *
      * @return string
      */
     public function __toString(): string
     {
-        return (string) $this->proximity;
+        return ($this->proximity > 0)
+            ? Proximity::PROXIMITY_OPERATOR . $this->proximity
+            : '';
     }
 }
