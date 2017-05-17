@@ -10,6 +10,13 @@ namespace LuceneQuery;
 class Fuzziness implements Expression
 {
     /**
+     * The fuzziness operator
+     *
+     * @var string
+     */
+    private const FUZZINESS_OPERATOR = '~';
+
+    /**
      * The Damerau-Levenshtein Distance
      * Possible values: 0, 1, 2
      *
@@ -58,7 +65,7 @@ class Fuzziness implements Expression
     }
 
     /**
-     * Returns the symbol for the logical operator.
+     * Returns the fuzziness as string.
      *
      * @return string
      */
@@ -66,9 +73,9 @@ class Fuzziness implements Expression
     {
         switch ($this->fuzziness) {
             case 2:
-                return '~';
+                return self::FUZZINESS_OPERATOR;
             case 1:
-                return '~1';
+                return self::FUZZINESS_OPERATOR . '1';
             default:
                 return '';
         }
