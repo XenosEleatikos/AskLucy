@@ -73,7 +73,7 @@ class Term implements Clause
     public function __toString(): string
     {
         return $this->operator
-            . $this->getFieldSpecification()
+            . $this->field
             . $this->searchString
             . $this->fuzziness;
     }

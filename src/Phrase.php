@@ -75,7 +75,7 @@ class Phrase implements Clause
             : $terms;
 
         return $this->operator
-            . $this->getFieldSpecification()
+            . $this->field
             . $terms
             . $this->getProximitySpecification();
     }

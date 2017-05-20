@@ -27,16 +27,4 @@ trait FieldTrait
     {
         $this->field = new Field($name);
     }
-
-    /**
-     * Returns the field specification.
-     *
-     * @return string
-     */
-    protected function getFieldSpecification(): string
-    {
-        return (empty((string) $this->field))
-            ? Field::DEFAULT
-            : (string) $this->field . Field::FIELD_SEPARATOR;
-    }
 }

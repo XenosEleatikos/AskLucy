@@ -45,6 +45,8 @@ class Field
      */
     public function __toString(): string
     {
-        return $this->name;
+        return (empty((string) $this->name))
+            ? self::DEFAULT
+            : $this->name . self::FIELD_SEPARATOR;
     }
 }

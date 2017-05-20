@@ -21,9 +21,9 @@ class FieldTest extends TestCase
         $field = new Field('field');
 
         $this->assertSame(
-            'field',
+            'field:',
             (string) $field,
-            'Expected field name to be "field".'
+            'Expected field name to be "field:".'
         );
     }
 
