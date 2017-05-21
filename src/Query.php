@@ -2,6 +2,7 @@
 
 namespace LuceneQuery;
 
+use LuceneQuery\Property\BoostTrait;
 use LuceneQuery\Property\FieldTrait;
 use LuceneQuery\Property\OperatorTrait;
 
@@ -10,6 +11,7 @@ use LuceneQuery\Property\OperatorTrait;
  */
 class Query implements Clause
 {
+    use BoostTrait;
     use FieldTrait;
     use OperatorTrait;
 
@@ -103,7 +105,8 @@ class Query implements Clause
     {
         return $this->operator
             . $this->field
-            . $this->getClauses();
+            . $this->getClauses()
+            . $this->boost;
     }
 
     /**

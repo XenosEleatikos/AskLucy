@@ -36,4 +36,11 @@ interface Clause extends Expression
      * @return void
      */
     public function prohibited(): void;
+
+    /**
+     * Boosts the clause.
+     *
+     * @param float $value The boost value
+     */
+    public function boost(float $value): void;
 }

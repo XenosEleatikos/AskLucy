@@ -2,6 +2,7 @@
 
 namespace LuceneQuery;
 
+use LuceneQuery\Property\BoostTrait;
 use LuceneQuery\Property\FieldTrait;
 use LuceneQuery\Property\OperatorTrait;
 
@@ -10,6 +11,7 @@ use LuceneQuery\Property\OperatorTrait;
  */
 class Term implements Clause
 {
+    use BoostTrait;
     use FieldTrait;
     use OperatorTrait;
 
@@ -75,6 +77,7 @@ class Term implements Clause
         return $this->operator
             . $this->field
             . $this->searchString
-            . $this->fuzziness;
+            . $this->fuzziness
+            . $this->boost;
     }
 }

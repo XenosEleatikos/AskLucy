@@ -247,4 +247,105 @@ abstract class ClauseTest extends TestCase
             'Expected prohibited() to overwrite operators set before.'
         );
     }
+
+    /**
+     * Tests, if the rendered clause contains the boost, if set.
+     *
+     * @return void
+     */
+    public function testBoost(): void
+    {
+        $clause = $this->getTestClause();
+        $clause->boost(2.5);
+
+        $this->assertContains(
+            '^2.5',
+            (string) $clause,
+            'Expected that the clause contains the boost "^2.5".'
+        );
+    }
+
+    /**
+     * Tests, if the rendered clause contains the boost, if set with an integer value.
+     *
+     * @return void
+     */
+    public function testBoostWithInteger(): void
+    {
+        $clause = $this->getTestClause();
+        $clause->boost(2);
+
+        $this->assertContains(
+            '^2',
+            (string) $clause,
+            'Expected that the clause contains the boost "^2".'
+        );
+    }
+
+    /**
+     * Tests, if the rendered clause contains the boost value with shortened decimal zeros.
+     *
+     * @return void
+     */
+    public function testBoostRederedIntegerIfIntegerIsGivenAsFloat(): void
+    {
+        $clause = $this->getTestClause();
+        $clause->boost(2.0);
+
+        $this->assertRegExp(
+            '/\^2(?!.|0)/',
+            (string) $clause,
+            'Expected that the clause contains the boost "^2" as integer, when it was given as "2.0".'
+        );
+    }
+
+    /**
+     * Tests, if the rendered clause contains the boost value with shortened decimal zeros.
+     *
+     * @return void
+     */
+    public function testBoostShortensTrailingDecimalZeros(): void
+    {
+        $clause = $this->getTestClause();
+        $clause->boost(2.10);
+
+        $this->assertRegExp(
+            '/\^2.1(?!0)/',
+            (string) $clause,
+            'Expected that the clause contains the boost "^2.1", where the value is rendered without trailing decimal zeros.'
+        );
+    }
+
+    /**
+     * Tests, if the rendered clause doesn't contain boost specification by default.
+     *
+     * @return void
+     */
+    public function testBoostDoesNotContainBoostSpecificationByDefault(): void
+    {
+        $clause = $this->getTestClause();
+
+        $this->assertNotContains(
+            '^',
+            (string) $clause,
+            'Expected that the clause doesn\'t contain the boost operator "^" by default.'
+        );
+    }
+
+    /**
+     * Tests, if the rendered clause doesn't contain boost specification if set to default value 1.0.
+     *
+     * @return void
+     */
+    public function testBoostDoesNotContainBoostSpecificationIfSetToDefault(): void
+    {
+        $clause = $this->getTestClause();
+        $clause->boost(1.0);
+
+        $this->assertNotContains(
+            '^',
+            (string) $clause,
+            'Expected that the clause doesn\'t contain the boost operator "^" if set to default 1.0.'
+        );
+    }
 }

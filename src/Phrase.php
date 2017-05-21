@@ -2,6 +2,7 @@
 
 namespace LuceneQuery;
 
+use LuceneQuery\Property\BoostTrait;
 use LuceneQuery\Property\FieldTrait;
 use LuceneQuery\Property\OperatorTrait;
 
@@ -10,6 +11,7 @@ use LuceneQuery\Property\OperatorTrait;
  */
 class Phrase implements Clause
 {
+    use BoostTrait;
     use FieldTrait;
     use OperatorTrait;
 
@@ -77,7 +79,8 @@ class Phrase implements Clause
         return $this->operator
             . $this->field
             . $terms
-            . $this->getProximitySpecification();
+            . $this->getProximitySpecification()
+            . $this->boost;
     }
 
     /**
