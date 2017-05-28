@@ -1,9 +1,10 @@
 # A Php Library for Creating Lucene Search Queries
 ## Usage
-A query to Lucene search engine consists of one ore more clauses for matching documents. There are three types of clauses:
+A query to Lucene search engine consists of one ore more clauses for matching documents. There are four types of clauses:
 1. Terms matching documents that contain a single word.
 2. Phrases matching documents that contain a sequence of words.
-3. Complex queries containing one or more sub-clauses of any type.
+3. Ranges matching documents that contain a value between a lower and an upper bound
+4. Complex queries containing one or more sub-clauses of any type.
 
 ### Creating Clauses
 #### Creating a Term
@@ -30,6 +31,19 @@ $phrase = new \LuceneQuery\Phrase('Lucene query');
 The string representation of the query will be:
 
 > "Lucene query"
+
+#### Creating a Range
+To create a range matching documents that contain a value between a lower and an upper bound, instantiate a new
+```Rage``` with the bounds as constructor arguments:
+
+```php
+<?php
+$range = new \LuceneQuery\Range('alpha', 'omega');
+```
+
+The string representation of the query will be:
+
+> [alpha TO omega]
 
 #### Creating a Complex Query
 To create a complex query containing one or more clauses of any type, instantiate a new ```Query``` and add clauses:
@@ -89,6 +103,26 @@ $phrase = new \LuceneQuery\Phrase('Search Engine', 'title');
 The result is the same:
 
 > title:"Search Engine"
+
+#### Setting a Field to a Range
+Specify a field to search the value range in by calling the method ```setField()```...
+
+```php
+<?php
+$range = new \LuceneQuery\Range('Anna', 'Doro');
+$range->setField('name');
+```
+
+... or set the field by adding a third constructor argument:
+
+```php
+<?php
+$range = new \LuceneQuery\Range('Anna', 'Doro', 'name');
+```
+
+The result is the same:
+
+> name:[Anna TO Dora]
 
 #### Setting Fields in Complex Queries
 As before you can specify a search field by calling the method ```setField()```...
@@ -187,6 +221,32 @@ $phrase->prohibited();
 
 > -"Java development"
 
+#### Setting an Operator to a Range
+Adding operators to ranges works in the same way as adding them to the other kinds of clauses.
+Require a value of a range necessarily...
+
+```php
+<?php
+$range = new \LuceneQuery\Range('Anna', 'Doro');
+$range->required();
+```
+
+... and get the string representation:
+
+> +[Anna TO Doro]
+
+Prohibit a value of the range...
+
+```php
+<?php
+$range = new \LuceneQuery\Range('Anna', 'Doro');
+$range->prohibited();
+```
+
+... and get:
+
+> -[Anna TO Doro]
+
 #### Setting Operators in Complex Queries
 You can add operators to complex queries right as to terms and phrases:
 
@@ -268,3 +328,30 @@ The string representation of the query will be:
 
 The proximity 0 means exact matching and, as the Lucene default value, must not be rendered. The proximity 1 would
 allow interchanging words, "term search".
+
+### Range Search
+Ranges matching documents that contain a value between a lower and an upper bound. They can be inclusive or exclusive of
+the bounds.
+
+```php
+<?php
+$range = new \LuceneQuery\Range('Alpha', 'Omega');
+$range->inclusive();
+```
+
+This clause matches documents that contain values between "Alpha" and "Omega" inclusive "Alpha" and "Omega". The clause
+will be rendered with square brackets.
+
+> [Alpha TO Omega]
+
+Note, that ranges are inclusive by default, so that you don't have to call ```Range::inclusive()```.
+You can make the range exclusive of the bounds by calling ```Range::exclusive()```:
+```php
+<?php
+$range = new \LuceneQuery\Range('Alpha', 'Omega');
+$range->exclusive();
+```
+
+The clause will be rendered with curly brackets:
+
+> {Alpha TO Omega}
