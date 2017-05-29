@@ -1,4 +1,26 @@
 # A Php Library for Creating Lucene Search Queries
+
+## Contents
+- [Usage](#)
+    - [Creating Clauses](#)
+        - [Creating a Term](#)
+        - [Creating a Phrase](#)
+        - [Creating a Range](#)
+        - [Creating a Complex Query](#)
+    - [Fields](#)
+        - [Setting a Field to a Term](#)
+        - [Setting a Field to a Phrase](#)
+        - [Setting a Field to a Range](#)
+        - [Setting Fields in Complex Queries](#)
+    - [Operators](#)
+        - [Setting an Operator to a Term](#)
+        - [Setting an Operator to a Phrase](#)
+        - [Setting an Operator to a Range](#)
+        - [Setting Operators in Complex Queries](#)
+    - [Fuzziness](#)
+    - [Proximity Search](#)
+    - [Range Search](#)
+
 ## Usage
 A query to Lucene search engine consists of one ore more clauses for matching documents. There are four types of clauses:
 1. Terms matching documents that contain a single word.
