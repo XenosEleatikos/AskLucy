@@ -1,4 +1,4 @@
-# A Php Library for Creating Lucene Search Queries
+# A PHP Library for Creating Lucene Search Queries
 
 ## Contents
 - [Usage](#)
@@ -17,6 +17,7 @@
         - [Setting an Operator to a Phrase](#)
         - [Setting an Operator to a Range](#)
         - [Setting Operators in Complex Queries](#)
+    - [Relevance Boosting](#)
     - [Fuzziness](#)
     - [Proximity Search](#)
     - [Range Search](#)
@@ -25,7 +26,7 @@
 A query to Lucene search engine consists of one ore more clauses for matching documents. There are four types of clauses:
 1. Terms matching documents that contain a single word.
 2. Phrases matching documents that contain a sequence of words.
-3. Ranges matching documents that contain a value between a lower and an upper bound
+3. Ranges matching documents that contain a value between a lower and an upper bound.
 4. Complex queries containing one or more sub-clauses of any type.
 
 ### Creating Clauses
@@ -292,8 +293,8 @@ Instead of creating sub-clauses, setting operators to them and finally adding th
 
 ```php
 <?php
-$phrase = new \LuceneQuery\Query;
-$phrase
+$query = new \LuceneQuery\Query;
+$query
     ->shouldHave(new \LuceneQuery\Term('word'))
     ->mustHave(new \LuceneQuery\Phrase('Lucene query'))
     ->mustNotHave(new \LuceneQuery\Phrase('Java development'));
@@ -302,6 +303,29 @@ $phrase
 The string representation of the query will be:
 
 > word +"Lucene query" -"Java development"
+
+### Relevance Boosting
+You can add a "boost" to a clause of any type, to make it more relevant. Just call ```boost()``` with a boost factor
+greater than zero.
+
+```php
+<?php
+$term = new \LuceneQuery\Term('Lucene');
+$term->boost(2.5);
+
+$phrase = new \LuceneQuery\Phrase('search engine');
+$phrase->boost(2);
+
+$query = new \LuceneQuery\Query;
+$query
+    ->add(new \LuceneQuery\Term('Apache'))
+    ->add($term)
+    ->add($phrase);
+```
+
+The result will be:
+
+> Apache Lucene^2.5 "search engine"^2
 
 ### Fuzziness
 
