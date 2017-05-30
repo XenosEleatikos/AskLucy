@@ -1,8 +1,8 @@
 <?php
-namespace LuceneQuery\Test;
+namespace AskLucy\Test;
 
-use LuceneQuery\Query;
-use LuceneQuery\Clause;
+use AskLucy\Query;
+use AskLucy\Clause;
 
 /**
  * Unit tests for the query.
@@ -218,7 +218,7 @@ class QueryTest extends ClauseTest
      */
     private function getClauseMock(string $query): \PHPUnit_Framework_MockObject_MockObject
     {
-        $clauseMock = $this->getMockBuilder('LuceneQuery\Clause')
+        $clauseMock = $this->getMockBuilder('AskLucy\Clause')
             ->getMockForAbstractClass();
 
         $clauseMock->expects($this->any())

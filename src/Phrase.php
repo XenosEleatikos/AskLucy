@@ -1,10 +1,10 @@
 <?php
 
-namespace LuceneQuery;
+namespace AskLucy;
 
-use LuceneQuery\Property\BoostTrait;
-use LuceneQuery\Property\FieldTrait;
-use LuceneQuery\Property\OperatorTrait;
+use AskLucy\Property\BoostTrait;
+use AskLucy\Property\FieldTrait;
+use AskLucy\Property\OperatorTrait;
 
 /**
  * A phrase

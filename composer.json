@@ -1,9 +1,9 @@
 {
-    "name": "xenos/lucenequery",
+    "name": "xenos/asklucy",
     "type": "library",
-    "description": "A PHP library for creating Lucene search queries",
+    "description": "AskLucy – A PHP library for creating Lucene search queries",
     "keywords": ["lucene", "search", "query", "php"],
-    "homepage": "https://github.com/XenosEleatikos/LuceneQuery",
+    "homepage": "https://github.com/XenosEleatikos/AskLucy",
     "authors": [
         {
             "name": "Christoph Hochholzer",
@@ -18,8 +18,8 @@
     },
     "autoload": {
         "psr-4": {
-            "LuceneQuery\\": "src",
-            "LuceneQuery\\Test\\": "tests"
+            "AskLucy\\": "src",
+            "AskLucy\\Test\\": "tests"
         }
     }
 }

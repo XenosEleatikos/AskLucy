@@ -1,8 +1,8 @@
 <?php
-namespace LuceneQuery\Test;
+namespace AskLucy\Test;
 
-use LuceneQuery\Clause;
-use LuceneQuery\Phrase;
+use AskLucy\Clause;
+use AskLucy\Phrase;
 use PHPUnit\Framework\TestCase;
 
 /**

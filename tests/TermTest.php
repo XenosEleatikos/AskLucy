@@ -1,8 +1,8 @@
 <?php
-namespace LuceneQuery\Test;
+namespace AskLucy\Test;
 
-use LuceneQuery\Clause;
-use LuceneQuery\Term;
+use AskLucy\Clause;
+use AskLucy\Term;
 
 /**
  * Unit tests for the term.

@@ -1,8 +1,8 @@
 <?php
 
-namespace LuceneQuery\Property;
+namespace AskLucy\Property;
 
-use LuceneQuery\Field;
+use AskLucy\Field;
 
 /**
  * Provides accessors for the field.

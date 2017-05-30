@@ -1,8 +1,8 @@
 <?php
-namespace LuceneQuery\Test;
+namespace AskLucy\Test;
 
-use LuceneQuery\Boost;
-use LuceneQuery\Fuzziness;
+use AskLucy\Boost;
+use AskLucy\Fuzziness;
 use PHPUnit\Framework\TestCase;
 
 /**

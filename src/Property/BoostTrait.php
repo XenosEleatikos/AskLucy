@@ -1,8 +1,8 @@
 <?php
 
-namespace LuceneQuery\Property;
+namespace AskLucy\Property;
 
-use LuceneQuery\Boost;
+use AskLucy\Boost;
 
 /**
  * Provides accessors for the boost.

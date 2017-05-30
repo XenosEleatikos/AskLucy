@@ -1,7 +1,7 @@
 <?php
-namespace LuceneQuery\Test;
+namespace AskLucy\Test;
 
-use LuceneQuery\RangeType;
+use AskLucy\RangeType;
 use PHPUnit\Framework\TestCase;
 
 /**

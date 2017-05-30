@@ -1,6 +1,10 @@
-# A PHP Library for Creating Lucene Search Queries
+# AskLucy – A PHP Library for Creating Lucene Search Queries
+This project contains an easy to use PHP library for creating Lucene search queries.
 
 ## Contents
+- [Installation](#installation)
+    - [Install with Git](#install-with-git)
+    - [Install with Composer](#install-with-composer)
 - [Usage](#usage)
     - [Creating Clauses](#creating-clauses)
         - [Creating a Term](#creating-a-term)
@@ -22,6 +26,19 @@
     - [Proximity Search](#proximity-search)
     - [Range Search](#range-search)
 
+## Installation
+### Install with Git
+```bash
+git clone https://github.com/XenosEleatikos/AskLucy.git
+```
+
+### Install with Composer
+This project is available at [Packagist](https://packagist.org): https://packagist.org/packages/xenos/asklucy
+You can install it with the following command:
+```bash
+composer require xenos/asklucy
+```
+
 ## Usage
 A query to Lucene search engine consists of one ore more clauses for matching documents. There are four types of clauses:
 1. Terms matching documents that contain a single word.
@@ -36,7 +53,7 @@ the word as constructor argument:
 
 ```php
 <?php
-$term = new \LuceneQuery\Term('word');
+$term = new \AskLucy\Term('word');
 ```
 The string representation of the query will be:
 
@@ -48,7 +65,7 @@ To create a clause matching documents that contain a sequence of words, e. g. "L
 
 ```php
 <?php
-$phrase = new \LuceneQuery\Phrase('Lucene query');
+$phrase = new \AskLucy\Phrase('Lucene query');
 ```
 
 The string representation of the query will be:
@@ -61,7 +78,7 @@ To create a range matching documents that contain a value between a lower and an
 
 ```php
 <?php
-$range = new \LuceneQuery\Range('alpha', 'omega');
+$range = new \AskLucy\Range('alpha', 'omega');
 ```
 
 The string representation of the query will be:
@@ -73,10 +90,10 @@ To create a complex query containing one or more clauses of any type, instantiat
 
 ```php
 <?php
-$phrase = new \LuceneQuery\Query;
+$phrase = new \AskLucy\Query;
 $phrase
-    ->add(new \LuceneQuery\Term('word'))
-    ->add(new \LuceneQuery\Phrase('Lucene query'));
+    ->add(new \AskLucy\Term('word'))
+    ->add(new \AskLucy\Phrase('Lucene query'));
 ```
 
 The string representation of the query will be:
@@ -92,7 +109,7 @@ To search for documents containing "Lucene" in the (field named) "title", use th
 
 ```php
 <?php
-$term = new \LuceneQuery\Term('Lucene');
+$term = new \AskLucy\Term('Lucene');
 $term->setField('title');
 ```
 
@@ -100,7 +117,7 @@ As a shortcut you may also set the field by adding a second constructor argument
 
 ```php
 <?php
-$term = new \LuceneQuery\Term('Lucene', 'title');
+$term = new \AskLucy\Term('Lucene', 'title');
 ```
 
 Both lead to the same result:
@@ -112,7 +129,7 @@ You can specify a field to search in by calling the method ```setField()```...
 
 ```php
 <?php
-$phrase = new \LuceneQuery\Phrase('Search Engine');
+$phrase = new \AskLucy\Phrase('Search Engine');
 $phrase->setField('title');
 ```
 
@@ -120,7 +137,7 @@ $phrase->setField('title');
 
 ```php
 <?php
-$phrase = new \LuceneQuery\Phrase('Search Engine', 'title');
+$phrase = new \AskLucy\Phrase('Search Engine', 'title');
 ```
 
 The result is the same:
@@ -132,7 +149,7 @@ Specify a field to search the value range in by calling the method ```setField()
 
 ```php
 <?php
-$range = new \LuceneQuery\Range('Anna', 'Doro');
+$range = new \AskLucy\Range('Anna', 'Doro');
 $range->setField('name');
 ```
 
@@ -140,7 +157,7 @@ $range->setField('name');
 
 ```php
 <?php
-$range = new \LuceneQuery\Range('Anna', 'Doro', 'name');
+$range = new \AskLucy\Range('Anna', 'Doro', 'name');
 ```
 
 The result is the same:
@@ -152,10 +169,10 @@ As before you can specify a search field by calling the method ```setField()```.
 
 ```php
 <?php
-$query = new \LuceneQuery\Query;
+$query = new \AskLucy\Query;
 $query
-    ->add(new \LuceneQuery\Term('Lucene'))
-    ->add(new \LuceneQuery\Term('Apache'));
+    ->add(new \AskLucy\Term('Lucene'))
+    ->add(new \AskLucy\Term('Apache'));
 $query->setField('title');
 ```
 
@@ -163,10 +180,10 @@ $query->setField('title');
 
 ```php
 <?php
-$query = new \LuceneQuery\Query('title');
+$query = new \AskLucy\Query('title');
 $query
-    ->add(new \LuceneQuery\Term('Lucene'))
-    ->add(new \LuceneQuery\Term('Apache'));
+    ->add(new \AskLucy\Term('Lucene'))
+    ->add(new \AskLucy\Term('Apache'));
 ```
 
 In both cases the string representation of the query will be:
@@ -178,10 +195,10 @@ just for a certain sub-clause, you may do this:
 
 ```php
 <?php
-$query = new \LuceneQuery\Query;
+$query = new \AskLucy\Query;
 $query
-    ->add(new \LuceneQuery\Term('Lucene', 'title'))
-    ->add(new \LuceneQuery\Term('Apache'));
+    ->add(new \AskLucy\Term('Lucene', 'title'))
+    ->add(new \AskLucy\Term('Apache'));
 ```
 
 The result will be:
@@ -198,7 +215,7 @@ To require the word "PHP" necessarily, use the following snippet...
 
 ```php
 <?php
-$term = new \LuceneQuery\Term('PHP');
+$term = new \AskLucy\Term('PHP');
 $term->required();
 ```
 
@@ -210,7 +227,7 @@ To prohibit the word "Java", do this...
 
 ```php
 <?php
-$term = new \LuceneQuery\Term('Java');
+$term = new \AskLucy\Term('Java');
 $term->prohibited();
 ```
 
@@ -224,7 +241,7 @@ Require a phrase necessarily...
 
 ```php
 <?php
-$phrase = new \LuceneQuery\Phrase('Lucene query');
+$phrase = new \AskLucy\Phrase('Lucene query');
 $phrase->required();
 ```
 
@@ -236,7 +253,7 @@ Prohibit the phrase...
 
 ```php
 <?php
-$phrase = new \LuceneQuery\Phrase('Java development');
+$phrase = new \AskLucy\Phrase('Java development');
 $phrase->prohibited();
 ```
 
@@ -250,7 +267,7 @@ Require a value of a range necessarily...
 
 ```php
 <?php
-$range = new \LuceneQuery\Range('Anna', 'Doro');
+$range = new \AskLucy\Range('Anna', 'Doro');
 $range->required();
 ```
 
@@ -262,7 +279,7 @@ Prohibit a value of the range...
 
 ```php
 <?php
-$range = new \LuceneQuery\Range('Anna', 'Doro');
+$range = new \AskLucy\Range('Anna', 'Doro');
 $range->prohibited();
 ```
 
@@ -275,10 +292,10 @@ You can add operators to complex queries right as to terms and phrases:
 
 ```php
 <?php
-$phrase = new \LuceneQuery\Query;
+$phrase = new \AskLucy\Query;
 $phrase
-    ->add(new \LuceneQuery\Term('Lucene'))
-    ->add(new \LuceneQuery\Phrase('search'))
+    ->add(new \AskLucy\Term('Lucene'))
+    ->add(new \AskLucy\Phrase('search'))
     ->required();
 ```
 
@@ -293,11 +310,11 @@ Instead of creating sub-clauses, setting operators to them and finally adding th
 
 ```php
 <?php
-$query = new \LuceneQuery\Query;
+$query = new \AskLucy\Query;
 $query
-    ->shouldHave(new \LuceneQuery\Term('word'))
-    ->mustHave(new \LuceneQuery\Phrase('Lucene query'))
-    ->mustNotHave(new \LuceneQuery\Phrase('Java development'));
+    ->shouldHave(new \AskLucy\Term('word'))
+    ->mustHave(new \AskLucy\Phrase('Lucene query'))
+    ->mustNotHave(new \AskLucy\Phrase('Java development'));
 ```
 
 The string representation of the query will be:
@@ -310,15 +327,15 @@ greater than zero.
 
 ```php
 <?php
-$term = new \LuceneQuery\Term('Lucene');
+$term = new \AskLucy\Term('Lucene');
 $term->boost(2.5);
 
-$phrase = new \LuceneQuery\Phrase('search engine');
+$phrase = new \AskLucy\Phrase('search engine');
 $phrase->boost(2);
 
-$query = new \LuceneQuery\Query;
+$query = new \AskLucy\Query;
 $query
-    ->add(new \LuceneQuery\Term('Apache'))
+    ->add(new \AskLucy\Term('Apache'))
     ->add($term)
     ->add($phrase);
 ```
@@ -333,7 +350,7 @@ You can do a fuzzy search term by calling ```Term::fuzzify()```:
 
 ```php
 <?php
-$term = new \LuceneQuery\Term('word');
+$term = new \AskLucy\Term('word');
 $term->fuzzify();
 ```
 
@@ -346,7 +363,7 @@ the search term. By using the optional parameter, you can define that distance:
 
 ```php
 <?php
-$term = new \LuceneQuery\Term('word');
+$term = new \AskLucy\Term('word');
 $term->fuzzify(1);
 ```
 
@@ -364,7 +381,7 @@ the terms "search" and "term" within five words, create the following phrase:
 
 ```php
 <?php
-$phrase = new \LuceneQuery\Phrase('search term');
+$phrase = new \AskLucy\Phrase('search term');
 $phrase->setProximity(5);
 ```
 
@@ -381,7 +398,7 @@ the bounds.
 
 ```php
 <?php
-$range = new \LuceneQuery\Range('Alpha', 'Omega');
+$range = new \AskLucy\Range('Alpha', 'Omega');
 $range->inclusive();
 ```
 
@@ -394,7 +411,7 @@ Note, that ranges are inclusive by default, so that you don't have to call ```Ra
 You can make the range exclusive of the bounds by calling ```Range::exclusive()```:
 ```php
 <?php
-$range = new \LuceneQuery\Range('Alpha', 'Omega');
+$range = new \AskLucy\Range('Alpha', 'Omega');
 $range->exclusive();
 ```
 

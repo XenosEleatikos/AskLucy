@@ -1,8 +1,8 @@
 <?php
 
-namespace LuceneQuery\Property;
+namespace AskLucy\Property;
 
-use LuceneQuery\Operator;
+use AskLucy\Operator;
 
 /**
  * Provides accessors for an operator.

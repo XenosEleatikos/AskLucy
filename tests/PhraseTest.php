@@ -1,11 +1,11 @@
 <?php
-namespace LuceneQuery\Test;
+namespace AskLucy\Test;
 
-use LuceneQuery\Clause;
-use LuceneQuery\Phrase;
-use LuceneQuery\Query;
-use LuceneQuery\Test\Property\FieldTraitTest;
-use LuceneQuery\Test\Property\OperatorTraitTest;
+use AskLucy\Clause;
+use AskLucy\Phrase;
+use AskLucy\Query;
+use AskLucy\Test\Property\FieldTraitTest;
+use AskLucy\Test\Property\OperatorTraitTest;
 use PHPUnit\Framework\TestCase;
 
 /**

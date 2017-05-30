@@ -1,7 +1,7 @@
 <?php
-namespace LuceneQuery\Test;
+namespace AskLucy\Test;
 
-use LuceneQuery\Proximity;
+use AskLucy\Proximity;
 use PHPUnit\Framework\TestCase;
 
 /**

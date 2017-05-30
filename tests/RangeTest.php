@@ -1,9 +1,9 @@
 <?php
-namespace LuceneQuery\Test;
+namespace AskLucy\Test;
 
-use LuceneQuery\Clause;
-use LuceneQuery\Phrase;
-use LuceneQuery\Range;
+use AskLucy\Clause;
+use AskLucy\Phrase;
+use AskLucy\Range;
 
 /**
  * Unit tests for the phrase.

@@ -1,7 +1,7 @@
 <?php
-namespace LuceneQuery\Test;
+namespace AskLucy\Test;
 
-use LuceneQuery\Field;
+use AskLucy\Field;
 use PHPUnit\Framework\TestCase;
 
 /**

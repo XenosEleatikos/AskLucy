@@ -1,6 +1,6 @@
 <?php
 
-namespace LuceneQuery;
+namespace AskLucy;
 
 /**
  * A field
