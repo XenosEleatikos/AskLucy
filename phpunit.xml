@@ -18,7 +18,7 @@
         <log type="coverage-html" target="build/coverage" lowUpperBound="50" highLowerBound="90"/>
     </logging>
     <testsuites>
-        <testsuite name="askLucy">
+        <testsuite name="AskLucy">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
