@@ -9,7 +9,7 @@ use AskLucy\Term;
  *
  * @see Term
  */
-class TermTests extends ClauseTest
+class TermTest extends ClauseTest
 {
     /**
      * Tests, if __construct() throws an expection for a given phrase containing spaces.
