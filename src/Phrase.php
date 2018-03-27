@@ -1,5 +1,4 @@
 <?php
-
 namespace AskLucy;
 
 use AskLucy\Property\BoostTrait;
