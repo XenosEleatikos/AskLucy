@@ -22,7 +22,7 @@ trait OperatorTrait
      */
     public function optional(): void
     {
-        $this->operator = new Operator(Operator::SYMBOL_OPTIONAL);
+        $this->operator = Operator::optional();
     }
 
     /**
@@ -32,7 +32,7 @@ trait OperatorTrait
      */
     public function required(): void
     {
-        $this->operator = new Operator(Operator::SYMBOL_REQUIRED);
+        $this->operator = Operator::required();
     }
 
     /**
@@ -42,6 +42,6 @@ trait OperatorTrait
      */
     public function prohibited(): void
     {
-        $this->operator = new Operator(Operator::SYMBOL_PROHIBITED);
+        $this->operator = Operator::prohibited();
     }
 }

@@ -49,20 +49,6 @@ class Operator implements Expression
     public const SYMBOL_REQUIRED = '+';
 
     /**
-     * A list of valid operators
-     *
-     * @var array
-     */
-    private const SYMBOLS = [
-        self::SYMBOL_AND,
-        self::SYMBOL_OR,
-        self::SYMBOL_NOT,
-        self::SYMBOL_OPTIONAL,
-        self::SYMBOL_PROHIBITED,
-        self::SYMBOL_REQUIRED
-    ];
-
-    /**
      * The operator
      *
      * @var string
@@ -73,16 +59,40 @@ class Operator implements Expression
      * Constructs a logical operator.
      *
      * @param string $symbol A logical operator
-     *
-     * @throws \Exception Exception for an invalid logical operator.
      */
-    public function __construct(string $symbol)
+    private function __construct(string $symbol)
     {
-        if (in_array($symbol, self::SYMBOLS)) {
-            $this->symbol = $symbol;
-        } else {
-            throw new \Exception('Invalid logical operator "' . $symbol . '"!');
-        }
+        $this->symbol = $symbol;
+    }
+
+    /**
+     * Returns the "optional"-operator.
+     *
+     * @return self
+     */
+    public static function optional(): self
+    {
+        return new self(self::SYMBOL_OPTIONAL);
+    }
+
+    /**
+     * Returns the "prohibited"-operator.
+     *
+     * @return self
+     */
+    public static function prohibited(): self
+    {
+        return new self(self::SYMBOL_PROHIBITED);
+    }
+
+    /**
+     * Returns the "required"-operator.
+     *
+     * @return self
+     */
+    public static function required(): self
+    {
+        return new self(self::SYMBOL_REQUIRED);
     }
 
     /**
