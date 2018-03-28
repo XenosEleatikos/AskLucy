@@ -90,8 +90,7 @@ To create a complex query containing one or more clauses of any type, instantiat
 
 ```php
 <?php
-$phrase = new \AskLucy\Query;
-$phrase
+$phrase = (new \AskLucy\Query)
     ->add(new \AskLucy\Term('word'))
     ->add(new \AskLucy\Phrase('Lucene query'));
 ```
@@ -169,8 +168,7 @@ As before you can specify a search field by calling the method ```setField()```.
 
 ```php
 <?php
-$query = new \AskLucy\Query;
-$query
+$query = (new \AskLucy\Query)
     ->add(new \AskLucy\Term('Lucene'))
     ->add(new \AskLucy\Term('Apache'));
 $query->setField('title');
@@ -180,8 +178,7 @@ $query->setField('title');
 
 ```php
 <?php
-$query = new \AskLucy\Query('title');
-$query
+$query = (new \AskLucy\Query('title'))
     ->add(new \AskLucy\Term('Lucene'))
     ->add(new \AskLucy\Term('Apache'));
 ```
@@ -195,8 +192,7 @@ just for a certain sub-clause, you may do this:
 
 ```php
 <?php
-$query = new \AskLucy\Query;
-$query
+$query = (new \AskLucy\Query)
     ->add(new \AskLucy\Term('Lucene', 'title'))
     ->add(new \AskLucy\Term('Apache'));
 ```
@@ -292,11 +288,10 @@ You can add operators to complex queries right as to terms and phrases:
 
 ```php
 <?php
-$phrase = new \AskLucy\Query;
-$phrase
+$phrase = (new \AskLucy\Query)
     ->add(new \AskLucy\Term('Lucene'))
-    ->add(new \AskLucy\Phrase('search'))
-    ->required();
+    ->add(new \AskLucy\Phrase('search'));
+$phrase->required();
 ```
 
 The query will match all documents containing necessarily "Lucene" or "search" (or both). The string representation will
@@ -310,8 +305,7 @@ Instead of creating sub-clauses, setting operators to them and finally adding th
 
 ```php
 <?php
-$query = new \AskLucy\Query;
-$query
+$query = (new \AskLucy\Query)
     ->shouldHave(new \AskLucy\Term('word'))
     ->mustHave(new \AskLucy\Phrase('Lucene query'))
     ->mustNotHave(new \AskLucy\Phrase('Java development'));
@@ -333,8 +327,7 @@ $term->boost(2.5);
 $phrase = new \AskLucy\Phrase('search engine');
 $phrase->boost(2);
 
-$query = new \AskLucy\Query;
-$query
+$query = (new \AskLucy\Query)
     ->add(new \AskLucy\Term('Apache'))
     ->add($term)
     ->add($phrase);
