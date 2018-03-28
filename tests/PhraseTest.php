@@ -3,10 +3,6 @@ namespace AskLucy\Test;
 
 use AskLucy\Clause;
 use AskLucy\Phrase;
-use AskLucy\Query;
-use AskLucy\Test\Property\FieldTraitTest;
-use AskLucy\Test\Property\OperatorTraitTest;
-use PHPUnit\Framework\TestCase;
 
 /**
  * Unit tests for the phrase.
@@ -21,6 +17,22 @@ class PhraseTest extends ClauseTest
      * @return void
      */
     public function test__toStringRendersPhrases(): void
+    {
+        $phrase = new Phrase('');
+
+        $this->assertSame(
+            '',
+            (string) $phrase,
+            'Expected an empty string.'
+        );
+    }
+
+    /**
+     * Tests, if __toString() renders an empty phrase.
+     *
+     * @return void
+     */
+    public function test__toStringRendersEmptyPhrase(): void
     {
         $phrase = new Phrase('a search phrase');
 
@@ -95,6 +107,23 @@ class PhraseTest extends ClauseTest
             '/^[^~]+$/',
             (string) $phrase,
             'Expected that __toString() doesn\'t render the proximity operator "~", when setProximity was called without parameter.'
+        );
+    }
+
+    /**
+     * Tests, if __toString() doesn't render the proximity operator "~" for a single term phrase.
+     *
+     * @return void
+     */
+    public function test__toStringDoesNotRenderProximityOperatorForSingleTermPhrase(): void
+    {
+        $phrase = new Phrase('lucene');
+        $phrase->setProximity(1);
+
+        $this->assertRegExp(
+            '/^[^~]+$/',
+            (string) $phrase,
+            'Expected that __toString() doesn\'t render the proximity operator "~" for a single word term.'
         );
     }
 
