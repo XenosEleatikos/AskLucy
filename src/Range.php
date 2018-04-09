@@ -56,7 +56,7 @@ class Range implements Clause
         $this->from      = new Term($from);
         $this->to        = new Term($to);
         $this->field     = new Field($field);
-        $this->rangeType = new RangeType;
+        $this->rangeType = RangeType::inclusive();
     }
 
     /**
@@ -66,7 +66,7 @@ class Range implements Clause
      */
     public function inclusive(): self
     {
-        $this->rangeType = new RangeType(RangeType::INCLUSIVE);
+        $this->rangeType = RangeType::inclusive();
 
         return $this;
     }
@@ -78,7 +78,7 @@ class Range implements Clause
      */
     public function exclusive(): self
     {
-        $this->rangeType = new RangeType(RangeType::EXCLUSIVE);
+        $this->rangeType = RangeType::exclusive();
 
         return $this;
     }

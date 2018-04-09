@@ -11,14 +11,14 @@ class RangeType
      *
      * @var string
      */
-    public const INCLUSIVE = 'inclusive';
+    private const INCLUSIVE = 'inclusive';
 
     /**
      * Exclusive
      *
      * @var string
      */
-    public const EXCLUSIVE = 'exclusive';
+    private const EXCLUSIVE = 'exclusive';
 
     /**
      * Opening bracket for inclusive range
@@ -49,16 +49,6 @@ class RangeType
     private const BRACKET_CLOSING_EXCLUSIVE = '}';
 
     /**
-     * A list of valid range types
-     *
-     * @var array
-     */
-    private const RANGE_TYPE_CODES = [
-        self::INCLUSIVE,
-        self::EXCLUSIVE
-    ];
-
-    /**
      * The code of the range type
      *
      * @var string
@@ -69,16 +59,30 @@ class RangeType
      * Constructs a range type.
      *
      * @param string $rangeTypeCode A range type code
-     *
-     * @throws \Exception Exception for an invalid range type.
      */
-    public function __construct(string $rangeTypeCode = self::INCLUSIVE)
+    private function __construct(string $rangeTypeCode)
     {
-        if (in_array($rangeTypeCode, self::RANGE_TYPE_CODES)) {
-            $this->rangeTypeCode = $rangeTypeCode;
-        } else {
-            throw new \Exception('Invalid range type "' . $rangeTypeCode . '"!');
-        }
+        $this->rangeTypeCode = $rangeTypeCode;
+    }
+
+    /**
+     * Returns the inclusive range.
+     *
+     * @return self
+     */
+    public static function inclusive(): self
+    {
+        return new self(self::INCLUSIVE);
+    }
+
+    /**
+     * Returns the exclusive range.
+     *
+     * @return self
+     */
+    public static function exclusive(): self
+    {
+        return new self(self::EXCLUSIVE);
     }
 
     /**
