@@ -157,10 +157,8 @@ class RangeTest extends ClauseTest
      */
     protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
-        $query = (null === $constructorArgumentField)
+        return is_null($constructorArgumentField)
             ? new Range('a', 'b')
             : new Range('a', 'b', $constructorArgumentField);
-
-        return $query;
     }
 }

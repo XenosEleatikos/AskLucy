@@ -31,11 +31,9 @@ class Proximity implements Expression
     {
         if ($proximity >= 0) {
             $this->proximity = $proximity;
-
-            return;
+        } else {
+            throw new \Exception('The given term distance must be positive!');
         }
-
-        throw new \Exception('The given term distance must be positive!');
     }
 
     /**

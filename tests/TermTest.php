@@ -12,7 +12,7 @@ use AskLucy\Term;
 class TermTest extends ClauseTest
 {
     /**
-     * Tests, if __construct() throws an expection for a given phrase containing spaces.
+     * Tests, if __construct() throws an exception for a given phrase containing spaces.
      *
      * @expectedException \Exception
      *
@@ -216,7 +216,7 @@ class TermTest extends ClauseTest
      */
     protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
-        $query = (null === $constructorArgumentField)
+        $query = is_null($constructorArgumentField)
             ? new Term('a')
             : new Term('a', $constructorArgumentField);
 

@@ -49,7 +49,7 @@ class Range implements Clause
      * @param string $to    The upper bound
      * @param string $field Optional name of the field to search in
      *
-     * @throws \Exception Throws an exception, if the given string contains spaces.XXX
+     * @throws \Exception Throws an exception, if the given string contains spaces.
      */
     public function __construct(string $from, string $to, string $field = Field::DEFAULT)
     {

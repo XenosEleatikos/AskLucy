@@ -160,7 +160,7 @@ class PhraseTest extends ClauseTest
      */
     protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
-        $query = (null === $constructorArgumentField)
+        $query = is_null($constructorArgumentField)
             ? new Phrase('a b')
             : new Phrase('a b', $constructorArgumentField);
 

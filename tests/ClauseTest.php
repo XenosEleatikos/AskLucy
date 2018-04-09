@@ -15,6 +15,8 @@ abstract class ClauseTest extends TestCase
     /**
      * Returns a clause for testing.
      *
+     * @param null|string $constructorArgumentField The constructor argument for the field
+     *
      * @return Clause
      */
     abstract protected function getTestClause(?string $constructorArgumentField = null): Clause;

@@ -23,9 +23,9 @@ class Boost implements Expression
     /**
      * The boost value
      *
-     * @var int
+     * @var float
      */
-    private $value = 0;
+    private $value = 0.0;
 
     /**
      * Constructs the boost.

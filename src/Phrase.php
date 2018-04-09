@@ -55,6 +55,8 @@ class Phrase implements Clause
      * @param int $proximity The required proximity between the terms
      *
      * @return self
+     *
+     * @throws \Exception Thrown, if the given distance is negative, what makes no sense
      */
     public function setProximity(int $proximity = 0): self
     {

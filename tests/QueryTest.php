@@ -3,6 +3,7 @@ namespace AskLucy\Test;
 
 use AskLucy\Query;
 use AskLucy\Clause;
+use PHPUnit\Framework\MockObject\MockObject;
 
 /**
  * Unit tests for the query.
@@ -214,11 +215,11 @@ class QueryTest extends ClauseTest
      *
      * @param string $query A query returned by __toString()
      *
-     * @return \PHPUnit_Framework_MockObject_MockObject|Clause
+     * @return MockObject|Clause
      */
-    private function getClauseMock(string $query): \PHPUnit_Framework_MockObject_MockObject
+    private function getClauseMock(string $query): MockObject
     {
-        $clauseMock = $this->getMockBuilder('AskLucy\Clause')
+        $clauseMock = $this->getMockBuilder(Clause::class)
             ->getMockForAbstractClass();
 
         $clauseMock->expects($this->any())
@@ -237,7 +238,7 @@ class QueryTest extends ClauseTest
      */
     protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
-        $query = (null === $constructorArgumentField)
+        $query = is_null($constructorArgumentField)
             ? new Query
             : new Query($constructorArgumentField);
 

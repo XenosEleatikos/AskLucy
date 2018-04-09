@@ -35,11 +35,9 @@ class Fuzziness implements Expression
     {
         if ($distance >= 0 && $distance <= 2) {
             $this->fuzziness = $distance;
-
-            return $this;
+        } else {
+            throw new \Exception('The Damerau-Levenshtein Distance must be 0, 1 or 2.');
         }
-
-        throw new \Exception('The Damerau-Levenshtein Distance must be 0, 1 or 2.');
     }
 
     /**

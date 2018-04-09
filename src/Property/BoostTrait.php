@@ -21,9 +21,11 @@ trait BoostTrait
      * @param float $value The boost value
      *
      * @return void
+     *
+     * @throws \Exception Thrown, if the given value is negative
      */
     public function boost(float $value): void
     {
-        $this->boost = new Boost((float) $value);
+        $this->boost = new Boost($value);
     }
 }
