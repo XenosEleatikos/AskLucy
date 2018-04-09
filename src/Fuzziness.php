@@ -16,7 +16,7 @@ class Fuzziness implements Expression
     private const FUZZINESS_OPERATOR = '~';
 
     /**
-     * The Damerau-Levenshtein Distance
+     * The Damerau-Levenshtein distance
      * Possible values: 0, 1, 2
      *
      * @var int
@@ -26,39 +26,42 @@ class Fuzziness implements Expression
     /**
      * Constructs a logical operator.
      *
-     * @param int $distance The Damerau-Levenshtein Distance
+     * @param int $distance The Damerau-Levenshtein distance
      *                      Possible values: 0, 1, 2
-     *
-     * @throws \Exception Thrown, if the given Damerau-Levenshtein Distance is out of range
      */
-    public function __construct(int $distance)
+    private function __construct(int $distance)
     {
-        if ($distance >= 0 && $distance <= 2) {
-            $this->fuzziness = $distance;
-        } else {
-            throw new \Exception('The Damerau-Levenshtein Distance must be 0, 1 or 2.');
-        }
+        $this->fuzziness = $distance;
     }
 
     /**
-     * Sets the Damerau-Levenshtein Distance.
-     *
-     * @param int $distance The Damerau-Levenshtein Distance
-     *                      Possible values: 0, 1, 2
-     *
-     * @throws \Exception
+     * Return the Damerau-Levenshtein distance 0.
      *
      * @return self
      */
-    public function setDistance(int $distance = 2): self
+    public static function distance0(): self
     {
-        if ($distance >= 0 && $distance <= 2) {
-            $this->fuzziness = $distance;
+        return new self(0);
+    }
 
-            return $this;
-        }
+    /**
+     * Return the Damerau-evenshtein distance 1.
+     *
+     * @return self
+     */
+    public static function distance1(): self
+    {
+        return new self(1);
+    }
 
-        throw new \Exception('The Damerau-Levenshtein Distance must be 0, 1 or 2.');
+    /**
+     * Return the Damerau-Levenshtein distance 2.
+     *
+     * @return self
+     */
+    public static function distance2(): self
+    {
+        return new self(2);
     }
 
     /**

@@ -45,11 +45,11 @@ class TermTest extends ClauseTest
      * Tests, if fuzzify() sets the fuzziness, and if the fuzzified term is rendered correctly by __toString(). Also
      * tests, if fuzzify() returns the term itself for a fluent interface.
      *
-     * @param string $searchString   The term to be fuzzified
-     * @param int    $distance       The distance parameter given to fuzzify()
-     * @param string $expecteTerm    The expected term
+     * @param string $searchString The term to be fuzzified
+     * @param int    $distance     The distance parameter given to fuzzify()
+     * @param string $expecteTerm  The expected term
      *
-     * @dataProvider dataProviderTestFuzzifyTerm
+     * @dataProvider dataProviderTestFuzzify
      *
      * @return void
      */
@@ -69,10 +69,74 @@ class TermTest extends ClauseTest
             (string) $term,
             'Expected term to be "'
             . $expecteTerm
-            . '", if Damerau-Levenshtein Distance '
+            . '", if Damerau-Levenshtein distance '
             . $distance
             . ' given as parameter.'
         );
+    }
+
+    /**
+     * Data provider for testFuzzify().
+     *
+     * @return array
+     */
+    public function dataProviderTestFuzzify(): array
+    {
+        return [
+            'Single word term with distance 0' => ['term', 0, 'term'],
+            'Single word term with distance 1' => ['term', 1, 'term~1'],
+            'Single word term with distance 2' => ['term', 2, 'term~']
+        ];
+    }
+
+    /**
+     * Tests, if fuzzify() overwrites a priviously set Damerau-Levenshtein distance. Also tests, that in such a case
+     * the term itself is returned for a fluent interface.
+     *
+     * @param string $searchString          The term to be fuzzified
+     * @param int    $priviouslySetDistance The priviously set Damerau-Levenshtein distance
+     * @param int    $distance              The distance parameter given to fuzzify()
+     * @param string $expecteTerm           The expected term
+     *
+     * @dataProvider dataProvidertTestFuzzifyOverwritesPriviouslySetFuzziness
+     *
+     * @return void
+     */
+    public function testFuzzifyOverwritesPriviouslySetFuzziness(
+        string $searchString,
+        int $priviouslySetDistance,
+        int $distance,
+        string $expecteTerm
+    ): void {
+        $term = new Term($searchString);
+        $term->fuzzify($priviouslySetDistance);
+        $result = $term->fuzzify($distance);
+
+        $this->assertSame(
+            $term,
+            $result,
+            'Expected fuzzify() to return the term itself for a fluent interface.'
+        );
+
+        $this->assertSame(
+            $expecteTerm,
+            (string) $term,
+            'Expected fuzzify() to overwrite a priviously set Damerau-Levenshtein distance.'
+        );
+    }
+
+    /**
+     * Data provider for testFuzzifyOverwritesPriviouslySetFuzziness().
+     *
+     * @return array
+     */
+    public function dataProvidertTestFuzzifyOverwritesPriviouslySetFuzziness(): array
+    {
+        return [
+            'Single word term with distance 0' => ['term', 1, 0, 'term'],
+            'Single word term with distance 1' => ['term', 2, 1, 'term~1'],
+            'Single word term with distance 2' => ['term', 1, 2, 'term~']
+        ];
     }
 
     /**
@@ -95,38 +159,176 @@ class TermTest extends ClauseTest
         $this->assertSame(
             'term~',
             (string) $term,
-            'Expected fuzzy term to be "term~", if no Damerau-Levenshtein Distance given as parameter.'
+            'Expected fuzzy term to be "term~", if no Damerau-Levenshtein distance given as parameter.'
         );
     }
 
     /**
-     * Tests, if fuzzify() throws an expection for an invalid Damerau-Levenshtein Distance given.
-     *
-     * @param int $distance The Damerau-Levenshtein Distance as parameter for fuzzify
-     *
-     * @dataProvider dataProviderTestFuzzifyThrowsExceptionForInvalidDistance
-     *
-     * @expectedException \Exception
+     * Tests, if the fuzziness is ignored, if a negative (and therefore invalid) Damerau-Levenshtein distance was given
+     * to fuzzify(). Also tests, if in that case the term itself is returned for a fluent interface.
      *
      * @return void
      */
-    public function testFuzzifyThrowsExceptionForInvalidDistance(int $distance): void
+    public function testFuzzifySetsDistance0ForNegativeValueGiven(): void
     {
         $term = new Term('term');
-        $term->fuzzify($distance);
+        $result = $term->fuzzify(-1);
+
+        $this->assertSame(
+            $term,
+            $result,
+            'Expected fuzzify() to return the term itself for a fluent interface.'
+        );
+
+        $this->assertSame(
+            'term',
+            (string) $term,
+            'Expected the fuzziness to be ignored, if a negative (and therefore invalid) Damerau-Levenshtein distance was given to fuzzify().'
+        );
     }
 
     /**
-     * Data provider for testFuzzifyThrowsExceptionForInvalidDistance().
+     * Tests, if the Damerau-Levenshtein distance 2 is set, if a too big value was given to fuzzify(). Also tests, if in
+     * that case the term itself is returned for a fluent interface.
      *
-     * @return array
+     * @return void
      */
-    public function dataProviderTestFuzzifyThrowsExceptionForInvalidDistance(): array
+    public function testFuzzifySetsDistance2ForTooBigValueGiven(): void
     {
-        return [
-            'Negative distance' => [-1],
-            'To big distance'   => [3],
-        ];
+        $term = new Term('term');
+        $result = $term->fuzzify(3);
+
+        $this->assertSame(
+            $term,
+            $result,
+            'Expected fuzzify() to return the term itself for a fluent interface.'
+        );
+
+        $this->assertSame(
+            'term~',
+            (string) $term,
+            'Expected the fuzziness to be 2, if a too big Damerau-Levenshtein distance (< 2) was given to fuzzify().'
+        );
+    }
+
+    /**
+     * Tests, if fuzzify0() sets the Damerau-Levenshtein distance 0 and returns the term itself for a fluent interface.
+     *
+     * @return void
+     */
+    public function testFuzzify0(): void
+    {
+        $term = new Term('term');
+        $result = $term->fuzzify0();
+
+        $this->assertSame(
+            $term,
+            $result,
+            'Expected fuzzify0() to return the term itself for a fluent interface.'
+        );
+
+        $this->assertSame(
+            'term',
+            (string) $term,
+            'Expected fuzzify0() to set the Damerau-Levenshtein distance 0, and therefore the term to be "term".'
+        );
+    }
+
+    /**
+     * Tests, if fuzzify0() overwrites a priviously set Damerau-Levenshtein distance.
+     *
+     * @return void
+     */
+    public function testFuzzify0OverwritesPriviouslySetFuzziness(): void
+    {
+        $term = new Term('term');
+        $term->fuzzify1();
+        $term->fuzzify0();
+        $this->assertSame(
+            'term',
+            (string) $term,
+            'Expected fuzzify0() overwrites a priviously set Damerau-Levenshtein distance.'
+        );
+    }
+
+    /**
+     * Tests, if fuzzify1() sets the Damerau-Levenshtein distance 1 and returns the term itself for a fluent interface.
+     *
+     * @return void
+     */
+    public function testFuzzify1(): void
+    {
+        $term = new Term('term');
+        $result = $term->fuzzify1();
+
+        $this->assertSame(
+            $term,
+            $result,
+            'Expected fuzzify1() to return the term itself for a fluent interface.'
+        );
+
+        $this->assertSame(
+            'term~1',
+            (string) $term,
+            'Expected fuzzify1() to set the Damerau-Levenshtein distance 1, and therefore the term to be "term~1".'
+        );
+    }
+
+    /**
+     * Tests, if fuzzify1() overwrites a priviously set Damerau-Levenshtein distance.
+     *
+     * @return void
+     */
+    public function testFuzzify1OverwritesPriviouslySetFuzziness(): void
+    {
+        $term = new Term('term');
+        $term->fuzzify2();
+        $term->fuzzify1();
+        $this->assertSame(
+            'term~1',
+            (string) $term,
+            'Expected fuzzify1() overwrites a priviously set Damerau-Levenshtein distance.'
+        );
+    }
+
+    /**
+     * Tests, if fuzzify2() sets the Damerau-Levenshtein distance 2 and returns the term itself for a fluent interface.
+     *
+     * @return void
+     */
+    public function testFuzzify2(): void
+    {
+        $term = new Term('term');
+        $result = $term->fuzzify2();
+
+        $this->assertSame(
+            $term,
+            $result,
+            'Expected fuzzify2() to return the term itself for a fluent interface.'
+        );
+
+        $this->assertSame(
+            'term~',
+            (string) $term,
+            'Expected fuzzify2() to set the Damerau-Levenshtein distance 2, and therefore the term to be "term~".'
+        );
+    }
+
+    /**
+     * Tests, if fuzzify2() overwrites a priviously set Damerau-Levenshtein distance.
+     *
+     * @return void
+     */
+    public function testFuzzify2OverwritesPriviouslySetFuzziness(): void
+    {
+        $term = new Term('term');
+        $term->fuzzify1();
+        $term->fuzzify2();
+        $this->assertSame(
+            'term~',
+            (string) $term,
+            'Expected fuzzify2() overwrites a priviously set Damerau-Levenshtein distance.'
+        );
     }
 
     /**
@@ -190,20 +392,6 @@ class TermTest extends ClauseTest
             'Prepending and appending carriage return' => array("\rterm\r"),
             'Prepending and appending NUL-byte'        => array("\0term\0"),
             'Prepending and appending vertical tab'    => array("\x0Bterm\x0B")
-        ];
-    }
-
-    /**
-     * Data provider for testFuzzifyTerm().
-     *
-     * @return array
-     */
-    public function dataProviderTestFuzzifyTerm(): array
-    {
-        return [
-            'Single word term with distance 0' => ['term', 0, 'term'],
-            'Single word term with distance 1' => ['term', 1, 'term~1'],
-            'Single word term with distance 2' => ['term', 2, 'term~']
         ];
     }
 
