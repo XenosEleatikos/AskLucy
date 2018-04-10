@@ -1,10 +1,10 @@
 <?php
-namespace AskLucy;
+namespace AskLucy\Expression;
 
 /**
  * A field
  */
-class Field
+class Field implements Expression
 {
     /**
      * The default field

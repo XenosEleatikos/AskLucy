@@ -1,9 +1,11 @@
 <?php
-namespace AskLucy;
+namespace AskLucy\Expression\Clause;
 
+use AskLucy\Expression\Field;
 use AskLucy\Property\BoostTrait;
 use AskLucy\Property\FieldTrait;
 use AskLucy\Property\OperatorTrait;
+use AskLucy\Value\RangeType;
 
 /**
  * A range

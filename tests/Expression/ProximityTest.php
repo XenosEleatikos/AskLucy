@@ -1,7 +1,7 @@
 <?php
-namespace AskLucy\Test;
+namespace AskLucy\Test\Expression;
 
-use AskLucy\Proximity;
+use AskLucy\Expression\Proximity;
 use PHPUnit\Framework\TestCase;
 
 /**

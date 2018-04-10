@@ -1,7 +1,7 @@
 <?php
 namespace AskLucy\Property;
 
-use AskLucy\Boost;
+use AskLucy\Expression\Boost;
 
 /**
  * Provides accessors for the boost.

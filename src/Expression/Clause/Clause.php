@@ -1,5 +1,8 @@
 <?php
-namespace AskLucy;
+namespace AskLucy\Expression\Clause;
+
+use AskLucy\Expression\Expression;
+use AskLucy\Expression\Field;
 
 /**
  * A clause

@@ -1,9 +1,12 @@
 <?php
-namespace AskLucy;
+namespace AskLucy\Expression\Clause;
 
+use AskLucy\Expression\Field;
+use AskLucy\Expression\Fuzziness;
 use AskLucy\Property\BoostTrait;
 use AskLucy\Property\FieldTrait;
 use AskLucy\Property\OperatorTrait;
+use AskLucy\Expression\Proximity;
 
 /**
  * A phrase

@@ -1,6 +1,8 @@
 <?php
-namespace AskLucy;
+namespace AskLucy\Expression\Clause;
 
+use AskLucy\Expression\Field;
+use AskLucy\Expression\Operator;
 use AskLucy\Property\BoostTrait;
 use AskLucy\Property\FieldTrait;
 use AskLucy\Property\OperatorTrait;

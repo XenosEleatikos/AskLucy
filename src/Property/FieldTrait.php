@@ -1,7 +1,7 @@
 <?php
 namespace AskLucy\Property;
 
-use AskLucy\Field;
+use AskLucy\Expression\Field;
 
 /**
  * Provides accessors for the field.

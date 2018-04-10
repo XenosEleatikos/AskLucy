@@ -1,5 +1,5 @@
 <?php
-namespace AskLucy;
+namespace AskLucy\Value;
 
 /**
  * A logical operator

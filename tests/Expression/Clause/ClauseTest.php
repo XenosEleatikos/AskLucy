@@ -1,8 +1,8 @@
 <?php
-namespace AskLucy\Test;
+namespace AskLucy\Test\Expression\Clause;
 
-use AskLucy\Clause;
-use AskLucy\Phrase;
+use AskLucy\Expression\Clause\Clause;
+use AskLucy\Expression\Clause\Phrase;
 use PHPUnit\Framework\TestCase;
 
 /**

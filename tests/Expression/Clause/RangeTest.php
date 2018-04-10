@@ -1,9 +1,10 @@
 <?php
-namespace AskLucy\Test;
+namespace AskLucy\Test\Expression\Clause;
 
-use AskLucy\Clause;
-use AskLucy\Phrase;
-use AskLucy\Range;
+use AskLucy\Expression\Clause\Clause;
+use AskLucy\Expression\Clause\Phrase;
+use AskLucy\Expression\Clause\Range;
+use AskLucy\Lucene;
 
 /**
  * Unit tests for the phrase.
@@ -158,7 +159,7 @@ class RangeTest extends ClauseTest
     protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
         return is_null($constructorArgumentField)
-            ? new Range('a', 'b')
-            : new Range('a', 'b', $constructorArgumentField);
+            ? Lucene::range('a', 'b')
+            : Lucene::range('a', 'b', $constructorArgumentField);
     }
 }

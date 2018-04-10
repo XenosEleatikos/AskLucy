@@ -1,7 +1,7 @@
 <?php
-namespace AskLucy\Test;
+namespace AskLucy\Test\Expression;
 
-use AskLucy\Field;
+use AskLucy\Expression\Field;
 use PHPUnit\Framework\TestCase;
 
 /**

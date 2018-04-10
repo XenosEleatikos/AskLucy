@@ -1,8 +1,9 @@
 <?php
-namespace AskLucy\Test;
+namespace AskLucy\Test\Expression\Clause;
 
-use AskLucy\Clause;
-use AskLucy\Term;
+use AskLucy\Expression\Clause\Clause;
+use AskLucy\Expression\Clause\Term;
+use AskLucy\Lucene;
 
 /**
  * Unit tests for the term.
@@ -20,7 +21,7 @@ class TermTest extends ClauseTest
      */
     public function test__constructThrowsExceptionForGivenPhrase():void
     {
-        new Term('a search phrase');
+        Lucene::term('a search phrase');
     }
 
     /**
@@ -32,7 +33,7 @@ class TermTest extends ClauseTest
      */
     public function testTrimSearchString($searchString): void
     {
-        $term = new Term($searchString);
+        $term = Lucene::term($searchString);
 
         $this->assertSame(
             'term',
@@ -55,7 +56,7 @@ class TermTest extends ClauseTest
      */
     public function testFuzzify(string $searchString, int $distance, string $expecteTerm): void
     {
-        $term   = new Term($searchString);
+        $term   = Lucene::term($searchString);
         $result = $term->fuzzify($distance);
 
         $this->assertSame(
@@ -108,7 +109,7 @@ class TermTest extends ClauseTest
         int $distance,
         string $expecteTerm
     ): void {
-        $term = new Term($searchString);
+        $term = Lucene::term($searchString);
         $term->fuzzify($priviouslySetDistance);
         $result = $term->fuzzify($distance);
 
@@ -147,7 +148,7 @@ class TermTest extends ClauseTest
      */
     public function testFuzzifyWithDefaultParameter()
     {
-        $term = new Term('term');
+        $term = Lucene::term('term');
         $result = $term->fuzzify();
 
         $this->assertSame(
@@ -171,7 +172,7 @@ class TermTest extends ClauseTest
      */
     public function testFuzzifySetsDistance0ForNegativeValueGiven(): void
     {
-        $term = new Term('term');
+        $term = Lucene::term('term');
         $result = $term->fuzzify(-1);
 
         $this->assertSame(
@@ -195,7 +196,7 @@ class TermTest extends ClauseTest
      */
     public function testFuzzifySetsDistance2ForTooBigValueGiven(): void
     {
-        $term = new Term('term');
+        $term = Lucene::term('term');
         $result = $term->fuzzify(3);
 
         $this->assertSame(
@@ -218,7 +219,7 @@ class TermTest extends ClauseTest
      */
     public function testFuzzify0(): void
     {
-        $term = new Term('term');
+        $term = Lucene::term('term');
         $result = $term->fuzzify0();
 
         $this->assertSame(
@@ -241,7 +242,7 @@ class TermTest extends ClauseTest
      */
     public function testFuzzify0OverwritesPriviouslySetFuzziness(): void
     {
-        $term = new Term('term');
+        $term = Lucene::term('term');
         $term->fuzzify1();
         $term->fuzzify0();
         $this->assertSame(
@@ -258,7 +259,7 @@ class TermTest extends ClauseTest
      */
     public function testFuzzify1(): void
     {
-        $term = new Term('term');
+        $term = Lucene::term('term');
         $result = $term->fuzzify1();
 
         $this->assertSame(
@@ -281,7 +282,7 @@ class TermTest extends ClauseTest
      */
     public function testFuzzify1OverwritesPriviouslySetFuzziness(): void
     {
-        $term = new Term('term');
+        $term = Lucene::term('term');
         $term->fuzzify2();
         $term->fuzzify1();
         $this->assertSame(
@@ -298,7 +299,7 @@ class TermTest extends ClauseTest
      */
     public function testFuzzify2(): void
     {
-        $term = new Term('term');
+        $term = Lucene::term('term');
         $result = $term->fuzzify2();
 
         $this->assertSame(
@@ -321,7 +322,7 @@ class TermTest extends ClauseTest
      */
     public function testFuzzify2OverwritesPriviouslySetFuzziness(): void
     {
-        $term = new Term('term');
+        $term = Lucene::term('term');
         $term->fuzzify1();
         $term->fuzzify2();
         $this->assertSame(
@@ -338,7 +339,7 @@ class TermTest extends ClauseTest
      */
     public function test__toString(): void
     {
-        $term = new Term('term');
+        $term = Lucene::term('term');
 
         $this->assertSame(
             'term',
@@ -354,7 +355,7 @@ class TermTest extends ClauseTest
      */
     public function test__toStringWithEmptyTermName(): void
     {
-        $term = new Term('');
+        $term = Lucene::term('');
 
         $this->assertSame(
             '',
@@ -405,8 +406,8 @@ class TermTest extends ClauseTest
     protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
         $query = is_null($constructorArgumentField)
-            ? new Term('a')
-            : new Term('a', $constructorArgumentField);
+            ? Lucene::term('a')
+            : Lucene::term('a', $constructorArgumentField);
 
         return $query;
     }

@@ -1,5 +1,5 @@
 <?php
-namespace AskLucy;
+namespace AskLucy\Expression;
 
 /**
  * The fuzziness
@@ -35,7 +35,7 @@ class Fuzziness implements Expression
     }
 
     /**
-     * Return the Damerau-Levenshtein distance 0.
+     * Returns the Damerau-Levenshtein distance 0.
      *
      * @return self
      */
@@ -45,7 +45,7 @@ class Fuzziness implements Expression
     }
 
     /**
-     * Return the Damerau-evenshtein distance 1.
+     * Returns the Damerau-evenshtein distance 1.
      *
      * @return self
      */
@@ -55,7 +55,7 @@ class Fuzziness implements Expression
     }
 
     /**
-     * Return the Damerau-Levenshtein distance 2.
+     * Returns the Damerau-Levenshtein distance 2.
      *
      * @return self
      */

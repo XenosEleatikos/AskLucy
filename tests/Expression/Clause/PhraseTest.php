@@ -1,8 +1,9 @@
 <?php
-namespace AskLucy\Test;
+namespace AskLucy\Test\Expression\Clause;
 
-use AskLucy\Clause;
-use AskLucy\Phrase;
+use AskLucy\Expression\Clause\Clause;
+use AskLucy\Expression\Clause\Phrase;
+use AskLucy\Lucene;
 
 /**
  * Unit tests for the phrase.
@@ -18,7 +19,7 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringRendersPhrases(): void
     {
-        $phrase = new Phrase('');
+        $phrase = Lucene::phrase('');
 
         $this->assertSame(
             '',
@@ -34,7 +35,7 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringRendersEmptyPhrase(): void
     {
-        $phrase = new Phrase('a search phrase');
+        $phrase = Lucene::phrase('a search phrase');
 
         $this->assertRegExp(
             '("a search phrase")',
@@ -50,7 +51,7 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringRendersProximity(): void
     {
-        $phrase = new Phrase('a search phrase');
+        $phrase = Lucene::phrase('a search phrase');
         $phrase->setProximity(1);
 
         $this->assertRegExp(
@@ -67,7 +68,7 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringDoesNotRenderProximityOperatorIfSetProximityWasNotCalled(): void
     {
-        $phrase = new Phrase('a search phrase');
+        $phrase = Lucene::phrase('a search phrase');
 
         $this->assertRegExp(
             '/^[^~]+$/',
@@ -83,7 +84,7 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringDoesNotRenderProximityOperatorIfSetProximityWasCalledWith0(): void
     {
-        $phrase = new Phrase('a search phrase');
+        $phrase = Lucene::phrase('a search phrase');
         $phrase->setProximity(0);
 
         $this->assertRegExp(
@@ -100,7 +101,7 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringDoesNotRenderProximityOperatorIfSetProximityWasCalledWithoutParameter(): void
     {
-        $phrase = new Phrase('a search phrase');
+        $phrase = Lucene::phrase('a search phrase');
         $phrase->setProximity();
 
         $this->assertRegExp(
@@ -117,7 +118,7 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringDoesNotRenderProximityOperatorForSingleTermPhrase(): void
     {
-        $phrase = new Phrase('lucene');
+        $phrase = Lucene::phrase('lucene');
         $phrase->setProximity(1);
 
         $this->assertRegExp(
@@ -134,7 +135,7 @@ class PhraseTest extends ClauseTest
      */
     public function testSetProximityOverwritesProximitySetBeforeAnd__toStringRendersLastSetProximityOnly(): void
     {
-        $phrase = new Phrase('a search phrase');
+        $phrase = Lucene::phrase('a search phrase');
         $phrase->setProximity(1);
         $phrase->setProximity(2);
 
@@ -161,8 +162,8 @@ class PhraseTest extends ClauseTest
     protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
         $query = is_null($constructorArgumentField)
-            ? new Phrase('a b')
-            : new Phrase('a b', $constructorArgumentField);
+            ? Lucene::phrase('a b')
+            : Lucene::phrase('a b', $constructorArgumentField);
 
         return $query;
     }

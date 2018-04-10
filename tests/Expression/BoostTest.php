@@ -1,8 +1,8 @@
 <?php
-namespace AskLucy\Test;
+namespace AskLucy\Test\Expression;
 
-use AskLucy\Boost;
-use AskLucy\Fuzziness;
+use AskLucy\Expression\Boost;
+use AskLucy\Expression\Fuzziness;
 use PHPUnit\Framework\TestCase;
 
 /**

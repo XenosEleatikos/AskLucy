@@ -1,7 +1,7 @@
 <?php
 namespace AskLucy\Property;
 
-use AskLucy\Operator;
+use AskLucy\Expression\Operator;
 
 /**
  * Provides accessors for an operator.
