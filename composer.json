@@ -16,8 +16,11 @@
         "php": ">=7.1.0"
     },
     "require-dev": {
-        "infection/infection": "^0.7.0",
-        "phpunit/phpunit": "^7"
+        "infection/infection": "0.10",
+        "phpunit/phpunit": "^7",
+        "phpro/grumphp": "0.14.2",
+        "phpstan/phpstan": "0.10.5",
+        "phpstan/phpstan-phpunit": "0.10"
     },
     "autoload": {
         "psr-4": {

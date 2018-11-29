@@ -1,0 +1,15 @@
+parameters:
+    git_dir: .
+    bin_dir: vendor/bin
+    tasks:
+        phpunit:
+            always_execute: true
+            metadata:
+                priority: 9
+        clover_coverage:
+            clover_file: ./build/coverage.xml
+        infection: ~
+        phpstan:
+            configuration: phpstan.neon
+            level: 7
+            triggered_by: ['php']
