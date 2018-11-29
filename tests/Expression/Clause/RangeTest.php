@@ -54,8 +54,8 @@ class RangeTest extends ClauseTest
      */
     public function testExclusive(): void
     {
-        $range = $this->getTestClause();
-        $range->exclusive();
+        $range = $this->getTestClause()
+            ->exclusive();
 
         $this->assertSame(
             '{a TO b}',
@@ -87,9 +87,9 @@ class RangeTest extends ClauseTest
      */
     public function testExclusiveOverwritesInclusive(): void
     {
-        $range = $this->getTestClause();
-        $range->inclusive();
-        $range->exclusive();
+        $range = $this->getTestClause()
+            ->inclusive()
+            ->exclusive();
 
         $this->assertRegExp(
             '/{*+}/',
@@ -105,8 +105,8 @@ class RangeTest extends ClauseTest
      */
     public function testInclusive(): void
     {
-        $range = $this->getTestClause();
-        $range->inclusive();
+        $range = $this->getTestClause()
+            ->inclusive();
 
         $this->assertSame(
             '[a TO b]',
@@ -138,9 +138,9 @@ class RangeTest extends ClauseTest
      */
     public function testInclusiveOverwritesExclusive(): void
     {
-        $range = $this->getTestClause();
-        $range->exclusive();
-        $range->inclusive();
+        $range = $this->getTestClause()
+            ->exclusive()
+            ->inclusive();
 
         $this->assertRegExp(
             '/\[*+\]/',

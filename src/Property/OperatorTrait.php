@@ -1,6 +1,7 @@
 <?php
 namespace AskLucy\Property;
 
+use AskLucy\Expression\Clause\Clause;
 use AskLucy\Expression\Operator;
 
 /**
@@ -18,30 +19,36 @@ trait OperatorTrait
     /**
      * Sets the optional operator.
      *
-     * @return void
+     * @return self|static
      */
-    public function optional(): void
+    public function optional(): Clause
     {
         $this->operator = Operator::optional();
+
+        return $this;
     }
 
     /**
      * Sets the required operator.
      *
-     * @return void
+     * @return self|static
      */
-    public function required(): void
+    public function required(): Clause
     {
         $this->operator = Operator::required();
+
+        return $this;
     }
 
     /**
      * Sets the prohibited operator.
      *
-     * @return void
+     * @return self|static
      */
-    public function prohibited(): void
+    public function prohibited(): Clause
     {
         $this->operator = Operator::prohibited();
+
+        return $this;
     }
 }

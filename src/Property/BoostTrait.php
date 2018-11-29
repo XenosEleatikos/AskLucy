@@ -2,6 +2,7 @@
 namespace AskLucy\Property;
 
 use AskLucy\Expression\Boost;
+use AskLucy\Expression\Clause\Clause;
 
 /**
  * Provides accessors for the boost.
@@ -20,12 +21,14 @@ trait BoostTrait
      *
      * @param float $value The boost value
      *
-     * @return void
+     * @return self|static
      *
      * @throws \Exception Thrown, if the given value is negative
      */
-    public function boost(float $value): void
+    public function boost(float $value): Clause
     {
         $this->boost = new Boost($value);
+
+        return $this;
     }
 }

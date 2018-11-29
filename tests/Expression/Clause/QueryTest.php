@@ -25,8 +25,7 @@ class QueryTest extends ClauseTest
         $clauseMock = $this->getClauseMock('a');
 
         $clauseMock->expects($this->once())
-            ->method('optional')
-            ->willReturn(null);
+            ->method('optional');
 
         $clauseMock->expects($this->never())
             ->method('required');
@@ -58,8 +57,7 @@ class QueryTest extends ClauseTest
             ->method('optional');
 
         $clauseMock->expects($this->once())
-            ->method('required')
-            ->willReturn(null);
+            ->method('required');
 
         $clauseMock->expects($this->never())
             ->method('prohibited');
@@ -91,8 +89,7 @@ class QueryTest extends ClauseTest
             ->method('required');
 
         $clauseMock->expects($this->once())
-            ->method('prohibited')
-            ->willReturn(null);
+            ->method('prohibited');
 
         $query->mustNotHave($clauseMock);
 
@@ -126,55 +123,55 @@ class QueryTest extends ClauseTest
      */
     public function dataProviderTest__toStringRendersBrackets(): array
     {
-        $query1 = Lucene::query('field');
-        $query1->required();
-        $query1->add($this->getClauseMock('a'));
-        $query1->add($this->getClauseMock('b'));
+        $query1 = Lucene::query('field')
+            ->required()
+            ->add($this->getClauseMock('a'))
+            ->add($this->getClauseMock('b'));
 
-        $query2 = Lucene::query('field');
-        $query2->required();
-        $query2->add($this->getClauseMock('a'));
+        $query2 = Lucene::query('field')
+            ->required()
+            ->add($this->getClauseMock('a'));
 
-        $query3 = Lucene::query();
-        $query3->required();
-        $query3->add($this->getClauseMock('a'));
-        $query3->add($this->getClauseMock('b'));
+        $query3 = Lucene::query()
+            ->required()
+            ->add($this->getClauseMock('a'))
+            ->add($this->getClauseMock('b'));
 
-        $query4 = Lucene::query();
-        $query4->required();
-        $query4->add($this->getClauseMock('a'));
+        $query4 = Lucene::query()
+            ->required()
+            ->add($this->getClauseMock('a'));
 
-        $query5 = Lucene::query('field');
-        $query5->prohibited();
-        $query5->add($this->getClauseMock('a'));
-        $query5->add($this->getClauseMock('b'));
+        $query5 = Lucene::query('field')
+            ->prohibited()
+            ->add($this->getClauseMock('a'))
+            ->add($this->getClauseMock('b'));
 
-        $query6 = Lucene::query('field');
-        $query6->prohibited();
-        $query6->add($this->getClauseMock('a'));
+        $query6 = Lucene::query('field')
+            ->prohibited()
+            ->add($this->getClauseMock('a'));
 
-        $query7 = Lucene::query();
-        $query7->prohibited();
-        $query7->add($this->getClauseMock('a'));
-        $query7->add($this->getClauseMock('b'));
+        $query7 = Lucene::query()
+            ->prohibited()
+            ->add($this->getClauseMock('a'))
+            ->add($this->getClauseMock('b'));
 
-        $query8 = Lucene::query();
-        $query8->prohibited();
-        $query8->add($this->getClauseMock('a'));
+        $query8 = Lucene::query()
+            ->prohibited()
+            ->add($this->getClauseMock('a'));
 
-        $query9 = Lucene::query('field');
-        $query9->add($this->getClauseMock('a'));
-        $query9->add($this->getClauseMock('b'));
+        $query9 = Lucene::query('field')
+            ->add($this->getClauseMock('a'))
+            ->add($this->getClauseMock('b'));
 
-        $query10 = Lucene::query('field');
-        $query10->add($this->getClauseMock('a'));
+        $query10 = Lucene::query('field')
+            ->add($this->getClauseMock('a'));
 
-        $query11 = Lucene::query();
-        $query11->add($this->getClauseMock('a'));
-        $query11->add($this->getClauseMock('b'));
+        $query11 = Lucene::query()
+            ->add($this->getClauseMock('a'))
+            ->add($this->getClauseMock('b'));
 
-        $query12 = Lucene::query();
-        $query12->add($this->getClauseMock('a'));
+        $query12 = Lucene::query()
+            ->add($this->getClauseMock('a'));
 
         return [
             'Query with "required" operator, non-default field and more than one clause'   => [$query1, true],
@@ -199,10 +196,10 @@ class QueryTest extends ClauseTest
      */
     public function test__toStringRendersClausesWithSeparator():void
     {
-        $query = Lucene::query();
-        $query->add($this->getClauseMock('a'));
-        $query->add($this->getClauseMock('b'));
-        $query->add($this->getClauseMock('c'));
+        $query = Lucene::query()
+            ->add($this->getClauseMock('a'))
+            ->add($this->getClauseMock('b'))
+            ->add($this->getClauseMock('c'));
 
         $this->assertInternalType(
             'int',

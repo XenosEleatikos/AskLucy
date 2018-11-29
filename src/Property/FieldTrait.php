@@ -1,6 +1,7 @@
 <?php
 namespace AskLucy\Property;
 
+use AskLucy\Expression\Clause\Clause;
 use AskLucy\Expression\Field;
 
 /**
@@ -20,10 +21,12 @@ trait FieldTrait
      *
      * @param string $name The name of the field to search in
      *
-     * @return void
+     * @return self|static
      */
-    public function setField(string $name = Field::DEFAULT): void
+    public function setField(string $name = Field::DEFAULT): Clause
     {
         $this->field = new Field($name);
+
+        return $this;
     }
 }

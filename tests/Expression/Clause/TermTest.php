@@ -109,8 +109,8 @@ class TermTest extends ClauseTest
         int $distance,
         string $expecteTerm
     ): void {
-        $term = Lucene::term($searchString);
-        $term->fuzzify($priviouslySetDistance);
+        $term = Lucene::term($searchString)
+            ->fuzzify($priviouslySetDistance);
         $result = $term->fuzzify($distance);
 
         $this->assertSame(
@@ -242,9 +242,9 @@ class TermTest extends ClauseTest
      */
     public function testFuzzify0OverwritesPriviouslySetFuzziness(): void
     {
-        $term = Lucene::term('term');
-        $term->fuzzify1();
-        $term->fuzzify0();
+        $term = Lucene::term('term')
+            ->fuzzify1()
+            ->fuzzify0();
         $this->assertSame(
             'term',
             (string) $term,
@@ -282,9 +282,9 @@ class TermTest extends ClauseTest
      */
     public function testFuzzify1OverwritesPriviouslySetFuzziness(): void
     {
-        $term = Lucene::term('term');
-        $term->fuzzify2();
-        $term->fuzzify1();
+        $term = Lucene::term('term')
+            ->fuzzify2()
+            ->fuzzify1();
         $this->assertSame(
             'term~1',
             (string) $term,
@@ -322,9 +322,9 @@ class TermTest extends ClauseTest
      */
     public function testFuzzify2OverwritesPriviouslySetFuzziness(): void
     {
-        $term = Lucene::term('term');
-        $term->fuzzify1();
-        $term->fuzzify2();
+        $term = Lucene::term('term')
+            ->fuzzify1()
+            ->fuzzify2();
         $this->assertSame(
             'term~',
             (string) $term,

@@ -239,8 +239,8 @@ To require the word "PHP" necessarily, use the following snippet...
 <?php
 use AskLucy\Lucene;
 
-$term = Lucene::term('PHP');
-$term->required();
+$term = Lucene::term('PHP')
+    ->required();
 ```
 
 ... and get:
@@ -253,8 +253,8 @@ To prohibit the word "Java", do this...
 <?php
 use AskLucy\Lucene;
 
-$term = Lucene::term('Java');
-$term->prohibited();
+$term = Lucene::term('Java')
+    ->prohibited();
 ```
 
 ... and you'll get that:
@@ -270,8 +270,8 @@ Require a phrase necessarily...
 <?php
 use AskLucy\Lucene;
 
-$phrase = Lucene::phrase('Lucene query');
-$phrase->required();
+$phrase = Lucene::phrase('Lucene query')
+    ->required();
 ```
 
 ... and get the string representation:
@@ -284,8 +284,8 @@ Prohibit the phrase...
 <?php
 use AskLucy\Lucene;
 
-$phrase = Lucene::phrase('Java development');
-$phrase->prohibited();
+$phrase = Lucene::phrase('Java development')
+    ->prohibited();
 ```
 
 ... and get:
@@ -301,8 +301,8 @@ Require a value of a range necessarily...
 <?php
 use AskLucy\Lucene;
 
-$range = Lucene::range('Anna', 'Doro');
-$range->required();
+$range = Lucene::range('Anna', 'Doro')
+    ->required();
 ```
 
 ... and get the string representation:
@@ -315,8 +315,8 @@ Prohibit a value of the range...
 <?php
 use AskLucy\Lucene;
 
-$range = Lucene::range('Anna', 'Doro');
-$range->prohibited();
+$range = Lucene::range('Anna', 'Doro')
+    ->prohibited();
 ```
 
 ... and get:
@@ -332,8 +332,8 @@ use AskLucy\Lucene;
 
 $phrase = Lucene::query()
     ->add(Lucene::term('Lucene'))
-    ->add(Lucene::phrase('search query'));
-$phrase->required();
+    ->add(Lucene::phrase('search query'))
+    ->required();
 ```
 
 The query will match all documents containing necessarily "Lucene" or "search query" (or both). The string representation will
@@ -370,8 +370,8 @@ use AskLucy\Lucene;
 $term = Lucene::term('Lucene');
 $term->boost(2.5);
 
-$phrase = Lucene::phrase('search engine');
-$phrase->boost(2);
+$phrase = Lucene::phrase('search engine')
+    ->boost(2);
 
 $query = Lucene::query()
     ->add(Lucene::term('Apache'))
@@ -391,8 +391,8 @@ You can do a fuzzy search term by calling ```Term::fuzzify()```:
 <?php
 use AskLucy\Lucene;
 
-$term = Lucene::term('word');
-$term->fuzzify();
+$term = Lucene::term('word')
+    ->fuzzify();
 ```
 
 The string representation of the query will be:
@@ -406,8 +406,8 @@ the search term. By using the optional parameter, you can define that distance:
 <?php
 use AskLucy\Lucene;
 
-$term = Lucene::term('word');
-$term->fuzzify(1);
+$term = Lucene::term('word')
+    ->fuzzify(1);
 ```
 
 The string representation of the query will be:
@@ -426,8 +426,8 @@ the terms "search" and "term" within five words, create the following phrase:
 <?php
 use AskLucy\Lucene;
 
-$phrase = Lucene::phrase('search term');
-$phrase->setProximity(5);
+$phrase = Lucene::phrase('search term')
+    ->setProximity(5);
 ```
 
 The string representation of the query will be:
@@ -445,8 +445,8 @@ the bounds.
 <?php
 use AskLucy\Lucene;
 
-$range = Lucene::range('Alpha', 'Omega');
-$range->inclusive();
+$range = Lucene::range('Alpha', 'Omega')
+    ->inclusive();
 ```
 
 This clause matches documents that contain values between "Alpha" and "Omega" inclusive "Alpha" and "Omega". The clause
@@ -461,8 +461,8 @@ You can make the range exclusive of the bounds by calling ```Range::exclusive()`
 <?php
 use AskLucy\Lucene;
 
-$range = Lucene::range('Alpha', 'Omega');
-$range->exclusive();
+$range = Lucene::range('Alpha', 'Omega')
+    ->exclusive();
 ```
 
 The clause will be rendered with curly brackets:

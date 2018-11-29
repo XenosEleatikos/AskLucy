@@ -14,35 +14,37 @@ interface Clause extends Expression
      *
      * @param string $name The name of the field to search in
      *
-     * @return void
+     * @return self|static
      */
-    public function setField(string $name = Field::DEFAULT): void;
+    public function setField(string $name = Field::DEFAULT): Clause;
 
     /**
      * Sets the optional operator.
      *
-     * @return void
+     * @return self|static
      */
-    public function optional(): void;
+    public function optional(): Clause;
 
     /**
      * Sets the required operator.
      *
-     * @return void
+     * @return self|static
      */
-    public function required(): void;
+    public function required(): Clause;
 
     /**
      * Sets the prohibited operator.
      *
-     * @return void
+     * @return self|static
      */
-    public function prohibited(): void;
+    public function prohibited(): Clause;
 
     /**
      * Boosts the clause.
      *
      * @param float $value The boost value
+     *
+     * @return self|static
      */
-    public function boost(float $value): void;
+    public function boost(float $value): Clause;
 }

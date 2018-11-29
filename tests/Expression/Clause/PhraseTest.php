@@ -51,8 +51,8 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringRendersProximity(): void
     {
-        $phrase = Lucene::phrase('a search phrase');
-        $phrase->setProximity(1);
+        $phrase = Lucene::phrase('a search phrase')
+            ->setProximity(1);
 
         $this->assertRegExp(
             '/(a search phrase).?(~1)/',
@@ -84,8 +84,8 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringDoesNotRenderProximityOperatorIfSetProximityWasCalledWith0(): void
     {
-        $phrase = Lucene::phrase('a search phrase');
-        $phrase->setProximity(0);
+        $phrase = Lucene::phrase('a search phrase')
+            ->setProximity(0);
 
         $this->assertRegExp(
             '/^[^~]+$/',
@@ -101,8 +101,8 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringDoesNotRenderProximityOperatorIfSetProximityWasCalledWithoutParameter(): void
     {
-        $phrase = Lucene::phrase('a search phrase');
-        $phrase->setProximity();
+        $phrase = Lucene::phrase('a search phrase')
+            ->setProximity();
 
         $this->assertRegExp(
             '/^[^~]+$/',
@@ -118,8 +118,8 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringDoesNotRenderProximityOperatorForSingleTermPhrase(): void
     {
-        $phrase = Lucene::phrase('lucene');
-        $phrase->setProximity(1);
+        $phrase = Lucene::phrase('lucene')
+            ->setProximity(1);
 
         $this->assertRegExp(
             '/^[^~]+$/',
@@ -135,9 +135,9 @@ class PhraseTest extends ClauseTest
      */
     public function testSetProximityOverwritesProximitySetBeforeAnd__toStringRendersLastSetProximityOnly(): void
     {
-        $phrase = Lucene::phrase('a search phrase');
-        $phrase->setProximity(1);
-        $phrase->setProximity(2);
+        $phrase = Lucene::phrase('a search phrase')
+            ->setProximity(1)
+            ->setProximity(2);
 
         $this->assertRegExp(
             '/(~2)/',

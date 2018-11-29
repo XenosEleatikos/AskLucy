@@ -28,8 +28,8 @@ abstract class ClauseTest extends TestCase
      */
     public function test__toStringRendersFieldSpecificationSetBySetField(): void
     {
-        $query = $this->getTestClause();
-        $query->setField('field');
+        $query = $this->getTestClause()
+            ->setField('field');
 
         $this->assertRegExp(
             '/(field:).?a/',
@@ -93,8 +93,8 @@ abstract class ClauseTest extends TestCase
      */
     public function testSetFieldOverwritesConstructorArgument(): void
     {
-        $query = $this->getTestClause('field');
-        $query->setField('otherField');
+        $query = $this->getTestClause('field')
+            ->setField('otherField');
 
         $this->assertRegExp(
             '/(otherField:).?a/',
@@ -110,9 +110,9 @@ abstract class ClauseTest extends TestCase
      */
     public function testSetFieldOverwritesFieldSetBefore(): void
     {
-        $query = $this->getTestClause();
-        $query->setField('field');
-        $query->setField('otherField');
+        $query = $this->getTestClause()
+            ->setField('field')
+            ->setField('otherField');
 
         $this->assertRegExp(
             '/(otherField:).?a/',
@@ -128,9 +128,9 @@ abstract class ClauseTest extends TestCase
      */
     public function testSetFieldUnsetsFieldSetBeforeIfNotArgumentIsGiven(): void
     {
-        $query = $this->getTestClause();
-        $query->setField('field');
-        $query->setField();
+        $query = $this->getTestClause()
+            ->setField('field')
+            ->setField();
 
         $this->assertFalse(
             strstr($query, 'field'),
@@ -167,9 +167,10 @@ abstract class ClauseTest extends TestCase
         $clause = $this->getTestClause();
         $originalClause = (string) $clause;
 
-        $clause->required();
-        $clause->prohibited();
-        $clause->optional();
+        $clause
+            ->required()
+            ->prohibited()
+            ->optional();
 
         $this->assertSame(
             $originalClause,
@@ -185,8 +186,8 @@ abstract class ClauseTest extends TestCase
      */
     public function testRequired(): void
     {
-        $clause = $this->getTestClause();
-        $clause->required();
+        $clause = $this->getTestClause()
+            ->required();
 
         $this->assertRegExp(
             '/\+.?a/',
@@ -202,10 +203,10 @@ abstract class ClauseTest extends TestCase
      */
     public function testRequiredOverwritesOperator(): void
     {
-        $clause = $this->getTestClause();
-        $clause->optional();
-        $clause->prohibited();
-        $clause->required();
+        $clause = $this->getTestClause()
+            ->optional()
+            ->prohibited()
+            ->required();
 
         $this->assertRegExp(
             '/\+.?a/',
@@ -221,8 +222,8 @@ abstract class ClauseTest extends TestCase
      */
     public function testProhibited(): void
     {
-        $clause = $this->getTestClause();
-        $clause->prohibited();
+        $clause = $this->getTestClause()
+            ->prohibited();
 
         $this->assertRegExp(
             '/\-.?a/',
@@ -238,10 +239,10 @@ abstract class ClauseTest extends TestCase
      */
     public function testProhibitedOverwritesOperator(): void
     {
-        $clause = $this->getTestClause();
-        $clause->optional();
-        $clause->required();
-        $clause->prohibited();
+        $clause = $this->getTestClause()
+            ->optional()
+            ->required()
+            ->prohibited();
 
         $this->assertRegExp(
             '/\-.?a/',
@@ -257,8 +258,8 @@ abstract class ClauseTest extends TestCase
      */
     public function testBoost(): void
     {
-        $clause = $this->getTestClause();
-        $clause->boost(2.5);
+        $clause = $this->getTestClause()
+            ->boost(2.5);
 
         $this->assertContains(
             '^2.5',
@@ -274,8 +275,8 @@ abstract class ClauseTest extends TestCase
      */
     public function testBoostWithInteger(): void
     {
-        $clause = $this->getTestClause();
-        $clause->boost(2);
+        $clause = $this->getTestClause()
+            ->boost(2);
 
         $this->assertContains(
             '^2',
@@ -291,8 +292,8 @@ abstract class ClauseTest extends TestCase
      */
     public function testBoostRederedIntegerIfIntegerIsGivenAsFloat(): void
     {
-        $clause = $this->getTestClause();
-        $clause->boost(2.0);
+        $clause = $this->getTestClause()
+            ->boost(2.0);
 
         $this->assertRegExp(
             '/\^2(?!.|0)/',
@@ -308,8 +309,8 @@ abstract class ClauseTest extends TestCase
      */
     public function testBoostShortensTrailingDecimalZeros(): void
     {
-        $clause = $this->getTestClause();
-        $clause->boost(2.10);
+        $clause = $this->getTestClause()
+            ->boost(2.10);
 
         $this->assertRegExp(
             '/\^2.1(?!0)/',
@@ -341,8 +342,8 @@ abstract class ClauseTest extends TestCase
      */
     public function testBoostDoesNotContainBoostSpecificationIfSetToDefault(): void
     {
-        $clause = $this->getTestClause();
-        $clause->boost(1.0);
+        $clause = $this->getTestClause()
+            ->boost(1.0);
 
         $this->assertNotContains(
             '^',
