@@ -1,6 +1,7 @@
 <?php
 namespace AskLucy;
 
+use AskLucy\Exception\InvalidArgumentException;
 use AskLucy\Expression\Clause\Phrase;
 use AskLucy\Expression\Clause\Query;
 use AskLucy\Expression\Clause\Range;
@@ -33,7 +34,7 @@ class Lucene
      *
      * @return Term
      *
-     * @throws \Exception Throws an exception, if the given string contains spaces.
+     * @throws InvalidArgumentException Throws an exception, if the given string contains spaces.
      */
     public static function term(string $searchString, string $field = Field::DEFAULT): Term
     {
@@ -61,7 +62,7 @@ class Lucene
      *
      * @return Range
      *
-     * @throws \Exception Throws an exception, if the given string contains spaces.
+     * @throws InvalidArgumentException Throws an exception, if the given string contains spaces.
      */
     public static function range(string $from, string $to, string $field = Field::DEFAULT): Range
     {

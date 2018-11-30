@@ -6,7 +6,9 @@
   },
   "timeout": 10,
   "logs": {
-    "text": "build/infection-log.txt"
+    "text": "build/infection/infection-log.txt",
+    "summary": "build/infection/summary.log",
+    "perMutator": "build/infection/per-mutator.md"
   },
   "phpUnit": {
     "configDir": "."

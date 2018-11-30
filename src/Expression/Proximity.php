@@ -1,6 +1,8 @@
 <?php
 namespace AskLucy\Expression;
 
+use AskLucy\Exception\InvalidArgumentException;
+
 /**
  * The term proximity
  */
@@ -25,14 +27,14 @@ class Proximity implements Expression
      *
      * @param int $proximity The required proximity between the terms
      *
-     * @throws \Exception Thrown, if the given distance is negative, what makes no sense
+     * @throws InvalidArgumentException Thrown, if the given distance is negative, what makes no sense
      */
     public function __construct(int $proximity = 0)
     {
         if ($proximity >= 0) {
             $this->proximity = $proximity;
         } else {
-            throw new \Exception('The given term distance must be positive!');
+            throw new InvalidArgumentException('The given term distance must be positive!');
         }
     }
 

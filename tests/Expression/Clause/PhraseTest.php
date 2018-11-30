@@ -35,10 +35,10 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringRendersEmptyPhrase(): void
     {
-        $phrase = Lucene::phrase('a search phrase');
+        $phrase = Lucene::phrase('search phrase');
 
         $this->assertRegExp(
-            '("a search phrase")',
+            '("search phrase")',
             (string) $phrase,
             'Expected phrases to get quoted.'
         );
@@ -51,11 +51,11 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringRendersProximity(): void
     {
-        $phrase = Lucene::phrase('a search phrase')
+        $phrase = Lucene::phrase('search phrase')
             ->setProximity(1);
 
         $this->assertRegExp(
-            '/(a search phrase).?(~1)/',
+            '/(search phrase).?(~1)/',
             (string) $phrase,
             'Expected that __toString() appends "~1" to the phrase, because setProximity() was called with parameter 1.'
         );
@@ -68,7 +68,7 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringDoesNotRenderProximityOperatorIfSetProximityWasNotCalled(): void
     {
-        $phrase = Lucene::phrase('a search phrase');
+        $phrase = Lucene::phrase('search phrase');
 
         $this->assertRegExp(
             '/^[^~]+$/',
@@ -84,7 +84,7 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringDoesNotRenderProximityOperatorIfSetProximityWasCalledWith0(): void
     {
-        $phrase = Lucene::phrase('a search phrase')
+        $phrase = Lucene::phrase('search phrase')
             ->setProximity(0);
 
         $this->assertRegExp(
@@ -101,7 +101,7 @@ class PhraseTest extends ClauseTest
      */
     public function test__toStringDoesNotRenderProximityOperatorIfSetProximityWasCalledWithoutParameter(): void
     {
-        $phrase = Lucene::phrase('a search phrase')
+        $phrase = Lucene::phrase('search phrase')
             ->setProximity();
 
         $this->assertRegExp(
@@ -135,7 +135,7 @@ class PhraseTest extends ClauseTest
      */
     public function testSetProximityOverwritesProximitySetBeforeAnd__toStringRendersLastSetProximityOnly(): void
     {
-        $phrase = Lucene::phrase('a search phrase')
+        $phrase = Lucene::phrase('search phrase')
             ->setProximity(1)
             ->setProximity(2);
 

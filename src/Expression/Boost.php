@@ -1,6 +1,8 @@
 <?php
 namespace AskLucy\Expression;
 
+use AskLucy\Exception\InvalidArgumentException;
+
 /**
  * A boost
  */
@@ -32,7 +34,7 @@ class Boost implements Expression
      *
      * @param float $value The boost value
      *
-     * @throws \Exception Thrown, if the given value is negative
+     * @throws InvalidArgumentException Thrown, if the given value is negative
      */
     public function __construct(float $value = self::DEFAULT_VALUE)
     {
@@ -42,7 +44,7 @@ class Boost implements Expression
             return;
         }
 
-        throw new \Exception('The given boost value must be positive!');
+        throw new InvalidArgumentException('The given boost value must be positive!');
     }
 
     /**

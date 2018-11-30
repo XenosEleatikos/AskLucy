@@ -1,6 +1,7 @@
 <?php
 namespace AskLucy\Expression\Clause;
 
+use AskLucy\Exception\InvalidArgumentException;
 use AskLucy\Expression\Field;
 use AskLucy\Expression\Fuzziness;
 use AskLucy\Property\BoostTrait;
@@ -36,14 +37,14 @@ class Term implements Clause
      * @param string $searchString The string to search for
      * @param string $field        Optional name of the field to search in
      *
-     * @throws \Exception Throws an exception, if the given string contains spaces.
+     * @throws InvalidArgumentException Throws an exception, if the given string contains spaces.
      */
     public function __construct(string $searchString, string $field = Field::DEFAULT)
     {
         $searchString = trim($searchString);
 
         if (strpos($searchString, Phrase::TERM_SEPARATOR)) {
-            throw new \Exception('A term must not contain spaces.');
+            throw new InvalidArgumentException('A term must not contain spaces.');
         }
 
         $this->searchString = trim($searchString);

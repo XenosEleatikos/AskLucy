@@ -1,6 +1,7 @@
 <?php
 namespace AskLucy\Expression\Clause;
 
+use AskLucy\Exception\InvalidArgumentException;
 use AskLucy\Expression\Field;
 use AskLucy\Expression\Fuzziness;
 use AskLucy\Property\BoostTrait;
@@ -59,7 +60,7 @@ class Phrase implements Clause
      *
      * @return self
      *
-     * @throws \Exception Thrown, if the given distance is negative, what makes no sense
+     * @throws InvalidArgumentException Thrown, if the given distance is negative, what makes no sense
      */
     public function setProximity(int $proximity = 0): self
     {

@@ -8,6 +8,7 @@ parameters:
                 priority: 9
         clover_coverage:
             clover_file: ./build/coverage.xml
+            level: 100
         infection: ~
         phpstan:
             configuration: phpstan.neon

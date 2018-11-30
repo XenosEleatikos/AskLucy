@@ -15,13 +15,13 @@ class TermTest extends ClauseTest
     /**
      * Tests, if __construct() throws an exception for a given phrase containing spaces.
      *
-     * @expectedException \Exception
+     * @expectedException \AskLucy\Exception\InvalidArgumentException
      *
      * @return void
      */
     public function test__constructThrowsExceptionForGivenPhrase():void
     {
-        Lucene::term('a search phrase');
+        Lucene::term('search phrase');
     }
 
     /**

@@ -19,7 +19,7 @@ class BoostTest extends TestCase
      *
      * @dataProvider dataProviderTest__constructThrowsExceptionForInvalidValue
      *
-     * @expectedException \Exception
+     * @expectedException \AskLucy\Exception\InvalidArgumentException
      *
      * @return void
      */

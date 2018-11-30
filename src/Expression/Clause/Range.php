@@ -1,6 +1,7 @@
 <?php
 namespace AskLucy\Expression\Clause;
 
+use AskLucy\Exception\InvalidArgumentException;
 use AskLucy\Expression\Field;
 use AskLucy\Property\BoostTrait;
 use AskLucy\Property\FieldTrait;
@@ -51,7 +52,7 @@ class Range implements Clause
      * @param string $to    The upper bound
      * @param string $field Optional name of the field to search in
      *
-     * @throws \Exception Throws an exception, if the given string contains spaces.
+     * @throws InvalidArgumentException Throws an exception, if the given string contains spaces.
      */
     public function __construct(string $from, string $to, string $field = Field::DEFAULT)
     {

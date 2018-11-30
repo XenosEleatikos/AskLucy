@@ -1,6 +1,7 @@
 <?php
 namespace AskLucy\Property;
 
+use AskLucy\Exception\InvalidArgumentException;
 use AskLucy\Expression\Boost;
 use AskLucy\Expression\Clause\Clause;
 
@@ -23,7 +24,7 @@ trait BoostTrait
      *
      * @return self|static
      *
-     * @throws \Exception Thrown, if the given value is negative
+     * @throws InvalidArgumentException Thrown, if the given value is negative
      */
     public function boost(float $value): Clause
     {

@@ -14,7 +14,7 @@ class ProximityTest extends TestCase
     /**
      * Tests, if __construct() throws an exception for a negative number given.
      *
-     * @expectedException        \Exception
+     * @expectedException        \AskLucy\Exception\InvalidArgumentException
      * @expectedExceptionMessage The given term distance must be positive!
      *
      * @return void
