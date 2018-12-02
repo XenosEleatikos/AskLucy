@@ -41,6 +41,12 @@ composer require xenos/asklucy
 ```
 
 ## Usage
+This library contains classes providing a ``__toString()`` method. By casting their instances with the ``(string)``
+operator you will get clauses ready to use for Lucene search engine. For more details about the syntax of Lucene search
+queries you may [read the official docs](https://lucene.apache.org/core/2_9_4/queryparsersyntax.html). But the following
+sections will give you all necessary information about building
+such queries.
+
 A query to Lucene search engine consists of one ore more clauses for matching documents. There are four types of clauses:
 1. Terms matching documents that contain a single word.
 2. Phrases matching documents that contain a sequence of words.
