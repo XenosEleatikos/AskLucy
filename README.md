@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/XenosEleatikos/AskLucy.svg)](https://travis-ci.org/XenosEleatikos/AskLucy)
+
 # AskLucy – A PHP Library for Creating Lucene Search Queries
 This project contains an easy to use PHP library for creating Lucene search queries.
 
