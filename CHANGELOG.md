@@ -1,3 +1,7 @@
+## [2.0.1] - 2019-03-17
+### Added
+- Travis build information
+
 ## [2.0.0] - 2018-12-02
 ### Fixed
 - Several coding style issues
