@@ -1,9 +1,13 @@
-[![Build Status](https://travis-ci.org/XenosEleatikos/AskLucy.svg)](https://travis-ci.org/XenosEleatikos/AskLucy)
+[![CI](https://github.com/XenosEleatikos/AskLucy/actions/workflows/ci.yml/badge.svg)](https://github.com/XenosEleatikos/AskLucy/actions/workflows/ci.yml)
+[![Packagist Version](https://img.shields.io/packagist/v/xenos/asklucy)](https://packagist.org/packages/xenos/asklucy)
+[![PHP Version](https://img.shields.io/packagist/dependency-v/xenos/asklucy/php)](https://packagist.org/packages/xenos/asklucy)
+[![License](https://img.shields.io/packagist/l/xenos/asklucy)](LICENSE)
 
 # AskLucy – A PHP Library for Creating Lucene Search Queries
 This project contains an easy to use PHP library for creating Lucene search queries.
 
 ## Contents
+- [Requirements](#requirements)
 - [Installation](#installation)
     - [Install with Git](#install-with-git)
     - [Install with Composer](#install-with-composer)
@@ -27,6 +31,16 @@ This project contains an easy to use PHP library for creating Lucene search quer
     - [Fuzziness](#fuzziness)
     - [Proximity Search](#proximity-search)
     - [Range Search](#range-search)
+    - [Wildcard Search](#wildcard-search)
+    - [Regular Expression Search](#regular-expression-search)
+    - [Boolean Operators](#boolean-operators)
+    - [Escaping](#escaping)
+- [Upgrading from 2.x](#upgrading-from-2x)
+- [Development](#development)
+- [License](#license)
+
+## Requirements
+PHP 8.3 or higher. Version 2.x supports PHP 7.1 and higher.
 
 ## Installation
 ### Install with Git
@@ -45,15 +59,17 @@ composer require xenos/asklucy
 ## Usage
 This library contains classes providing a ``__toString()`` method. By casting their instances with the ``(string)``
 operator you will get clauses ready to use for Lucene search engine. For more details about the syntax of Lucene search
-queries you may [read the official docs](https://lucene.apache.org/core/2_9_4/queryparsersyntax.html). But the following
+queries you may [read the official docs](https://lucene.apache.org/core/10_0_0/queryparser/org/apache/lucene/queryparser/classic/package-summary.html). But the following
 sections will give you all necessary information about building
 such queries.
 
-A query to Lucene search engine consists of one ore more clauses for matching documents. There are four types of clauses:
+A query to Lucene search engine consists of one or more clauses for matching documents. There are six types of clauses:
 1. Terms matching documents that contain a single word.
 2. Phrases matching documents that contain a sequence of words.
 3. Ranges matching documents that contain a value between a lower and an upper bound.
-4. Complex queries containing one or more sub-clauses of any type.
+4. Wildcards matching documents that contain words following a pattern.
+5. Regular expressions matching documents that contain words following a regular expression.
+6. Complex queries containing one or more sub-clauses of any type.
 
 ### Creating Clauses
 #### Creating a Term
@@ -86,7 +102,7 @@ The string representation of the query will be:
 
 #### Creating a Range
 To create a range matching documents that contain a value between a lower and an upper bound, instantiate a new
-```Rage``` with the bounds:
+```Range``` with the bounds:
 
 ```php
 <?php
@@ -189,7 +205,7 @@ $range = Lucene::range('Anna', 'Doro', 'name');
 
 The result is the same:
 
-> name:[Anna TO Dora]
+> name:[Anna TO Doro]
 
 #### Setting Fields in Complex Queries
 As before you can specify a search field by calling the method ```setField()```...
@@ -236,6 +252,9 @@ The result will be:
 > title:Lucene Apache
 
 ### Operators
+Note, that ```Query::shouldHave()```, ```Query::mustHave()``` and ```Query::mustNotHave()``` set the operator of the given
+clause object itself. If you use the same clause object in several queries, create a copy for each of them.
+
 For all types of clauses you can add operators to define, if matching is required, prohibited or optional. Just call
 ```required()```, ```prohibited()```, or ```optional()```. Note, that a clause is optional by default, so that calling
 ```optional()``` is optional. But it can be used to override an operator set before.
@@ -476,3 +495,152 @@ $range = Lucene::range('Alpha', 'Omega')
 The clause will be rendered with curly brackets:
 
 > {Alpha TO Omega}
+
+Both bounds can be set independently of each other:
+
+```php
+<?php
+use AskLucy\Lucene;
+
+$range = Lucene::range('Alpha', 'Omega')
+    ->exclusiveFrom();  // or inclusiveFrom(), exclusiveTo(), inclusiveTo()
+```
+
+> {Alpha TO Omega]
+
+A bound given as ```null``` is open and rendered as an asterisk, e. g. for all documents with a price of at least 100:
+
+```php
+<?php
+use AskLucy\Lucene;
+
+$range = Lucene::range('100', null, 'price');
+```
+
+> price:[100 TO *]
+
+### Wildcard Search
+Use ```Lucene::wildcard()``` to search for terms containing the wildcards ```?``` (exactly one character) and ```*```
+(zero or more characters). All other special characters are escaped.
+
+```php
+<?php
+use AskLucy\Lucene;
+
+$wildcard = Lucene::wildcard('te?t*', 'title');
+```
+
+> title:te?t*
+
+Note, that Lucene may disallow wildcards at the beginning of a term, depending on its configuration.
+
+### Regular Expression Search
+```Lucene::regex()``` renders a regular expression between slashes. Slashes in the pattern are escaped automatically.
+
+```php
+<?php
+use AskLucy\Lucene;
+
+$regex = Lucene::regex('[mb]oat', 'title');
+```
+
+> title:/[mb]oat/
+
+The syntax of the pattern depends on your search engine.
+
+### Boolean Operators
+Besides the prefix operators ```required()``` and ```prohibited()```, the clauses of a complex query can be connected by
+the boolean operators ```AND```, ```OR``` and ```NOT```. Use ```Query::and()```, ```Query::or()``` and
+```Query::not()``` instead of ```Query::add()```:
+
+```php
+<?php
+use AskLucy\Lucene;
+
+$query = Lucene::query()
+    ->add(Lucene::term('Lucene'))
+    ->and(Lucene::query()
+        ->add(Lucene::term('search'))
+        ->or(Lucene::term('query'))
+    )
+    ->not(Lucene::term('Solr'));
+```
+
+Nested queries with more than one clause are enclosed in parentheses automatically:
+
+> Lucene AND (search OR query) NOT Solr
+
+Note, that Lucene's ```AND``` and ```OR``` are not boolean algebra: ```a AND b OR c``` means "```a``` and ```b``` are
+required, ```c``` is optional". Use nested queries to group clauses explicitly.
+
+For the first clause of a query, ```and()``` and ```or()``` have no effect, ```not()``` renders ```NOT``` (which matches
+nothing on its own). ```NOT``` must not be followed by ```+``` or ```-```, so such a clause is put in parentheses.
+Operators, field and boost of a query that contains a single decorated clause lead to parentheses as well, to keep the
+query valid, e. g. ```+(-a)```.
+
+### Escaping
+Lucene's special characters ```+ - && || ! ( ) { } [ ] ^ " ~ * ? : \ /``` and the reserved words ```AND```, ```OR```,
+```NOT``` and ```TO``` are escaped automatically in terms, phrases, ranges, wildcards and field names. So it is safe to
+pass user input to these clauses, it can't change the structure of the query:
+
+```php
+<?php
+use AskLucy\Lucene;
+
+$term = Lucene::term('-secret', 'title');
+```
+
+> title:\-secret
+
+Terms and wildcards must not be empty and must not contain whitespace (including the ideographic space). Use a phrase
+for several words. Input must be valid UTF-8, otherwise an ```InvalidArgumentException``` is thrown.
+
+Note the following limits:
+- The pattern of a regular expression is passed through, except for slashes, which are escaped. It has the syntax of your
+  search engine, so don't pass untrusted input to ```Lucene::regex()``` without validating it. A pattern must not end
+  with a backslash; use ```[\\]``` to match a literal backslash.
+- Bounds of ranges that contain whitespace or closing brackets (```]```, ```}```) are put in quotation marks, because
+  Lucene can't read escaped brackets within a range. Such a bound must not end with a backslash, because Lucene would
+  read it as an escaped quotation mark. An ```InvalidArgumentException``` is thrown in this case.
+- In wildcards, ```*``` and ```?``` are always wildcards. There is no way to match them literally.
+- To escape a string for your own use, call ```Lucene::escape()```. It escapes whitespace, too, so the result is always
+  a single token.
+- The library only escapes Lucene's syntax. Search engines built on top of Lucene may reserve further characters, for
+  example ```<``` and ```>``` in Elasticsearch's ```query_string```.
+
+## Upgrading from 2.x
+Version 3.0 requires PHP 8.3 and contains the following breaking changes:
+
+- Phrases are always rendered in quotation marks, also if they contain a single word.
+- Empty terms and phrases throw an ```InvalidArgumentException``` instead of being rendered as an empty string.
+- Terms and phrases are escaped. If you relied on passing Lucene syntax like ```te*t``` to ```Lucene::term()```, use
+  ```Lucene::wildcard()```.
+- A query with a field now encloses multiple clauses in parentheses: ```title:(a b)``` instead of ```title:a b```.
+- ```Operator```, ```Fuzziness``` and the former ```RangeType``` are replaced by enums. The constants
+  ```Operator::SYMBOL_*``` are removed, use the enum ```Operator``` and the new enum ```Conjunction```.
+- ```InvalidArgumentException``` extends ```\InvalidArgumentException```.
+- The ```Clause``` interface declares ```static``` as return type of its fluent methods. Own implementations must adapt.
+- Removed: the public constants ```Query::CLAUSE_SEPARATOR``` and ```Phrase::TERM_SEPARATOR```, and the factory methods
+  ```Fuzziness::distance0/1/2()```, ```Operator::optional/required/prohibited()``` and
+  ```RangeType::inclusive/exclusive()```.
+- ```Boost``` throws an exception for values that are not finite or not greater than zero (rendered as at least
+  ```0.0000000001```).
+- Regular expressions must not end with a backslash, and a query must not contain itself, directly or indirectly.
+- All classes are final, the traits in ```AskLucy\Property``` were removed.
+- Fluent methods return ```static```.
+
+## Compatibility
+The rendered queries were verified against the classic query parser of Apache Lucene 10.6: tens of thousands of randomly
+generated queries, including adversarial input like special characters, reserved words and unicode, were parsed by Lucene
+and compared with the structure that was meant. Solr and Elasticsearch use the same syntax, but may differ in details.
+
+## Development
+```bash
+composer install
+composer ci
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## License
+AskLucy is released under the [MIT License](LICENSE).
