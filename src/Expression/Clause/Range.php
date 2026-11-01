@@ -1,105 +1,130 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Expression\Clause;
 
+use AskLucy\Escape;
 use AskLucy\Exception\InvalidArgumentException;
 use AskLucy\Expression\Field;
-use AskLucy\Property\BoostTrait;
-use AskLucy\Property\FieldTrait;
-use AskLucy\Property\OperatorTrait;
-use AskLucy\Value\RangeType;
 
 /**
- * A range
+ * A range between a lower and an upper bound. Bounds containing whitespace or closing brackets are quoted, because
+ * Lucene doesn't recognize escaped brackets within a range. A bound given as null is open and rendered as "*". Ranges are inclusive
+ * of both bounds by default.
  */
-class Range implements Clause
+final class Range extends AbstractClause
 {
-    use BoostTrait;
-    use FieldTrait;
-    use OperatorTrait;
+    private const OPEN_BOUND = '*';
 
-    /**
-     * The "to"-operator
-     *
-     * @var string
-     */
-    private const TO = ' TO ';
+    private readonly ?string $from;
 
-    /**
-     * The lower bound
-     *
-     * @var Term
-     */
-    private $from;
+    private readonly ?string $to;
 
-    /**
-     * The upper bound
-     *
-     * @var Term
-     */
-    private $to;
+    private bool $includesFrom = true;
 
-    /**
-     * The type of the range
-     *
-     * @var RangeType
-     */
-    private $rangeType;
+    private bool $includesTo = true;
 
-    /**
-     * Constructs a range.
-     *
-     * @param string $from  The lower bound
-     * @param string $to    The upper bound
-     * @param string $field Optional name of the field to search in
-     *
-     * @throws InvalidArgumentException Throws an exception, if the given string contains spaces.
-     */
-    public function __construct(string $from, string $to, string $field = Field::DEFAULT)
+    public function __construct(?string $from, ?string $to, string $field = Field::DEFAULT)
     {
-        $this->from      = new Term($from);
-        $this->to        = new Term($to);
-        $this->field     = new Field($field);
-        $this->rangeType = RangeType::inclusive();
+        parent::__construct($field);
+
+        $this->from = $this->normalize($from);
+        $this->to   = $this->normalize($to);
     }
 
     /**
-     * Includes the lower and the upper bound.
-     *
-     * @return self
+     * Includes both bounds: [a TO b]
      */
     public function inclusive(): self
     {
-        $this->rangeType = RangeType::inclusive();
+        $this->includesFrom = true;
+        $this->includesTo   = true;
 
         return $this;
     }
 
     /**
-     * Excludes the lower and the upper bound.
-     *
-     * @return self
+     * Excludes both bounds: {a TO b}
      */
     public function exclusive(): self
     {
-        $this->rangeType = RangeType::exclusive();
+        $this->includesFrom = false;
+        $this->includesTo   = false;
 
         return $this;
     }
 
-    /**
-     * Returns the range as string.
-     *
-     * @return string
-     */
-    public function __toString(): string
+    public function inclusiveFrom(): self
     {
-        return $this->operator
-            . $this->field
-            . $this->rangeType->getOpeningBracket()
-            . $this->from
-            . self::TO
-            . $this->to
-            . $this->rangeType->getClosingBracket()
-            . $this->boost;
+        $this->includesFrom = true;
+
+        return $this;
+    }
+
+    public function exclusiveFrom(): self
+    {
+        $this->includesFrom = false;
+
+        return $this;
+    }
+
+    public function inclusiveTo(): self
+    {
+        $this->includesTo = true;
+
+        return $this;
+    }
+
+    public function exclusiveTo(): self
+    {
+        $this->includesTo = false;
+
+        return $this;
+    }
+
+    protected function body(): string
+    {
+        return ($this->includesFrom ? '[' : '{')
+            . $this->render($this->from)
+            . ' TO '
+            . $this->render($this->to)
+            . ($this->includesTo ? ']' : '}');
+    }
+
+    private function normalize(?string $bound): ?string
+    {
+        if (null === $bound) {
+            return null;
+        }
+
+        $bound = Escape::trim($bound);
+
+        if ('' === $bound) {
+            throw new InvalidArgumentException('A bound of a range must not be empty. Use null for an open bound.');
+        }
+
+        if ($this->needsQuotes($bound) && str_ends_with($bound, '\\')) {
+            // Lucene reads the backslash and the closing quotation mark as an escaped quotation mark.
+            throw new InvalidArgumentException(
+                'A bound of a range containing whitespace or closing brackets must not end with a backslash.'
+            );
+        }
+
+        return $bound;
+    }
+
+    private function needsQuotes(string $bound): bool
+    {
+        return Escape::containsWhitespace($bound) || 1 === preg_match('/[\]}]/', $bound);
+    }
+
+    private function render(?string $bound): string
+    {
+        return match (true) {
+            null === $bound => self::OPEN_BOUND,
+            $this->needsQuotes($bound) => '"' . Escape::phrase($bound) . '"',
+            default => Escape::term($bound),
+        };
     }
 }

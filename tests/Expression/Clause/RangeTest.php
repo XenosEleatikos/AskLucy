@@ -1,164 +1,135 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Test\Expression\Clause;
 
+use AskLucy\Exception\InvalidArgumentException;
 use AskLucy\Expression\Clause\Clause;
-use AskLucy\Expression\Clause\Phrase;
-use AskLucy\Expression\Clause\Range;
 use AskLucy\Lucene;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * Unit tests for the phrase.
- *
- * @see Phrase
- */
-class RangeTest extends ClauseTest
+final class RangeTest extends ClauseTestCase
 {
-    /**
-     * Tests, if the constructor sets the lower and the upper bound, if the range type is inclusive by default, and if
-     * __toString() renders the range correctly for this minimum set of input.
-     *
-     * @return void
-     */
-    public function test__constructSetsRage(): void
+    public function testIsInclusiveByDefault(): void
     {
-        $range = $this->getTestClause();
-
-        $this->assertSame(
-            '[a TO b]',
-            (string) $range,
-            'Expected range to be rendered as "[a TO b]", if "a" and "b" where given as constructor arguments for the lower and the upper bound.'
-        );
+        $this->assertSame('[a TO b]', (string) Lucene::range('a', 'b'));
     }
 
-    /**
-     * Tests, if the constructor sets the lower and the upper bound, if the range type is inclusive by default, and if
-     * __toString() renders the range correctly for this minimum set of input.
-     *
-     * @return void
-     */
-    public function test__constructSetsRageWithField(): void
-    {
-        $range = $this->getTestClause('name');
-
-        $this->assertSame(
-            'name:',
-            substr($range, 0, 5),
-            'Expected that "name:" is prepended to the range, if the field "name" was given as constructor argument.'
-        );
-    }
-
-    /**
-     * Tests, if __toString() renders the range correctly with curly brackets, if exclusive() was called.
-     *
-     * @return void
-     */
     public function testExclusive(): void
     {
-        $range = $this->getTestClause()
-            ->exclusive();
+        $range = Lucene::range('a', 'b');
 
-        $this->assertSame(
-            '{a TO b}',
-            (string) $range,
-            'Expected exclusive range to be rendered as "{a TO b}".'
-        );
+        $this->assertSame($range, $range->exclusive(), 'Expected a fluent interface.');
+        $this->assertSame('{a TO b}', (string) $range);
     }
 
-    /**
-     * Tests, if exclusive() returns the range itself for a fluent interface.
-     *
-     * @return void
-     */
-    public function testExclusiveReturnsSelf(): void
-    {
-        $range = $this->getTestClause();
-
-        $this->assertSame(
-            $range,
-            $range->exclusive(),
-            'Expected that exclusive() returns the range itself for a fluent interface.'
-        );
-    }
-
-    /**
-     * Tests, if exclusive() overwrites inclusive(), and if the exclusive range is rendered with curly brackets.
-     *
-     * @return void
-     */
-    public function testExclusiveOverwritesInclusive(): void
-    {
-        $range = $this->getTestClause()
-            ->inclusive()
-            ->exclusive();
-
-        $this->assertRegExp(
-            '/{*+}/',
-            (string) $range,
-            'Expected that exclusive() overwrites inclusive().'
-        );
-    }
-
-    /**
-     * Tests, if __toString() renders the range correctly with square brackets, if inclusive() was called.
-     *
-     * @return void
-     */
-    public function testInclusive(): void
-    {
-        $range = $this->getTestClause()
-            ->inclusive();
-
-        $this->assertSame(
-            '[a TO b]',
-            (string) $range,
-            'Expected exclusive range to be rendered as "[a TO b]".'
-        );
-    }
-
-    /**
-     * Tests, if exclusive() returns the range itself for a fluent interface.
-     *
-     * @return void
-     */
-    public function testInclusiveReturnsSelf(): void
-    {
-        $range = $this->getTestClause();
-
-        $this->assertSame(
-            $range,
-            $range->inclusive(),
-            'Expected that inclusive() returns the range itself for a fluent interface.'
-        );
-    }
-
-    /**
-     * Tests, if inclusive() overwrites exclusive(), and if the inclusive range is rendered with square brackets.
-     *
-     * @return void
-     */
     public function testInclusiveOverwritesExclusive(): void
     {
-        $range = $this->getTestClause()
-            ->exclusive()
-            ->inclusive();
+        $range = Lucene::range('a', 'b')->exclusive();
 
-        $this->assertRegExp(
-            '/\[*+\]/',
-            (string) $range,
-            'Expected that inclusive() overwrites exclusive().'
-        );
+        $this->assertSame($range, $range->inclusive(), 'Expected a fluent interface.');
+        $this->assertSame('[a TO b]', (string) $range);
     }
 
-    /**
-     * Returns a range for testing.
-     *
-     * @param null|string $constructorArgumentField The constructor argument for the field
-     *
-     * @return Clause|Range
-     */
+    public function testMixedBounds(): void
+    {
+        $this->assertSame('{a TO b]', (string) Lucene::range('a', 'b')->exclusiveFrom());
+        $this->assertSame('[a TO b}', (string) Lucene::range('a', 'b')->exclusiveTo());
+        $this->assertSame('[a TO b]', (string) Lucene::range('a', 'b')->exclusive()->inclusiveFrom()->inclusiveTo());
+    }
+
+    public function testMixedBoundMethodsReturnTheRange(): void
+    {
+        $range = Lucene::range('a', 'b');
+
+        $this->assertSame($range, $range->exclusiveFrom());
+        $this->assertSame($range, $range->exclusiveTo());
+        $this->assertSame($range, $range->inclusiveFrom());
+        $this->assertSame($range, $range->inclusiveTo());
+    }
+
+    public function testOpenBounds(): void
+    {
+        $this->assertSame('[* TO 5]', (string) Lucene::range(null, '5'));
+        $this->assertSame('[5 TO *]', (string) Lucene::range('5', null));
+        $this->assertSame('{* TO *}', (string) Lucene::range(null, null)->exclusive());
+    }
+
+    public function testBoundsAreEscaped(): void
+    {
+        $this->assertSame('[2020\-01\-01 TO \*]', (string) Lucene::range('2020-01-01', '*'));
+    }
+
+    public function testBoundsWithWhitespaceAreQuoted(): void
+    {
+        $this->assertSame('["Anna Maria" TO Doro]', (string) Lucene::range('Anna Maria', 'Doro'));
+    }
+
+    public function testBoundsWithUnicodeWhitespaceAreQuoted(): void
+    {
+        $this->assertSame("[\"a\u{3000}b\" TO c]", (string) Lucene::range("a\u{3000}b", 'c'));
+    }
+
+    public function testBoundsWithClosingBracketsAreQuoted(): void
+    {
+        $this->assertSame('["a]b" TO "c}d"]', (string) Lucene::range('a]b', 'c}d'));
+    }
+
+    public function testQuotedBoundsEscapeQuotationMarksAndBackslashes(): void
+    {
+        $this->assertSame('["a\\"]" TO c]', (string) Lucene::range('a"]', 'c'));
+    }
+
+    #[DataProvider('provideBoundsEndingWithBackslash')]
+    public function testThrowsExceptionForQuotedBoundEndingWithBackslash(string $bound): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Lucene::range('a', $bound);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function provideBoundsEndingWithBackslash(): array
+    {
+        return [
+            'with whitespace'      => ['a b\\'],
+            'with closing bracket' => ['a]\\'],
+            'with closing brace'   => ['a}\\'],
+        ];
+    }
+
+    public function testAcceptsUnquotedBoundEndingWithBackslash(): void
+    {
+        $this->assertSame('[a\\\\ TO b]', (string) Lucene::range('a\\', 'b'));
+    }
+
+    public function testTrimsBounds(): void
+    {
+        $this->assertSame('[a TO b]', (string) Lucene::range(' a ', "\tb\n"));
+        $this->assertSame('[a TO b]', (string) Lucene::range("\0a\u{3000}", "\fb"));
+    }
+
+    public function testThrowsExceptionForEmptyBound(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Lucene::range('', 'b');
+    }
+
+    public function testRendersFieldBeforeRange(): void
+    {
+        $this->assertSame('name:[a TO b]', (string) Lucene::range('a', 'b', 'name'));
+    }
+
+    protected function getExpectedBody(): string
+    {
+        return '[a TO b]';
+    }
+
     protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
-        return is_null($constructorArgumentField)
+        return null === $constructorArgumentField
             ? Lucene::range('a', 'b')
             : Lucene::range('a', 'b', $constructorArgumentField);
     }

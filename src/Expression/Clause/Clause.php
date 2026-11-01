@@ -1,50 +1,36 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Expression\Clause;
 
 use AskLucy\Expression\Expression;
 use AskLucy\Expression\Field;
 
-/**
- * A clause
- */
 interface Clause extends Expression
 {
     /**
-     * Sets the field.
-     *
-     * @param string $name The name of the field to search in
-     *
-     * @return self|static
+     * Sets the field to search in. Calling it without argument resets to the default field.
      */
-    public function setField(string $name = Field::DEFAULT): Clause;
+    public function setField(string $name = Field::DEFAULT): static;
 
     /**
-     * Sets the optional operator.
-     *
-     * @return self|static
+     * Matching is optional (default).
      */
-    public function optional(): Clause;
+    public function optional(): static;
 
     /**
-     * Sets the required operator.
-     *
-     * @return self|static
+     * Matching is required.
      */
-    public function required(): Clause;
+    public function required(): static;
 
     /**
-     * Sets the prohibited operator.
-     *
-     * @return self|static
+     * Matching is prohibited.
      */
-    public function prohibited(): Clause;
+    public function prohibited(): static;
 
     /**
-     * Boosts the clause.
-     *
-     * @param float $value The boost value
-     *
-     * @return self|static
+     * Sets the relevance boost factor, which must be greater than zero.
      */
-    public function boost(float $value): Clause;
+    public function boost(float $value): static;
 }

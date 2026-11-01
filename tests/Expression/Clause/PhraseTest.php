@@ -1,170 +1,115 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Test\Expression\Clause;
 
+use AskLucy\Exception\InvalidArgumentException;
 use AskLucy\Expression\Clause\Clause;
-use AskLucy\Expression\Clause\Phrase;
 use AskLucy\Lucene;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * Unit tests for the phrase.
- *
- * @see Phrase
- */
-class PhraseTest extends ClauseTest
+final class PhraseTest extends ClauseTestCase
 {
-    /**
-     * Tests, if phrases getting quoted.
-     *
-     * @return void
-     */
-    public function test__toStringRendersPhrases(): void
+    public function testRendersPhraseInQuotationMarks(): void
     {
-        $phrase = Lucene::phrase('');
+        $this->assertSame('"search phrase"', (string) Lucene::phrase('search phrase'));
+    }
+
+    public function testRendersSingleWordInQuotationMarks(): void
+    {
+        $this->assertSame('"lucene"', (string) Lucene::phrase('lucene'));
+    }
+
+    public function testNormalizesWhitespace(): void
+    {
+        $this->assertSame('"a b c"', (string) Lucene::phrase(" a \t b\nc "));
+    }
+
+    public function testThrowsExceptionForPhraseOfWhitespaceOnly(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Lucene::phrase(" \t\n");
+    }
+
+    public function testSplitsAtUnicodeWhitespace(): void
+    {
+        $this->assertSame("\"a b c\"", (string) Lucene::phrase("a\u{3000}b\u{00A0}c"));
+    }
+
+    public function testThrowsExceptionForInvalidUtf8(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Lucene::phrase("a \xFF");
+    }
+
+    public function testThrowsExceptionForEmptyPhrase(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        Lucene::phrase('  ');
+    }
+
+    public function testEscapesQuotationMarksAndBackslashes(): void
+    {
+        $this->assertSame('"say \"hi\" \\\\ there"', (string) Lucene::phrase('say "hi" \\ there'));
+    }
+
+    public function testKeepsOtherSpecialCharactersUnescaped(): void
+    {
+        $this->assertSame('"a+b (c)"', (string) Lucene::phrase('a+b (c)'));
+    }
+
+    #[DataProvider('provideProximities')]
+    public function testSetProximity(?int $proximity, string $expected): void
+    {
+        $phrase = Lucene::phrase('search phrase');
 
         $this->assertSame(
-            '',
-            (string) $phrase,
-            'Expected an empty string.'
+            $phrase,
+            null === $proximity ? $phrase->setProximity() : $phrase->setProximity($proximity),
+            'Expected a fluent interface.'
         );
+        $this->assertSame($expected, (string) $phrase);
     }
 
-    /**
-     * Tests, if __toString() renders an empty phrase.
-     *
-     * @return void
-     */
-    public function test__toStringRendersEmptyPhrase(): void
+    /** @return array<string, array{?int, string}> */
+    public static function provideProximities(): array
     {
-        $phrase = Lucene::phrase('search phrase');
-
-        $this->assertRegExp(
-            '("search phrase")',
-            (string) $phrase,
-            'Expected phrases to get quoted.'
-        );
+        return [
+            'default argument' => [null, '"search phrase"'],
+            'proximity 0'      => [0, '"search phrase"'],
+            'proximity 1'      => [1, '"search phrase"~1'],
+            'proximity 5'      => [5, '"search phrase"~5'],
+        ];
     }
 
-    /**
-     * Tests, if setProximity() sets and __toString() renders the proximity correctly.
-     *
-     * @return void
-     */
-    public function test__toStringRendersProximity(): void
+    public function testProximityIsNotRenderedByDefault(): void
     {
-        $phrase = Lucene::phrase('search phrase')
-            ->setProximity(1);
-
-        $this->assertRegExp(
-            '/(search phrase).?(~1)/',
-            (string) $phrase,
-            'Expected that __toString() appends "~1" to the phrase, because setProximity() was called with parameter 1.'
-        );
+        $this->assertStringNotContainsString('~', (string) Lucene::phrase('search phrase'));
     }
 
-    /**
-     * Tests, if __toString() doesn't render the proximity operator "~", when setProximity() wasn't called.
-     *
-     * @return void
-     */
-    public function test__toStringDoesNotRenderProximityOperatorIfSetProximityWasNotCalled(): void
+    public function testProximityIsNotRenderedForSingleWord(): void
     {
-        $phrase = Lucene::phrase('search phrase');
-
-        $this->assertRegExp(
-            '/^[^~]+$/',
-            (string) $phrase,
-            'Expected that __toString() doesn\'t render the proximity operator "~", when setProximity wasn\'t called.'
-        );
+        $this->assertSame('"lucene"', (string) Lucene::phrase('lucene')->setProximity(1));
     }
 
-    /**
-     * Tests, if __toString() doesn't render the proximity operator "~", when setProximity() was called with parameter 0.
-     *
-     * @return void
-     */
-    public function test__toStringDoesNotRenderProximityOperatorIfSetProximityWasCalledWith0(): void
+    public function testLastProximityWins(): void
     {
-        $phrase = Lucene::phrase('search phrase')
-            ->setProximity(0);
-
-        $this->assertRegExp(
-            '/^[^~]+$/',
-            (string) $phrase,
-            'Expected that __toString() doesn\'t render the proximity operator "~", when setProximity was called with parameter 0.'
-        );
+        $this->assertSame('"a b"~2', (string) Lucene::phrase('a b')->setProximity(1)->setProximity(2));
     }
 
-    /**
-     * Tests, if __toString() doesn't render the proximity operator "~", when setProximity() was called without parameter.
-     *
-     * @return void
-     */
-    public function test__toStringDoesNotRenderProximityOperatorIfSetProximityWasCalledWithoutParameter(): void
+    protected function getExpectedBody(): string
     {
-        $phrase = Lucene::phrase('search phrase')
-            ->setProximity();
-
-        $this->assertRegExp(
-            '/^[^~]+$/',
-            (string) $phrase,
-            'Expected that __toString() doesn\'t render the proximity operator "~", when setProximity was called without parameter.'
-        );
+        return '"a b"';
     }
 
-    /**
-     * Tests, if __toString() doesn't render the proximity operator "~" for a single term phrase.
-     *
-     * @return void
-     */
-    public function test__toStringDoesNotRenderProximityOperatorForSingleTermPhrase(): void
-    {
-        $phrase = Lucene::phrase('lucene')
-            ->setProximity(1);
-
-        $this->assertRegExp(
-            '/^[^~]+$/',
-            (string) $phrase,
-            'Expected that __toString() doesn\'t render the proximity operator "~" for a single word term.'
-        );
-    }
-
-    /**
-     * Tests, if setProximity() overwrites the proximity set before and __toString() renders only the last set proximity.
-     *
-     * @return void
-     */
-    public function testSetProximityOverwritesProximitySetBeforeAnd__toStringRendersLastSetProximityOnly(): void
-    {
-        $phrase = Lucene::phrase('search phrase')
-            ->setProximity(1)
-            ->setProximity(2);
-
-        $this->assertRegExp(
-            '/(~2)/',
-            (string) $phrase,
-            'Expected that the __toString() renders the last set proximity, "~2".'
-        );
-
-        $this->assertRegExp(
-            '/^[^1]+$/',
-            (string) $phrase,
-            'Expected that the proximity 1 was overwritten by 2 and that __toString() only renders the last set proximity, "~2".'
-        );
-    }
-
-    /**
-     * Returns a phrase for testing.
-     *
-     * @param null|string $constructorArgumentField The constructor argument for the field
-     *
-     * @return Clause|Phrase
-     */
     protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
-        $query = is_null($constructorArgumentField)
+        return null === $constructorArgumentField
             ? Lucene::phrase('a b')
             : Lucene::phrase('a b', $constructorArgumentField);
-
-        return $query;
     }
 }

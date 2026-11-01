@@ -1,123 +1,75 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Expression\Clause;
 
+use AskLucy\Escape;
 use AskLucy\Exception\InvalidArgumentException;
 use AskLucy\Expression\Field;
 use AskLucy\Expression\Fuzziness;
-use AskLucy\Property\BoostTrait;
-use AskLucy\Property\FieldTrait;
-use AskLucy\Property\OperatorTrait;
 
 /**
- * A term
+ * A single word. Special characters are escaped automatically.
  */
-class Term implements Clause
+final class Term extends AbstractClause
 {
-    use BoostTrait;
-    use FieldTrait;
-    use OperatorTrait;
+    private readonly string $searchString;
 
-    /**
-     * The search string
-     *
-     * @var string
-     */
-    private $searchString;
+    private Fuzziness $fuzziness = Fuzziness::None;
 
-    /**
-     * The fuzziness
-     *
-     * @var Fuzziness
-     */
-    private $fuzziness;
-
-    /**
-     * Constructs a term.
-     *
-     * @param string $searchString The string to search for
-     * @param string $field        Optional name of the field to search in
-     *
-     * @throws InvalidArgumentException Throws an exception, if the given string contains spaces.
-     */
     public function __construct(string $searchString, string $field = Field::DEFAULT)
     {
-        $searchString = trim($searchString);
+        parent::__construct($field);
 
-        if (strpos($searchString, Phrase::TERM_SEPARATOR)) {
-            throw new InvalidArgumentException('A term must not contain spaces.');
+        $searchString = Escape::trim($searchString);
+
+        if ('' === $searchString) {
+            throw new InvalidArgumentException('A term must not be empty.');
         }
 
-        $this->searchString = trim($searchString);
-        $this->field        = new Field($field);
-        $this->fuzziness    = Fuzziness::distance0();
+        if (Escape::containsWhitespace($searchString)) {
+            throw new InvalidArgumentException('A term must not contain whitespace.');
+        }
+
+        $this->searchString = $searchString;
     }
 
     /**
-     * Allows search results similar to the search term.
-     *
-     * @param int $distance The Damerau-Levenshtein distance
-     *                      Possible values: 0, 1, 2
-     *
-     * @return self
+     * Makes the term fuzzy. Values lower than 1 disable fuzziness, values greater than 2 are limited to 2.
      */
     public function fuzzify(int $distance = 2): self
     {
-        if ($distance < 1) {
-            return $this->fuzzify0();
-        } elseif ($distance === 1) {
-            return $this->fuzzify1();
-        } else {
-            return $this->fuzzify2();
-        }
+        return match (true) {
+            $distance < 1 => $this->fuzzify0(),
+            1 === $distance => $this->fuzzify1(),
+            default => $this->fuzzify2(),
+        };
     }
 
-    /**
-     * Sets the Damerau-Levenshtein distance 0 as fuzziness.
-     *
-     * @return self
-     */
     public function fuzzify0(): self
     {
-        $this->fuzziness = Fuzziness::distance0();
+        $this->fuzziness = Fuzziness::None;
 
         return $this;
     }
 
-    /**
-     * Sets the Damerau-Levenshtein distance 1 as fuzziness.
-     *
-     * @return self
-     */
     public function fuzzify1(): self
     {
-        $this->fuzziness = Fuzziness::distance1();
+        $this->fuzziness = Fuzziness::One;
 
         return $this;
     }
 
-    /**
-     * Sets the Damerau-Levenshtein distance 2 as fuzziness.
-     *
-     * @return self
-     */
     public function fuzzify2(): self
     {
-        $this->fuzziness = Fuzziness::distance2();
+        $this->fuzziness = Fuzziness::Two;
 
         return $this;
     }
 
-    /**
-     * Returns the search string.
-     *
-     * @return string
-     */
-    public function __toString(): string
+    protected function body(): string
     {
-        return $this->operator
-            . $this->field
-            . $this->searchString
-            . $this->fuzziness
-            . $this->boost;
+        return Escape::term($this->searchString) . $this->fuzziness->suffix();
     }
 }

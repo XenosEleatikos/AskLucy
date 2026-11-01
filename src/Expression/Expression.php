@@ -1,15 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Expression;
 
 /**
- * An expression
+ * An expression is a part of a Lucene query that can be rendered to a string.
  */
-interface Expression
-{
-    /**
-     * Returns a string representation of the object.
-     *
-     * @return string
-     */
-    public function __toString(): string;
-}
+interface Expression extends \Stringable {}
