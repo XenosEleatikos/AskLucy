@@ -2,8 +2,9 @@
     "name": "xenos/asklucy",
     "type": "library",
     "description": "AskLucy – A PHP library for creating Lucene search queries",
-    "keywords": ["lucene", "search", "query", "php"],
+    "keywords": ["lucene", "search", "query", "query-builder", "solr", "elasticsearch", "php"],
     "homepage": "https://github.com/XenosEleatikos/AskLucy",
+    "license": "MIT",
     "authors": [
         {
             "name": "Christoph Hochholzer",
@@ -12,20 +13,56 @@
             "role": "Developer"
         }
     ],
+    "support": {
+        "issues": "https://github.com/XenosEleatikos/AskLucy/issues",
+        "source": "https://github.com/XenosEleatikos/AskLucy"
+    },
     "require": {
-        "php": ">=7.1.0"
+        "php": "^8.3"
     },
     "require-dev": {
-        "infection/infection": "0.10",
-        "phpunit/phpunit": "^7",
-        "phpro/grumphp": "0.14.2",
-        "phpstan/phpstan": "0.10.5",
-        "phpstan/phpstan-phpunit": "0.10"
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "infection/infection": "^0.35.8",
+        "phpstan/phpstan": "^2.3",
+        "phpstan/phpstan-phpunit": "^2.1",
+        "phpstan/phpstan-strict-rules": "^2.1",
+        "phpunit/phpunit": "^12.5"
     },
     "autoload": {
         "psr-4": {
-            "AskLucy\\": "src",
+            "AskLucy\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
             "AskLucy\\Test\\": "tests"
         }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "infection/extension-installer": true
+        }
+    },
+    "scripts": {
+        "cs": "php-cs-fixer fix --dry-run --diff --allow-risky=yes",
+        "cs-fix": "php-cs-fixer fix --allow-risky=yes",
+        "stan": "phpstan analyse --no-progress",
+        "test": "phpunit",
+        "infection": "infection --threads=max --show-mutations",
+        "ci": [
+            "@cs",
+            "@stan",
+            "@test",
+            "@infection"
+        ]
+    },
+    "scripts-descriptions": {
+        "cs": "Checks the coding style",
+        "cs-fix": "Fixes the coding style",
+        "stan": "Runs the static analysis",
+        "test": "Runs the unit tests",
+        "infection": "Runs the mutation tests",
+        "ci": "Runs all checks of the CI pipeline"
     }
 }

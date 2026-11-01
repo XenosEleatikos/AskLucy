@@ -1,8 +1,15 @@
-parameters:
-    ignoreErrors:
-        - '#Call to an undefined method AskLucy\\Expression\\Clause\\Clause\:\:exclusive\(\)\.#'
-        - '#Call to an undefined method AskLucy\\Expression\\Clause\\Clause\:\:inclusive\(\)\.#'
-        - '#Method AskLucy\\Expression\\Clause\\Phrase\:\:getProximitySpecification\(\) should return string but returns AskLucy\\Expression\\Proximity\|string\.#'
 includes:
     - vendor/phpstan/phpstan-phpunit/extension.neon
     - vendor/phpstan/phpstan-phpunit/rules.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+    level: max
+    paths:
+        - src
+        - tests
+    ignoreErrors:
+        # Calling assertions via $this is the common PHPUnit style.
+        -
+            identifier: staticMethod.dynamicCall
+            path: tests
