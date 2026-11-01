@@ -1,53 +1,26 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Expression;
 
 use AskLucy\Exception\InvalidArgumentException;
 
-/**
- * The term proximity
- */
-class Proximity implements Expression
+final readonly class Proximity implements Expression
 {
-    /**
-     * The proximity operator
-     *
-     * @var string
-     */
-    const PROXIMITY_OPERATOR = '~';
+    private const PROXIMITY_OPERATOR = '~';
 
-    /**
-     * The required proximity between the terms
-     *
-     * @var int
-     */
-    private $proximity = 0;
-
-    /**
-     * Constructs the term proximity.
-     *
-     * @param int $proximity The required proximity between the terms
-     *
-     * @throws InvalidArgumentException Thrown, if the given distance is negative, what makes no sense
-     */
-    public function __construct(int $proximity = 0)
+    public function __construct(private int $proximity = 0)
     {
-        if ($proximity >= 0) {
-            $this->proximity = $proximity;
-        } else {
-            throw new InvalidArgumentException('The given term distance must be positive!');
+        if ($proximity < 0) {
+            throw new InvalidArgumentException('The given term distance must not be negative!');
         }
     }
 
-    /**
-     * Returns the term proximity as string.
-     * We can ignore the proximity for the default value 0.
-     *
-     * @return string
-     */
     public function __toString(): string
     {
-        return ($this->proximity > 0)
-            ? Proximity::PROXIMITY_OPERATOR . $this->proximity
+        return $this->proximity > 0
+            ? self::PROXIMITY_OPERATOR . $this->proximity
             : '';
     }
 }

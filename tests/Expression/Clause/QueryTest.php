@@ -1,247 +1,384 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Test\Expression\Clause;
 
-use AskLucy\Expression\Clause\Query;
+use AskLucy\Exception\InvalidArgumentException;
 use AskLucy\Expression\Clause\Clause;
+use AskLucy\Expression\Clause\Query;
 use AskLucy\Lucene;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\DataProvider;
 
-/**
- * Unit tests for the query.
- *
- * @see Query
- */
-class QueryTest extends ClauseTest
+final class QueryTest extends ClauseTestCase
 {
-    /**
-     * Tests adding an optional clause with shouldHave().
-     *
-     * @return void
-     */
+    public function testRendersClausesSeparatedBySpaces(): void
+    {
+        $query = Lucene::query()
+            ->add(Lucene::term('a'))
+            ->add(Lucene::term('b'))
+            ->add(Lucene::term('c'));
+
+        $this->assertSame('a b c', (string) $query);
+    }
+
+    public function testEmptyQueryIsEmpty(): void
+    {
+        $this->assertSame('', (string) Lucene::query());
+    }
+
+    public function testIgnoresEmptyNestedQueries(): void
+    {
+        $query = Lucene::query()
+            ->add(Lucene::term('a'))
+            ->add(Lucene::query());
+
+        $this->assertSame('a', (string) $query);
+    }
+
+    public function testIgnoresEmptyNestedQueryBeforeOtherClauses(): void
+    {
+        $query = Lucene::query()
+            ->add(Lucene::query())
+            ->add(Lucene::term('a'));
+
+        $this->assertSame('a', (string) $query);
+    }
+
     public function testShouldHave(): void
     {
-        $query = Lucene::query();
+        $query = Lucene::query()->shouldHave(Lucene::term('a')->required());
 
-        $clauseMock = $this->getClauseMock('a');
-
-        $clauseMock->expects($this->once())
-            ->method('optional');
-
-        $clauseMock->expects($this->never())
-            ->method('required');
-
-        $clauseMock->expects($this->never())
-            ->method('prohibited');
-
-        $query->shouldHave($clauseMock);
-
-        $this->assertSame(
-            'a',
-            (string) $query,
-            'Expected the query to contain the optional clause "a".'
-        );
+        $this->assertSame('a', (string) $query);
     }
 
-    /**
-     * Tests adding a required clause with mustHave().
-     *
-     * @return void
-     */
     public function testMustHave(): void
     {
-        $query = Lucene::query();
-
-        $clauseMock = $this->getClauseMock('+a');
-
-        $clauseMock->expects($this->never())
-            ->method('optional');
-
-        $clauseMock->expects($this->once())
-            ->method('required');
-
-        $clauseMock->expects($this->never())
-            ->method('prohibited');
-
-        $query->mustHave($clauseMock);
-
-        $this->assertSame(
-            '+a',
-            (string) $query,
-            'Expected the query to contain the required clause "+a".'
-        );
+        $this->assertSame('+a', (string) Lucene::query()->mustHave(Lucene::term('a')));
     }
 
-    /**
-     * Tests adding a prohibited clause with mustNotHave().
-     *
-     * @return void
-     */
     public function testMustNotHave(): void
     {
+        $this->assertSame('-a', (string) Lucene::query()->mustNotHave(Lucene::term('a')));
+    }
+
+    public function testMixedOperators(): void
+    {
+        $query = Lucene::query()
+            ->shouldHave(Lucene::term('word'))
+            ->mustHave(Lucene::phrase('Lucene query'))
+            ->mustNotHave(Lucene::phrase('Java development'));
+
+        $this->assertSame('word +"Lucene query" -"Java development"', (string) $query);
+    }
+
+    public function testAddMethodsReturnTheQuery(): void
+    {
         $query = Lucene::query();
 
-        $clauseMock = $this->getClauseMock('-a');
-
-        $clauseMock->expects($this->never())
-            ->method('optional');
-
-        $clauseMock->expects($this->never())
-            ->method('required');
-
-        $clauseMock->expects($this->once())
-            ->method('prohibited');
-
-        $query->mustNotHave($clauseMock);
-
-        $this->assertSame(
-            '-a',
-            (string) $query,
-            'Expected the query to contain the required clause "-a".'
-        );
+        $this->assertSame($query, $query->add(Lucene::term('a')));
+        $this->assertSame($query, $query->shouldHave(Lucene::term('a')));
+        $this->assertSame($query, $query->mustHave(Lucene::term('a')));
+        $this->assertSame($query, $query->mustNotHave(Lucene::term('a')));
+        $this->assertSame($query, $query->and(Lucene::term('a')));
+        $this->assertSame($query, $query->or(Lucene::term('a')));
+        $this->assertSame($query, $query->not(Lucene::term('a')));
     }
 
-    /**
-     * Tests, if a test query contains brackets or not.
-     *
-     * @param Query  $query            A query
-     * @param bool $shouldHaveBrackets True, if the query is expected to contain brackets, otherwise false
-     *
-     * @dataProvider dataProviderTest__toStringRendersBrackets
-     */
-    public function test__toStringRendersBrackets(Query $query, bool $shouldHaveBrackets): void
+    public function testBooleanOperators(): void
     {
-        $this->assertSame(
-            $shouldHaveBrackets,
-            (bool) preg_match('/\(.+\)/', (string) $query)
-        );
+        $query = Lucene::query()
+            ->add(Lucene::term('a'))
+            ->and(Lucene::term('b'))
+            ->or(Lucene::term('c'))
+            ->not(Lucene::term('d'));
+
+        $this->assertSame('a AND b OR c NOT d', (string) $query);
     }
 
-    /**
-     * Provides test data for test__toStringRendersBrackets.
-     *
-     * @return array
-     */
-    public function dataProviderTest__toStringRendersBrackets(): array
+    public function testConjunctionBeforeFirstClauseIsOmitted(): void
     {
-        $query1 = Lucene::query('field')
-            ->required()
-            ->add($this->getClauseMock('a'))
-            ->add($this->getClauseMock('b'));
+        $this->assertSame('a OR b', (string) Lucene::query()->and(Lucene::term('a'))->or(Lucene::term('b')));
+    }
 
-        $query2 = Lucene::query('field')
-            ->required()
-            ->add($this->getClauseMock('a'));
+    public function testNotBeforeFirstClauseIsKept(): void
+    {
+        $this->assertSame('NOT a', (string) Lucene::query()->not(Lucene::term('a')));
+    }
 
-        $query3 = Lucene::query()
-            ->required()
-            ->add($this->getClauseMock('a'))
-            ->add($this->getClauseMock('b'));
+    public function testConjunctionBeforeEmptyClauseDoesNotLeaveDanglingOperator(): void
+    {
+        $query = Lucene::query()->add(Lucene::term('a'))->and(Lucene::query());
 
-        $query4 = Lucene::query()
-            ->required()
-            ->add($this->getClauseMock('a'));
+        $this->assertSame('a', (string) $query);
+    }
 
-        $query5 = Lucene::query('field')
-            ->prohibited()
-            ->add($this->getClauseMock('a'))
-            ->add($this->getClauseMock('b'));
+    public function testNestedQueriesAreEnclosedInParentheses(): void
+    {
+        $query = Lucene::query()
+            ->add(Lucene::term('a'))
+            ->and(Lucene::query()->add(Lucene::term('b'))->or(Lucene::term('c')));
 
-        $query6 = Lucene::query('field')
-            ->prohibited()
-            ->add($this->getClauseMock('a'));
+        $this->assertSame('a AND (b OR c)', (string) $query);
+    }
 
-        $query7 = Lucene::query()
-            ->prohibited()
-            ->add($this->getClauseMock('a'))
-            ->add($this->getClauseMock('b'));
+    public function testNestedQueryWithSingleClauseIsNotEnclosedInParentheses(): void
+    {
+        $query = Lucene::query()
+            ->add(Lucene::term('a'))
+            ->and(Lucene::query()->add(Lucene::term('b')));
 
-        $query8 = Lucene::query()
-            ->prohibited()
-            ->add($this->getClauseMock('a'));
+        $this->assertSame('a AND b', (string) $query);
+    }
 
-        $query9 = Lucene::query('field')
-            ->add($this->getClauseMock('a'))
-            ->add($this->getClauseMock('b'));
+    #[DataProvider('provideDecoratedSingleClauseQueries')]
+    public function testDecoratedQueryWithSingleDecoratedClauseIsEnclosedInParentheses(Query $query, string $expected): void
+    {
+        $this->assertSame($expected, (string) $query);
+    }
 
-        $query10 = Lucene::query('field')
-            ->add($this->getClauseMock('a'));
-
-        $query11 = Lucene::query()
-            ->add($this->getClauseMock('a'))
-            ->add($this->getClauseMock('b'));
-
-        $query12 = Lucene::query()
-            ->add($this->getClauseMock('a'));
-
+    /** @return array<string, array{Query, string}> */
+    public static function provideDecoratedSingleClauseQueries(): array
+    {
         return [
-            'Query with "required" operator, non-default field and more than one clause'   => [$query1, true],
-            'Query with "required" operator, non-default field and a single clause'        => [$query2, false],
-            'Query with "required" operator, default field and more than one clauses'      => [$query3, false],
-            'Query with "required" operator, default field and a single clause'            => [$query4, false],
-            'Query with "prohibited" operator, non-default field and more than one clause' => [$query5, true],
-            'Query with "prohibited" operator, non-default field and a single clause'      => [$query6, false],
-            'Query with "prohibited" operator, default field and more than one clauses'    => [$query7, false],
-            'Query with "prohibited" operator, default field and a single clause'          => [$query8, false],
-            'Query with default operator, non-default field and more than one clause'      => [$query9, false],
-            'Query with default operator, non-default field and a single clause'           => [$query10, false],
-            'Query with default operator, default field and more than one clauses'         => [$query11, false],
-            'Query with default operator, default field and a single clause'               => [$query12, false],
+            'operator and operator' => [
+                Lucene::query()->required()->add(Lucene::term('x')->prohibited()),
+                '+(-x)',
+            ],
+            'field and field' => [
+                Lucene::query('title')->add(Lucene::term('x', 'body')),
+                'title:(body:x)',
+            ],
+            'boost and boost' => [
+                Lucene::query()->boost(3)->add(Lucene::term('x')->boost(2)),
+                '(x^2)^3',
+            ],
+            'operator and NOT' => [
+                Lucene::query()->required()->not(Lucene::term('x')),
+                '+(NOT x)',
+            ],
+            'operator and decorated nested query' => [
+                Lucene::query()->required()->add(Lucene::query()->prohibited()->add(Lucene::term('x'))),
+                '+(-x)',
+            ],
         ];
     }
 
-    /**
-     * Tests, if __toString() renders a list of clauses using spaces as separators.
-     *
-     * @return void
-     */
-    public function test__toStringRendersClausesWithSeparator():void
+    public function testDecoratedQueryWithSingleUndecoratedClauseNeedsNoParentheses(): void
     {
-        $query = Lucene::query()
-            ->add($this->getClauseMock('a'))
-            ->add($this->getClauseMock('b'))
-            ->add($this->getClauseMock('c'));
+        $this->assertSame('+x', (string) Lucene::query()->required()->add(Lucene::term('x')));
+        $this->assertSame('x^2', (string) Lucene::query()->boost(2)->add(Lucene::term('x')));
+    }
 
-        $this->assertInternalType(
-            'int',
-            strpos($query, 'a b c'),
-            'Expected the query to contain a space separated list of clauses.'
+    public function testDecoratedQueryWithSingleClauseNotImplementedByTheLibraryIsEnclosedInParentheses(): void
+    {
+        $clause = new class implements Clause {
+            public function setField(string $name = ''): static
+            {
+                return $this;
+            }
+
+            public function optional(): static
+            {
+                return $this;
+            }
+
+            public function required(): static
+            {
+                return $this;
+            }
+
+            public function prohibited(): static
+            {
+                return $this;
+            }
+
+            public function boost(float $value): static
+            {
+                return $this;
+            }
+
+            public function __toString(): string
+            {
+                return 'custom';
+            }
+        };
+
+        $this->assertSame('+(custom)', (string) Lucene::query()->required()->add($clause));
+        $this->assertSame('custom', (string) Lucene::query()->add($clause));
+    }
+
+    public function testDecoratedEmptyQueryIsEmpty(): void
+    {
+        $this->assertSame('', (string) Lucene::query()->required());
+        $this->assertSame('', (string) Lucene::query('title'));
+        $this->assertSame('', (string) Lucene::query()->boost(2));
+        $this->assertSame(
+            'a',
+            (string) Lucene::query()->add(Lucene::term('a'))->add(Lucene::query()->required())
         );
     }
 
-    /**
-     * Returns a mock object for a clause.
-     *
-     * @param string $query A query returned by __toString()
-     *
-     * @return MockObject|Clause
-     */
-    private function getClauseMock(string $query): MockObject
+    public function testNotIsFollowedByParenthesesIfTheClauseHasAnOperator(): void
     {
-        $clauseMock = $this->getMockBuilder(Clause::class)
-            ->getMockForAbstractClass();
+        $query = Lucene::query()
+            ->add(Lucene::term('a'))
+            ->not(Lucene::term('x')->required())
+            ->not(Lucene::term('y')->prohibited());
 
-        $clauseMock->expects($this->any())
-            ->method('__toString')
-            ->willReturn($query);
-
-        return $clauseMock;
+        $this->assertSame('a NOT (+x) NOT (-y)', (string) $query);
     }
 
-    /**
-     * Returns a query for testing.
-     *
-     * @param null|string $constructorArgumentField The constructor argument for the field
-     *
-     * @return Clause|Query
-     */
+    public function testAndAndOrAcceptClausesWithOperators(): void
+    {
+        $query = Lucene::query()
+            ->add(Lucene::term('a'))
+            ->and(Lucene::term('x')->prohibited())
+            ->or(Lucene::term('y')->required());
+
+        $this->assertSame('a AND -x OR +y', (string) $query);
+    }
+
+    public function testThrowsExceptionIfQueryIsAddedToItself(): void
+    {
+        $query = Lucene::query();
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $query->add($query);
+    }
+
+    public function testThrowsExceptionIfQueryWouldBecomeCyclic(): void
+    {
+        $inner = Lucene::query();
+        $outer = Lucene::query()->add($inner);
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $inner->and($outer);
+    }
+
+    public function testThrowsExceptionIfDeeplyNestedQueryWouldBecomeCyclic(): void
+    {
+        $innermost = Lucene::query();
+        $outer     = Lucene::query()->add(Lucene::query()->add($innermost));
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $innermost->or($outer);
+    }
+
+    public function testThrowsExceptionForCycleAddedByOr(): void
+    {
+        $inner = Lucene::query();
+        $outer = Lucene::query()->add($inner);
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $inner->or($outer);
+    }
+
+    public function testThrowsExceptionForCycleAddedByNot(): void
+    {
+        $inner = Lucene::query();
+        $outer = Lucene::query()->add($inner);
+
+        $this->expectException(InvalidArgumentException::class);
+
+        $inner->not($outer);
+    }
+
+    public function testAcceptsNestedQueriesThatDoNotContainTheOuterQuery(): void
+    {
+        $outer = Lucene::query();
+        $inner = Lucene::query()->add(Lucene::query()->add(Lucene::term('a')));
+
+        $this->assertSame('b OR a', (string) $outer->add(Lucene::term('b'))->or($inner));
+    }
+
+    public function testNotDoesNotWrapClausesContainingHyphensOrPlusSigns(): void
+    {
+        $this->assertSame(
+            'a NOT "b-c"',
+            (string) Lucene::query()->add(Lucene::term('a'))->not(Lucene::phrase('b-c'))
+        );
+    }
+
+    public function testAcceptsTheSameClauseInSeveralQueries(): void
+    {
+        $term = Lucene::term('a');
+
+        $this->assertSame(
+            'a OR a',
+            (string) Lucene::query()->or(Lucene::query()->add($term))->or(Lucene::query()->add($term))
+        );
+    }
+
+    public function testFieldIsAppliedToAllClauses(): void
+    {
+        $query = Lucene::query('title')
+            ->add(Lucene::term('Lucene'))
+            ->add(Lucene::term('Apache'));
+
+        $this->assertSame('title:(Lucene Apache)', (string) $query);
+    }
+
+    public function testFieldOfSingleClauseNeedsNoParentheses(): void
+    {
+        $this->assertSame('title:a', (string) Lucene::query('title')->add(Lucene::term('a')));
+    }
+
+    public function testFieldOfSubClauseDoesNotAffectOthers(): void
+    {
+        $query = Lucene::query()
+            ->add(Lucene::term('Lucene', 'title'))
+            ->add(Lucene::term('Apache'));
+
+        $this->assertSame('title:Lucene Apache', (string) $query);
+    }
+
+    public function testOperatorAppliesToAllClauses(): void
+    {
+        $query = Lucene::query()
+            ->add(Lucene::term('Lucene'))
+            ->add(Lucene::phrase('search query'))
+            ->required();
+
+        $this->assertSame('+(Lucene "search query")', (string) $query);
+    }
+
+    public function testBoostAppliesToAllClauses(): void
+    {
+        $query = Lucene::query()
+            ->add(Lucene::term('a'))
+            ->add(Lucene::term('b'))
+            ->boost(2);
+
+        $this->assertSame('(a b)^2', (string) $query);
+    }
+
+    public function testFieldOperatorAndBoostCombined(): void
+    {
+        $query = Lucene::query('title')
+            ->add(Lucene::term('a'))
+            ->add(Lucene::term('b'))
+            ->prohibited()
+            ->boost(1.5);
+
+        $this->assertSame('-title:(a b)^1.5', (string) $query);
+    }
+
+    protected function getExpectedBody(): string
+    {
+        return 'a';
+    }
+
     protected function getTestClause(?string $constructorArgumentField = null): Clause
     {
-        $query = is_null($constructorArgumentField)
+        $query = null === $constructorArgumentField
             ? Lucene::query()
             : Lucene::query($constructorArgumentField);
 
-        $query->add($this->getClauseMock('a'));
-
-        return $query;
+        return $query->add(Lucene::term('a'));
     }
 }

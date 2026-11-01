@@ -1,9 +1,10 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Exception;
 
 /**
- * Invalid argument exception
+ * Thrown if an invalid argument was given to one of the library's methods.
  */
-class InvalidArgumentException extends \Exception
-{
-}
+class InvalidArgumentException extends \InvalidArgumentException {}

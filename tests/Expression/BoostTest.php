@@ -1,43 +1,57 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Test\Expression;
 
+use AskLucy\Exception\InvalidArgumentException;
 use AskLucy\Expression\Boost;
-use AskLucy\Expression\Fuzziness;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Unit tests for the boost.
- *
- * @see Fuzziness
- */
-class BoostTest extends TestCase
+final class BoostTest extends TestCase
 {
-    /**
-     * Tests, if __construct() throws an exception, if the boost value is out of range.
-     *
-     * @param float $bootValue The boost value as constructor argument
-     *
-     * @dataProvider dataProviderTest__constructThrowsExceptionForInvalidValue
-     *
-     * @expectedException \AskLucy\Exception\InvalidArgumentException
-     *
-     * @return void
-     */
-    public function test__constructThrowsException(float $bootValue): void
+    #[DataProvider('provideInvalidValues')]
+    public function testConstructThrowsExceptionForInvalidValue(float $value): void
     {
-        new Boost($bootValue);
+        $this->expectException(InvalidArgumentException::class);
+
+        new Boost($value);
     }
 
-    /**
-     * Data provider for test__constructThrowsException().
-     *
-     * @return array
-     */
-    public function dataProviderTest__constructThrowsExceptionForInvalidValue(): array
+    /** @return array<string, array{float}> */
+    public static function provideInvalidValues(): array
     {
         return [
-            'Negative value' => [-1.0],
-            'Zero value'     => [0.0],
+            'negative'  => [-1.0],
+            'zero'      => [0.0],
+            'infinite'  => [INF],
+            'rounds to zero' => [1.0E-11],
+            'not a number' => [NAN],
         ];
+    }
+
+    #[DataProvider('provideValues')]
+    public function testToString(float $value, string $expected): void
+    {
+        $this->assertSame($expected, (string) new Boost($value));
+    }
+
+    /** @return array<string, array{float, string}> */
+    public static function provideValues(): array
+    {
+        return [
+            'default value is omitted'         => [1.0, ''],
+            'integer value'                    => [2.0, '^2'],
+            'smallest renderable value'        => [0.0000000001, '^0.0000000001'],
+            'decimal value'                    => [2.5, '^2.5'],
+            'trailing zeros are removed'       => [2.10, '^2.1'],
+            'small value without exponent'     => [0.0000001, '^0.0000001'],
+        ];
+    }
+
+    public function testDefaultConstructorArgumentRendersNothing(): void
+    {
+        $this->assertSame('', (string) new Boost());
     }
 }

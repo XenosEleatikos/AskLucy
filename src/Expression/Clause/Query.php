@@ -1,124 +1,155 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Expression\Clause;
 
-use AskLucy\Expression\Field;
-use AskLucy\Expression\Operator;
-use AskLucy\Property\BoostTrait;
-use AskLucy\Property\FieldTrait;
-use AskLucy\Property\OperatorTrait;
+use AskLucy\Exception\InvalidArgumentException;
+use AskLucy\Expression\Conjunction;
 
 /**
- * A query
+ * A complex query containing any number of clauses, which may be queries themselves.
  */
-class Query implements Clause
+final class Query extends AbstractClause
 {
-    use BoostTrait;
-    use FieldTrait;
-    use OperatorTrait;
+    private const CLAUSE_SEPARATOR = ' ';
 
-    /**
-     * Separator between clauses
-     *
-     * @var string
-     */
-    const CLAUSE_SEPARATOR = ' ';
+    /** @var list<array{0: ?Conjunction, 1: Clause}> */
+    private array $entries = [];
 
-    /**
-     * A list of clauses
-     *
-     * @var Clause[]
-     */
-    private $clauses = [];
-
-    /**
-     * Constructs a query.
-     *
-     * @param string $field Optional name of the field to search in
-     */
-    public function __construct(string $field = Field::DEFAULT)
+    public function add(Clause $clause): self
     {
-        $this->optional();
-        $this->field = new Field($field);
+        $this->assertNoCycle($clause);
+
+        $this->entries[] = [null, $clause];
+
+        return $this;
+    }
+
+    public function shouldHave(Clause $clause): self
+    {
+        return $this->add($clause->optional());
+    }
+
+    public function mustHave(Clause $clause): self
+    {
+        return $this->add($clause->required());
+    }
+
+    public function mustNotHave(Clause $clause): self
+    {
+        return $this->add($clause->prohibited());
     }
 
     /**
-     * Adds a clause.
-     *
-     * @param Clause $clause A clause
-     *
-     * @return Query
+     * Adds a clause connected to the preceding one by "AND".
      */
-    public function add(Clause $clause): self
+    public function and(Clause $clause): self
     {
-        $this->clauses[] = $clause;
+        $this->assertNoCycle($clause);
+
+        $this->entries[] = [Conjunction::And, $clause];
 
         return $this;
     }
 
     /**
-     * Adds an optional clause.
-     *
-     * @param Clause $clause A clause
-     *
-     * @return Query
+     * Adds a clause connected to the preceding one by "OR".
      */
-    public function shouldHave(Clause $clause): self
+    public function or(Clause $clause): self
     {
-        $clause->optional();
+        $this->assertNoCycle($clause);
 
-        return $this->add($clause);
+        $this->entries[] = [Conjunction::Or, $clause];
+
+        return $this;
     }
 
     /**
-     * Adds a required clause.
-     *
-     * @param Clause $clause A clause
-     *
-     * @return Query
+     * Adds a clause connected to the preceding one by "NOT".
      */
-    public function mustHave(Clause $clause): self
+    public function not(Clause $clause): self
     {
-        $clause->required();
+        $this->assertNoCycle($clause);
 
-        return $this->add($clause);
+        $this->entries[] = [Conjunction::Not, $clause];
+
+        return $this;
+    }
+
+    private function assertNoCycle(Clause $clause): void
+    {
+        if ($clause === $this || ($clause instanceof self && $clause->contains($this))) {
+            throw new InvalidArgumentException('A query must not contain itself.');
+        }
     }
 
     /**
-     * Adds a prohibited clause.
-     *
-     * @param Clause $clause A clause
-     *
-     * @return Query
+     * Renders the query as part of another query. Then it must be enclosed in parentheses if it contains more than one
+     * clause, otherwise the boolean operators of the outer query would apply to the single clauses.
      */
-    public function mustNotHave(Clause $clause): self
+    private function renderNested(): string
     {
-        $clause->prohibited();
+        $body = $this->renderBody(true);
 
-        return $this->add($clause);
+        return '' === $body ? '' : $this->decorate($body);
     }
 
-    /**
-     * Returns the query as string.
-     *
-     * @return string
-     */
-    public function __toString(): string
+    private function contains(self $query): bool
     {
-        return $this->operator
-            . $this->field
-            . $this->getClauses()
-            . $this->boost;
+        foreach ($this->entries as [, $clause]) {
+            if ($clause === $query || ($clause instanceof self && $clause->contains($query))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    /**
-     * @return string
-     */
-    private function getClauses(): string
+    protected function body(): string
     {
-        $clauses = implode(self::CLAUSE_SEPARATOR, $this->clauses);
+        return $this->renderBody(false);
+    }
 
-        return (Field::DEFAULT != $this->field && Operator::SYMBOL_OPTIONAL != $this->operator && count($this->clauses) > 1)
-            ? '(' .  $clauses . ')'
-            : $clauses;
+    private function renderBody(bool $nested): string
+    {
+        $parts    = [];
+        $collides = false;
+
+        foreach ($this->entries as [$conjunction, $clause]) {
+            $rendered = $clause instanceof self ? $clause->renderNested() : $clause->__toString();
+
+            if ('' === $rendered) {
+                continue;
+            }
+
+            $isFirst = [] === $parts;
+
+            // "NOT" is a modifier itself, so it must not be followed by "+" or "-".
+            if (Conjunction::Not === $conjunction && 1 === preg_match('/^[+-]/', $rendered)) {
+                $rendered = '(' . $rendered . ')';
+            }
+
+            $parts[] = null === $conjunction || ($isFirst && Conjunction::Not !== $conjunction)
+                ? $rendered
+                : $conjunction->value . ' ' . $rendered;
+
+            $collides = Conjunction::Not === $conjunction || self::isDecoratedClause($clause);
+        }
+
+        $body = implode(self::CLAUSE_SEPARATOR, $parts);
+
+        if (count($parts) > 1) {
+            return $nested || $this->isDecorated() ? '(' . $body . ')' : $body;
+        }
+
+        // A single clause needs parentheses if it would otherwise collide with the operator, the field or the boost of
+        // this query, e. g. "+-a", "title:body:a" or "a^2^3".
+        return $collides && $this->isDecorated() ? '(' . $body . ')' : $body;
+    }
+
+    private static function isDecoratedClause(Clause $clause): bool
+    {
+        return !$clause instanceof AbstractClause || $clause->isDecorated();
     }
 }

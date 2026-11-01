@@ -1,83 +1,29 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Expression;
 
 /**
- * The fuzziness
- *
- * @see https://en.wikipedia.org/wiki/Damerau%E2%80%93Levenshtein_distance
+ * The maximum Damerau-Levenshtein distance of a fuzzy search term.
  */
-class Fuzziness implements Expression
+enum Fuzziness: int
 {
-    /**
-     * The fuzziness operator
-     *
-     * @var string
-     */
-    private const FUZZINESS_OPERATOR = '~';
+    case None = 0;
+    case One  = 1;
+    case Two  = 2;
+
+    private const OPERATOR = '~';
 
     /**
-     * The Damerau-Levenshtein distance
-     * Possible values: 0, 1, 2
-     *
-     * @var int
+     * Returns the suffix to be appended to the term. Lucene's default distance is 2, so it needs no number.
      */
-    private $fuzziness = 0;
-
-    /**
-     * Constructs a logical operator.
-     *
-     * @param int $distance The Damerau-Levenshtein distance
-     *                      Possible values: 0, 1, 2
-     */
-    private function __construct(int $distance)
+    public function suffix(): string
     {
-        $this->fuzziness = $distance;
-    }
-
-    /**
-     * Returns the Damerau-Levenshtein distance 0.
-     *
-     * @return self
-     */
-    public static function distance0(): self
-    {
-        return new self(0);
-    }
-
-    /**
-     * Returns the Damerau-evenshtein distance 1.
-     *
-     * @return self
-     */
-    public static function distance1(): self
-    {
-        return new self(1);
-    }
-
-    /**
-     * Returns the Damerau-Levenshtein distance 2.
-     *
-     * @return self
-     */
-    public static function distance2(): self
-    {
-        return new self(2);
-    }
-
-    /**
-     * Returns the fuzziness as string.
-     *
-     * @return string
-     */
-    public function __toString(): string
-    {
-        switch ($this->fuzziness) {
-            case 2:
-                return self::FUZZINESS_OPERATOR;
-            case 1:
-                return self::FUZZINESS_OPERATOR . '1';
-            default:
-                return '';
-        }
+        return match ($this) {
+            self::None => '',
+            self::One  => self::OPERATOR . '1',
+            self::Two  => self::OPERATOR,
+        };
     }
 }

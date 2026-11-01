@@ -1,59 +1,42 @@
 <?php
+
+declare(strict_types=1);
+
 namespace AskLucy\Test\Expression;
 
 use AskLucy\Expression\Field;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Unit tests for the field.
- *
- * @see Field
- */
-class FieldTest extends TestCase
+final class FieldTest extends TestCase
 {
-    /**
-     * Tests, if Field::__toString() returns the field name given as constructor argument.
-     *
-     * @return void
-     */
-    public function test__toString(): void
+    public function testToString(): void
     {
-        $field = new Field('field');
-
-        $this->assertSame(
-            'field:',
-            (string) $field,
-            'Expected field name to be "field:".'
-        );
+        $this->assertSame('field:', (string) new Field('field'));
     }
 
-    /**
-     * Tests, if Field::__toString() returns an empty string for the default field.
-     *
-     * @param Field $field An empty field
-     *
-     * @dataProvider dataProviderTest__toStringWithDefaultField
-     *
-     * @return void
-     */
-    public function test__toStringWithDefaultField(Field $field): void
+    public function testEscapesFieldName(): void
     {
-        $this->assertEmpty(
-            (string) $field,
-            'Expected field name to be an empty string.'
-        );
+        $this->assertSame('my\ field\:x:', (string) new Field('my field:x'));
     }
 
-    /**
-     * Returns empty fields as test data for test__toStringWithDefaultField().
-     *
-     * @return array
-     */
-    public function dataProviderTest__toStringWithDefaultField(): array
+    public function testEscapesUnicodeWhitespaceInFieldName(): void
+    {
+        $this->assertSame("f\\\u{3000}g:", (string) new Field("f\u{3000}g"));
+    }
+
+    #[DataProvider('provideDefaultFields')]
+    public function testToStringWithDefaultField(Field $field): void
+    {
+        $this->assertSame('', (string) $field);
+    }
+
+    /** @return array<string, array{Field}> */
+    public static function provideDefaultFields(): array
     {
         return [
-            'Default field instantiated without constructor argument'              => [new Field],
-            'Default field instantiated with empty string as constructor argument' => [new Field('')]
+            'without constructor argument'                 => [new Field()],
+            'with empty string as constructor argument'    => [new Field('')],
         ];
     }
 }
